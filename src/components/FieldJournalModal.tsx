@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { BiotaSpecimen, ZoneData } from '../types';
 import { SpecimenRenderer } from './papercraft/SpecimenRenderer';
 import { DiverScaleSVG } from './papercraft/SpecimenSVGs';
-import { X, Calendar, Compass, ShieldAlert, Sparkles } from 'lucide-react';
+import { X, Calendar, Compass, ShieldAlert, Sparkles, BookOpen } from 'lucide-react';
 import { pelagiaAudio } from '../lib/audioEngine';
 
 interface FieldJournalModalProps {
@@ -22,18 +22,31 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
     }
   }, [specimen]);
 
+  // Handle ESC key to close
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   if (!specimen || !zone) return null;
 
-  // Calculate comparative scale percentage vs 1.8m diver
-  // 1.8m = reference 100% height (or width). If Whale Shark is 12m, it's ~6.6x human.
   const scaleRatio = (specimen.lengthMeters / 1.8).toFixed(1);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 select-none">
-      {/* Field Journal Paper Card (Wes Anderson / Naturalist Notebook Style) */}
-      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-[#FAF6EE] text-[#1E252B] border-2 border-[#1E252B] shadow-paper-lg rounded-xl overflow-hidden paper-grain">
-        {/* Top Field Plate Header */}
-        <div className="flex items-center justify-between px-5 sm:px-7 py-4 border-b-2 border-[#1E252B] bg-[#F4ECE1]">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-sm select-none transition-all"
+      onClick={onClose}
+    >
+      {/* Field Journal Notebook Unfold Animation */}
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-[#FAF6EE] text-[#1E252B] border-2 border-[#1E252B] shadow-paper-lg rounded-2xl overflow-hidden paper-grain animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 ease-out"
+      >
+        {/* Vintage Bookmark Tag Header */}
+        <div className="flex items-center justify-between px-5 sm:px-8 py-4 border-b-2 border-[#1E252B] bg-[#F4ECE1]">
           <div className="space-y-0.5 font-mono">
             <div className="text-[10px] tracking-widest text-[#D95A47] font-bold uppercase flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
@@ -57,21 +70,18 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
           </button>
         </div>
 
-        {/* Scrollable Journal Content */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6">
-          {/* Specimen Showcase Box (Papercraft on display) */}
-          <div className="relative p-6 sm:p-8 rounded-xl border-2 border-[#1E252B] bg-[#FDFBF7] shadow-inner flex items-center justify-center min-h-[220px]">
-            {/* Watermark grid */}
+        {/* Scrollable Journal Notebook Body */}
+        <div className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-6">
+          {/* Specimen Showcase Arena */}
+          <div className="relative p-6 sm:p-10 rounded-xl border-2 border-[#1E252B] bg-[#FDFBF7] shadow-inner flex items-center justify-center min-h-[220px]">
             <div className="absolute inset-0 bg-[radial-gradient(#1E252B_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
 
-            {/* Specimen Render */}
             <div className="transform scale-110 sm:scale-125 transition-transform">
               <SpecimenRenderer type={specimen.papercraftType} />
             </div>
 
-            {/* Scale stamp */}
-            <div className="absolute bottom-3 right-3 px-2 py-1 bg-[#F4ECE1] border border-[#1E252B] rounded text-[10px] font-mono">
-              SPECIMEN LENGTH: <span className="font-bold">{specimen.lengthMeters} M</span>
+            <div className="absolute bottom-3 right-3 px-2.5 py-1 bg-[#F4ECE1] border border-[#1E252B] rounded text-[10px] font-mono shadow-paper-sm">
+              SPECIMEN LENGTH: <span className="font-bold text-[#D95A47]">{specimen.lengthMeters} M</span>
             </div>
           </div>
 
@@ -93,37 +103,39 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
             </div>
           </div>
 
-          {/* Naturalist Field Observation Note */}
-          <div className="space-y-1.5 bg-[#F4ECE1] p-4 rounded-lg border border-[#1E252B]/20">
-            <div className="text-[10px] font-mono tracking-widest uppercase font-bold text-[#2F6D68]">
-              EXPEDITION OBSERVATION // LOG ENTRY
+          {/* Field Log Entry */}
+          <div className="space-y-1.5 bg-[#F4ECE1] p-4 sm:p-5 rounded-xl border border-[#1E252B]/20 shadow-paper-sm">
+            <div className="text-[10px] font-mono tracking-widest uppercase font-bold text-[#2F6D68] flex items-center gap-1.5">
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>FIELD OBSERVATION LOG</span>
             </div>
             <p className="font-serif text-base sm:text-lg leading-relaxed italic text-[#2D312E]">
               "{specimen.observationNotes}"
             </p>
           </div>
 
-          {/* Scale Comparison Bar (Creature vs 1.8m Human Diver) */}
-          <div className="space-y-2 p-4 rounded-lg border-2 border-[#1E252B] bg-[#FDFBF7]">
+          {/* Scale Comparison with Human Diver */}
+          <div className="space-y-2 p-4 sm:p-5 rounded-xl border-2 border-[#1E252B] bg-[#FDFBF7] shadow-paper-sm">
             <div className="flex items-center justify-between text-xs font-mono">
               <span className="font-bold uppercase tracking-wider text-[#1E252B]">
-                SCALE COMPARISON // HUMAN DIVER (1.8M)
+                SCALE // HUMAN DIVER (1.8M)
               </span>
-              <span className="text-[#D95A47] font-semibold">
-                ≈ {scaleRatio}× Human Scale
+              <span className="text-[#D95A47] font-bold">
+                ≈ {scaleRatio}× Human Diver
               </span>
             </div>
 
-            <div className="flex items-end gap-6 pt-3 pb-2 justify-center border-t border-dashed border-[#1E252B]/20">
-              {/* Diver */}
+            <div className="flex items-end gap-8 pt-4 pb-2 justify-center border-t border-dashed border-[#1E252B]/20">
               <div className="flex flex-col items-center gap-1">
                 <DiverScaleSVG className="w-8 h-16 text-[#1E252B]" />
                 <span className="text-[9px] font-mono opacity-60">1.8 M</span>
               </div>
 
-              {/* Specimen Representation */}
               <div className="flex flex-col items-center gap-1">
-                <div className="transform origin-bottom" style={{ transform: `scale(${Math.min(1.8, Math.max(0.4, specimen.lengthMeters / 1.8))})` }}>
+                <div 
+                  className="transform origin-bottom" 
+                  style={{ transform: `scale(${Math.min(1.8, Math.max(0.4, specimen.lengthMeters / 1.8))})` }}
+                >
                   <SpecimenRenderer type={specimen.papercraftType} className="w-20 h-16" />
                 </div>
                 <span className="text-[9px] font-mono font-bold text-[#D95A47]">
@@ -133,7 +145,7 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
             </div>
           </div>
 
-          {/* Anatomical Key Features List */}
+          {/* Anatomical Key Features */}
           <div className="space-y-2">
             <div className="text-xs font-mono font-bold tracking-widest uppercase text-[#1E252B]">
               KEY ANATOMICAL ADAPTATIONS
@@ -148,12 +160,12 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
             </ul>
           </div>
 
-          {/* Specs Footer Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-xs border-t-2 border-dashed border-[#1E252B]/20 pt-4">
+          {/* Grid of Taxonomy Specs */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 font-mono text-xs border-t-2 border-dashed border-[#1E252B]/20 pt-4">
             <div className="p-2.5 rounded bg-[#F4ECE1] border border-[#1E252B]/15">
               <div className="text-[9px] opacity-60 flex items-center gap-1">
                 <Compass className="w-3 h-3" />
-                HABITAT ZONE
+                ZONE
               </div>
               <div className="font-bold text-[11px] truncate">{zone.name.split('·')[0]}</div>
             </div>
@@ -161,9 +173,9 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
             <div className="p-2.5 rounded bg-[#F4ECE1] border border-[#1E252B]/15">
               <div className="text-[9px] opacity-60 flex items-center gap-1">
                 <ShieldAlert className="w-3 h-3" />
-                PRIMARY DIET
+                DIET
               </div>
-              <div className="font-bold text-[11px] truncate">{specimen.diet}</div>
+              <div className="font-bold text-[11px] truncate">{specimen.diet.split(',')[0]}</div>
             </div>
 
             <div className="p-2.5 rounded bg-[#F4ECE1] border border-[#1E252B]/15 col-span-2 sm:col-span-1">
@@ -176,14 +188,14 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
           </div>
         </div>
 
-        {/* Footer Ribbon */}
-        <div className="px-5 sm:px-7 py-3 border-t-2 border-[#1E252B] bg-[#F4ECE1] flex items-center justify-between text-[11px] font-mono text-[#626863]">
+        {/* Footer */}
+        <div className="px-5 sm:px-8 py-3.5 border-t-2 border-[#1E252B] bg-[#F4ECE1] flex items-center justify-between text-[11px] font-mono text-[#626863]">
           <span>COLLECTED BY sm000ky × Zero Two</span>
           <button
             onClick={onClose}
-            className="font-bold text-[#1E252B] hover:text-[#D95A47] underline"
+            className="font-bold text-[#1E252B] hover:text-[#D95A47] underline cursor-pointer"
           >
-            [CLOSE ENTRY]
+            [CLOSE LOG]
           </button>
         </div>
       </div>

@@ -7,15 +7,15 @@ export const ZONES: ZoneData[] = [
     depthRange: '+10m to 0m',
     depthMin: -10,
     depthMax: 0,
-    paperBg: 'bg-[#FDFBF7]',
-    cardBg: 'bg-[#F7EFE2]',
+    paperBg: 'bg-[#F4E7D3]',
+    cardBg: 'bg-[#EBDDCB]',
     textColor: 'text-[#2D312E]',
     subtextColor: 'text-[#626863]',
-    accentColor: '#D95A47', // Terracotta ink
+    accentColor: '#D95A47',
     lightLevel: '100% Direct Sunlight',
     pressure: '1.0 ATM',
     temperature: '26°C - 31°C',
-    summary: 'The sunlit boundary between continental soil and restless saltwater. Sea oats whisper in the breeze as ghost crabs scuttle across tidal flats.',
+    summary: 'The sunlit threshold where dry dunes meet salt spray. Ghost crabs scuttle through quartz sand as gulls wheel overhead.',
     quote: '"The edge of the sea is a strange and beautiful place." — Rachel Carson'
   },
   {
@@ -24,15 +24,15 @@ export const ZONES: ZoneData[] = [
     depthRange: '0m to -200m',
     depthMin: 0,
     depthMax: 200,
-    paperBg: 'bg-[#EBF3EF]',
-    cardBg: 'bg-[#DDECE5]',
+    paperBg: 'bg-[#6CAE9E]',
+    cardBg: 'bg-[#50857D]',
     textColor: 'text-[#1B322D]',
-    subtextColor: 'text-[#44665E]',
-    accentColor: '#2F6D68', // Coastal Teal
+    subtextColor: 'text-[#365750]',
+    accentColor: '#2F6D68',
     lightLevel: '90% - 1% Ambient Light',
     pressure: '1.0 to 21.0 ATM',
     temperature: '18°C - 27°C',
-    summary: 'The nursery of marine life. Photosynthesis thrives in emerald-cyan water where corals branch and graceful pelagic migrators glide through filtered sunbeams.',
+    summary: 'The ocean’s luminous canopy. Corals bloom in filtered emerald beams while gentle leviathans glide through schools of silver fish.',
     quote: '"Under the sea, our world is colored in sapphire and liquid sun."'
   },
   {
@@ -41,15 +41,15 @@ export const ZONES: ZoneData[] = [
     depthRange: '-200m to -1,000m',
     depthMin: 200,
     depthMax: 1000,
-    paperBg: 'bg-[#D3E0EA]',
-    cardBg: 'bg-[#BFCFD9]',
-    textColor: 'text-[#162736]',
-    subtextColor: 'text-[#3E5C73]',
-    accentColor: '#346285', // Faded Indigo
+    paperBg: 'bg-[#1D445A]',
+    cardBg: 'bg-[#163244]',
+    textColor: 'text-[#EDE8DF]',
+    subtextColor: 'text-[#94A3B8]',
+    accentColor: '#5DADE2',
     lightLevel: 'Dim Twilight (No Red Spectrum)',
     pressure: '21.0 to 101.0 ATM',
     temperature: '4°C - 10°C',
-    summary: 'A ghostly realm where red wavelengths perish. Strange creatures navigate perpetual dusk with gargantuan telescopic lenses and silvery reflective scales.',
+    summary: 'A ghostly realm where red wavelengths perish. Strange creatures navigate perpetual dusk with gargantuan telescopic lenses and silvery scales.',
     quote: '"In this perpetual gloaming, light ceases to nourish and begins to deceive."'
   },
   {
@@ -58,15 +58,15 @@ export const ZONES: ZoneData[] = [
     depthRange: '-1,000m to -4,000m',
     depthMin: 1000,
     depthMax: 4000,
-    paperBg: 'bg-[#232F3E]',
-    cardBg: 'bg-[#192430]',
+    paperBg: 'bg-[#101E2B]',
+    cardBg: 'bg-[#0C1620]',
     textColor: 'text-[#EDE8DF]',
     subtextColor: 'text-[#8EA2B3]',
-    accentColor: '#EAA838', // Bioluminescent Amber
+    accentColor: '#EAA838',
     lightLevel: '0% Solar (Bioluminescence Only)',
     pressure: '101.0 to 401.0 ATM',
     temperature: '2°C - 4°C',
-    summary: 'Eternal darkness reigns. The sun is completely extinguished. Only living sparks, glowing lures, and bioluminescent photophores pierce the cold black ink.',
+    summary: 'Eternal darkness reigns. The sun is completely extinguished. Living sparks, glowing lures, and bioluminescent photophores pierce the cold black ink.',
     quote: '"Darkness here is not the absence of light, but an ancient, sovereign presence."'
   },
   {
@@ -75,11 +75,11 @@ export const ZONES: ZoneData[] = [
     depthRange: '-4,000m to -6,000m',
     depthMin: 4000,
     depthMax: 6000,
-    paperBg: 'bg-[#151D26]',
-    cardBg: 'bg-[#0E151C]',
+    paperBg: 'bg-[#091017]',
+    cardBg: 'bg-[#060A0E]',
     textColor: 'text-[#F4EDE2]',
     subtextColor: 'text-[#7D8F9E]',
-    accentColor: '#6BB7B9', // Pale Abyssal Cyan
+    accentColor: '#6BB7B9',
     lightLevel: 'Total Perpetual Aphotic',
     pressure: '401.0 to 601.0 ATM',
     temperature: '1°C - 2°C',
@@ -92,11 +92,11 @@ export const ZONES: ZoneData[] = [
     depthRange: '-6,000m to -10,994m',
     depthMin: 6000,
     depthMax: 11000,
-    paperBg: 'bg-[#0B0F14]',
-    cardBg: 'bg-[#06090D]',
+    paperBg: 'bg-[#030508]',
+    cardBg: 'bg-[#010204]',
     textColor: 'text-[#F9F7F1]',
     subtextColor: 'text-[#94A3B8]',
-    accentColor: '#E06D53', // Deep Magma Terracotta
+    accentColor: '#E06D53',
     lightLevel: 'Absolute Void (1,086 ATM)',
     pressure: '601.0 to 1,086.0 ATM',
     temperature: '1.1°C - 2.5°C',
@@ -106,7 +106,7 @@ export const ZONES: ZoneData[] = [
 ];
 
 export const SPECIMENS: BiotaSpecimen[] = [
-  // 1. Coastal Shore (+5m)
+  // 1. Coastal (+5m)
   {
     id: 'ghost-crab',
     plateNumber: 'PLATE 01 // LITTORAL',
@@ -114,7 +114,7 @@ export const SPECIMENS: BiotaSpecimen[] = [
     binomialName: 'Ocypode quadrata',
     japaneseName: 'スナガニ (Sunagani)',
     zoneId: 'coastal',
-    depthMeters: -2, // Above sea level
+    depthMeters: -2,
     lengthMeters: 0.05,
     weightKg: '0.04 kg',
     diet: 'Carrion, clams, sea turtle hatchlings',
@@ -128,7 +128,7 @@ export const SPECIMENS: BiotaSpecimen[] = [
     ],
     papercraftType: 'ghost-crab'
   },
-  // 2. Coastal Shore (+8m)
+  // 2. Coastal (+8m)
   {
     id: 'seagull',
     plateNumber: 'PLATE 02 // AERIAL',
@@ -150,12 +150,12 @@ export const SPECIMENS: BiotaSpecimen[] = [
     ],
     papercraftType: 'seagull'
   },
-  // 3. Sunlight Zone (-15m)
+  // 3. Sunlight (-15m)
   {
     id: 'clownfish-anemone',
     plateNumber: 'PLATE 03 // EPIPELAGIC',
-    commonName: 'Ocellaris Clownfish & Magnificent Anemone',
-    binomialName: 'Amphiprion ocellaris & Heteractis magnifica',
+    commonName: 'Ocellaris Clownfish & Anemone',
+    binomialName: 'Amphiprion ocellaris',
     japaneseName: 'カクレクマノミ (Kakurekumanomi)',
     zoneId: 'sunlight',
     depthMeters: 15,
@@ -164,7 +164,7 @@ export const SPECIMENS: BiotaSpecimen[] = [
     diet: 'Zooplankton, algae, anemone parasites',
     curiosityRating: 'Common',
     discoveryYear: '1830',
-    observationNotes: 'Dances within stinging paper tentacles without harm. A thick lipid mucus coat prevents anemone nematocyst fire in mutualist perfection.',
+    observationNotes: 'Dances within stinging paper tentacles without harm. A thick lipid mucus coat prevents anemone nematocyst discharge.',
     anatomicalFeatures: [
       'Mucus-based chemical cloaking against anemone venom',
       'Protandrous hermaphroditic social hierarchy',
@@ -172,7 +172,7 @@ export const SPECIMENS: BiotaSpecimen[] = [
     ],
     papercraftType: 'clownfish-anemone'
   },
-  // 4. Sunlight Zone (-35m)
+  // 4. Sunlight (-35m)
   {
     id: 'green-turtle',
     plateNumber: 'PLATE 04 // EPIPELAGIC',
@@ -189,15 +189,37 @@ export const SPECIMENS: BiotaSpecimen[] = [
     observationNotes: 'Glides like an ancient kite through sunlit seagrass meadows. Navigates entire ocean basins using geomagnetic sensory crystals in its skull.',
     anatomicalFeatures: [
       'Hydrodynamic teardrop-shaped bone carapace',
-      'Modified pectoral paddle-flippers with serrated claw remnants',
+      'Pectoral flippers with steady downstroke and glide cycle',
       'Heart rate reduces to 1 beat per 9 minutes during sleep dives'
     ],
     papercraftType: 'green-turtle'
   },
-  // 5. Sunlight Zone (-80m)
+  // 5. Sunlight (-60m) - NEW!
+  {
+    id: 'lions-mane-jelly',
+    plateNumber: 'PLATE 05 // EPIPELAGIC',
+    commonName: "Lion's Mane Jellyfish",
+    binomialName: 'Cyanea capillata',
+    japaneseName: 'キタユウレイクラゲ',
+    zoneId: 'sunlight',
+    depthMeters: 60,
+    lengthMeters: 2.3,
+    weightKg: '120 kg',
+    diet: 'Small fish, ctenophores, other jellyfish',
+    curiosityRating: 'Rare',
+    discoveryYear: '1758',
+    observationNotes: 'Pulsates gently like a glowing paper parasol. Its thousands of fine crimson tentacles trail up to thirty meters behind the bell.',
+    anatomicalFeatures: [
+      'Lobate scalloped margin bell with 8 distinct rhopalia clusters',
+      'Rhythmic bell contraction creating toroidal vortex jet rings',
+      'Stinging cnidocyte threads coated with proteolytic neurotoxins'
+    ],
+    papercraftType: 'lions-mane-jelly'
+  },
+  // 6. Sunlight (-80m)
   {
     id: 'manta-ray',
-    plateNumber: 'PLATE 05 // EPIPELAGIC',
+    plateNumber: 'PLATE 06 // EPIPELAGIC',
     commonName: 'Giant Oceanic Manta Ray',
     binomialName: 'Mobula birostris',
     japaneseName: 'オニイトマキエイ (Oniitomakiei)',
@@ -212,41 +234,85 @@ export const SPECIMENS: BiotaSpecimen[] = [
     anatomicalFeatures: [
       'Highest brain-to-body mass ratio of all cold-blooded fish',
       'Flexible cephalic lobes that unfurl into funnel scoops',
-      'Unique ventral spot patterns permanent as fingerprints'
+      'Undulating pectoral wingtip wave locomotion'
     ],
     papercraftType: 'manta-ray'
   },
-  // 6. Sunlight Zone (-140m)
+  // 7. Sunlight (-120m) - NEW!
+  {
+    id: 'blue-whale',
+    plateNumber: 'PLATE 07 // EPIPELAGIC',
+    commonName: 'Antarctic Blue Whale',
+    binomialName: 'Balaenoptera musculus',
+    japaneseName: 'シロナガスクジラ',
+    zoneId: 'sunlight',
+    depthMeters: 120,
+    lengthMeters: 29.5,
+    weightKg: '150,000 kg',
+    diet: 'Euphausiids (krill, up to 4 tons per day)',
+    curiosityRating: 'Mythical',
+    discoveryYear: '1758',
+    observationNotes: 'The largest organism ever known to have existed on Earth. Its deep sub-acoustic pulses travel thousands of kilometers through oceanic sound channels.',
+    anatomicalFeatures: [
+      'Pleated ventral throat grooves expanding into a 90-ton water pouch',
+      'Baleen plates composed of keratin filtering microscopic krill',
+      'Massive flukes generating up to 1,000 horsepower per upward sweep'
+    ],
+    papercraftType: 'blue-whale'
+  },
+  // 8. Sunlight (-160m)
   {
     id: 'whale-shark',
-    plateNumber: 'PLATE 06 // EPIPELAGIC',
+    plateNumber: 'PLATE 08 // EPIPELAGIC',
     commonName: 'Whale Shark',
     binomialName: 'Rhincodon typus',
     japaneseName: 'ジンベエザメ (Jinbeezame)',
     zoneId: 'sunlight',
-    depthMeters: 140,
+    depthMeters: 160,
     lengthMeters: 12.0,
     weightKg: '19,000 kg',
     diet: 'Plankton, micro-crustaceans, fish eggs',
     curiosityRating: 'Mythical',
     discoveryYear: '1828',
-    observationNotes: 'A colossal, benevolent wanderer. Its slate-blue flank carries a constellation of star-like ivory dots, cruising at an unhurried 5 kilometers per hour.',
+    observationNotes: 'A colossal, benevolent wanderer. Its flank carries a constellation of star-like ivory dots, cruising at an unhurried 5 kilometers per hour.',
     anatomicalFeatures: [
       'Massive 1.5-meter filter-feeding transverse mouth',
       'Over 3,000 microscopic vestigial teeth arranged in 300 rows',
-      'Carapace skin armored with thousands of dermal denticles'
+      'Thick dermis armor embedded with tooth-like dermal denticles'
     ],
     papercraftType: 'whale-shark'
   },
-  // 7. Twilight Zone (-380m)
+  // 9. Twilight (-250m) - NEW!
+  {
+    id: 'giant-octopus',
+    plateNumber: 'PLATE 09 // MESOPELAGIC',
+    commonName: 'Giant Pacific Octopus',
+    binomialName: 'Enteroctopus dofleini',
+    japaneseName: 'ミズダコ (Mizudako)',
+    zoneId: 'twilight',
+    depthMeters: 250,
+    lengthMeters: 4.5,
+    weightKg: '50 kg',
+    diet: 'Crabs, clams, lobsters, small sharks',
+    curiosityRating: 'Rare',
+    discoveryYear: '1910',
+    observationNotes: 'An intelligent master of camouflage. Can squeeze its boneless muscular body through any aperture larger than its keratin beak.',
+    anatomicalFeatures: [
+      'Three systemic hearts pumping copper-rich blue hemocyanin blood',
+      'Over 2,000 suction cups, each lined with chemical taste receptors',
+      'Complex chromatophore organs driven by direct neural control'
+    ],
+    papercraftType: 'giant-octopus'
+  },
+  // 10. Twilight (-400m)
   {
     id: 'giant-oarfish',
-    plateNumber: 'PLATE 07 // MESOPELAGIC',
+    plateNumber: 'PLATE 10 // MESOPELAGIC',
     commonName: 'Giant Oarfish · King of Herrings',
     binomialName: 'Regalecus glesne',
     japaneseName: 'リュウグウノツカイ (Ryugu-no-tsukai)',
     zoneId: 'twilight',
-    depthMeters: 380,
+    depthMeters: 400,
     lengthMeters: 8.5,
     weightKg: '270 kg',
     diet: 'Euphausiids, small pelagic squid, jellyfish',
@@ -260,10 +326,10 @@ export const SPECIMENS: BiotaSpecimen[] = [
     ],
     papercraftType: 'giant-oarfish'
   },
-  // 8. Twilight Zone (-650m)
+  // 11. Twilight (-650m)
   {
     id: 'barreleye',
-    plateNumber: 'PLATE 08 // MESOPELAGIC',
+    plateNumber: 'PLATE 11 // MESOPELAGIC',
     commonName: 'Barreleye Fish',
     binomialName: 'Macropinna microstoma',
     japaneseName: 'デメニギス (Demenigisu)',
@@ -282,10 +348,10 @@ export const SPECIMENS: BiotaSpecimen[] = [
     ],
     papercraftType: 'barreleye'
   },
-  // 9. Twilight Zone (-880m)
+  // 12. Twilight (-880m)
   {
     id: 'glass-squid',
-    plateNumber: 'PLATE 09 // MESOPELAGIC',
+    plateNumber: 'PLATE 12 // MESOPELAGIC',
     commonName: 'Cockatoo Glass Squid',
     binomialName: 'Taonius borealis',
     japaneseName: 'サメハダホウズキイカ (Samehadahozuki-ika)',
@@ -304,15 +370,37 @@ export const SPECIMENS: BiotaSpecimen[] = [
     ],
     papercraftType: 'glass-squid'
   },
-  // 10. Midnight Zone (-1,450m)
+  // 13. Midnight (-1,200m) - NEW!
+  {
+    id: 'viperfish',
+    plateNumber: 'PLATE 13 // BATHYPELAGIC',
+    commonName: "Sloane's Viperfish",
+    binomialName: 'Chauliodus sloani',
+    japaneseName: 'ホウライエソ (Horai-eso)',
+    zoneId: 'midnight',
+    depthMeters: 1200,
+    lengthMeters: 0.35,
+    weightKg: '0.15 kg',
+    diet: 'Lanternfish and mesopelagic crustaceans',
+    curiosityRating: 'Abyssal',
+    discoveryYear: '1801',
+    observationNotes: 'Its teeth are so long and needle-like they do not fit inside its mouth, curling outside the skull like transparent sabers.',
+    anatomicalFeatures: [
+      'Fangs exceeding half the height of its entire head',
+      'Modified hinged first vertebrae acting as a hydraulic shock absorber',
+      'Bioluminescent photophore tipped dorsal spine lure'
+    ],
+    papercraftType: 'viperfish'
+  },
+  // 14. Midnight (-1,500m)
   {
     id: 'anglerfish',
-    plateNumber: 'PLATE 10 // BATHYPELAGIC',
+    plateNumber: 'PLATE 14 // BATHYPELAGIC',
     commonName: 'Humpback Anglerfish',
     binomialName: 'Melanocetus johnsonii',
     japaneseName: 'ペリカンアンコウ (Pelikan-ankou)',
     zoneId: 'midnight',
-    depthMeters: 1450,
+    depthMeters: 1500,
     lengthMeters: 0.2,
     weightKg: '0.5 kg',
     diet: 'Fish and crustaceans lured by photophore glow',
@@ -326,10 +414,10 @@ export const SPECIMENS: BiotaSpecimen[] = [
     ],
     papercraftType: 'anglerfish'
   },
-  // 11. Midnight Zone (-2,200m)
+  // 15. Midnight (-2,200m)
   {
     id: 'gulper-eel',
-    plateNumber: 'PLATE 11 // BATHYPELAGIC',
+    plateNumber: 'PLATE 15 // BATHYPELAGIC',
     commonName: 'Pelican Gulper Eel',
     binomialName: 'Eurypharynx pelecanoides',
     japaneseName: 'フクロウナギ (Fukuro-unagi)',
@@ -348,15 +436,37 @@ export const SPECIMENS: BiotaSpecimen[] = [
     ],
     papercraftType: 'gulper-eel'
   },
-  // 12. Midnight Zone (-3,100m)
+  // 16. Midnight (-2,800m) - NEW!
+  {
+    id: 'giant-squid',
+    plateNumber: 'PLATE 16 // BATHYPELAGIC',
+    commonName: 'Giant Squid · Kraken of the Deep',
+    binomialName: 'Architeuthis dux',
+    japaneseName: 'ダイオウイカ (Daiou-ika)',
+    zoneId: 'midnight',
+    depthMeters: 2800,
+    lengthMeters: 13.0,
+    weightKg: '275 kg',
+    diet: 'Deep-sea fish, grenadiers, other squid species',
+    curiosityRating: 'Mythical',
+    discoveryYear: '1857',
+    observationNotes: 'Possesses dinner-plate sized eyes (27 cm across)—the largest in the animal kingdom—calibrated to detect faint bioluminescent turbulence caused by sperm whales.',
+    anatomicalFeatures: [
+      'Massive 27 cm optical diameter eyes capturing single photons',
+      'Two long feeding tentacles armed with serrated chitinous suckers',
+      'Powerful black parrot-like beak capable of cutting steel cable'
+    ],
+    papercraftType: 'giant-squid'
+  },
+  // 17. Midnight (-3,200m)
   {
     id: 'vampire-squid',
-    plateNumber: 'PLATE 12 // BATHYPELAGIC',
+    plateNumber: 'PLATE 17 // BATHYPELAGIC',
     commonName: 'Vampire Squid from Hell',
     binomialName: 'Vampyroteuthis infernalis',
     japaneseName: 'コウモリダコ (Komoridako)',
     zoneId: 'midnight',
-    depthMeters: 3100,
+    depthMeters: 3200,
     lengthMeters: 0.3,
     weightKg: '0.45 kg',
     diet: 'Marine snow, organic fecal pellets, discarded plankton',
@@ -370,10 +480,32 @@ export const SPECIMENS: BiotaSpecimen[] = [
     ],
     papercraftType: 'vampire-squid'
   },
-  // 13. Abyssal Plains (-4,200m)
+  // 18. Midnight (-3,600m) - NEW!
+  {
+    id: 'coelacanth',
+    plateNumber: 'PLATE 18 // BATHYPELAGIC',
+    commonName: 'West Indian Ocean Coelacanth',
+    binomialName: 'Latimeria chalumnae',
+    japaneseName: 'シーラカンス (Shīrakansu)',
+    zoneId: 'midnight',
+    depthMeters: 3600,
+    lengthMeters: 2.0,
+    weightKg: '80 kg',
+    diet: 'Squid, cuttlefish, bottom-dwelling sharks',
+    curiosityRating: 'Mythical',
+    discoveryYear: '1938 (Rediscovered)',
+    observationNotes: 'Believed extinct for 66 million years until hauled from a South African trawl in 1938. Its unique lobed fins move in an alternating diagonal gait like a walking four-legged reptile.',
+    anatomicalFeatures: [
+      'Lobe-finned limb pedicles containing precursors to tetrapod bones',
+      'Rostral electroreceptive organ in snout for detecting hidden prey',
+      'Intracranial joint dividing skull, allowing dorsal head elevation'
+    ],
+    papercraftType: 'coelacanth'
+  },
+  // 19. Abyss (-4,200m)
   {
     id: 'dumbo-octopus',
-    plateNumber: 'PLATE 13 // ABYSSOPELAGIC',
+    plateNumber: 'PLATE 19 // ABYSSOPELAGIC',
     commonName: 'Dumbo Octopus',
     binomialName: 'Grimpoteuthis',
     japaneseName: 'ダンボオクトパス (Danbo-okutopasu)',
@@ -392,10 +524,10 @@ export const SPECIMENS: BiotaSpecimen[] = [
     ],
     papercraftType: 'dumbo-octopus'
   },
-  // 14. Abyssal Plains (-5,150m)
+  // 20. Abyss (-5,150m)
   {
     id: 'tripod-fish',
-    plateNumber: 'PLATE 14 // ABYSSOPELAGIC',
+    plateNumber: 'PLATE 20 // ABYSSOPELAGIC',
     commonName: 'Tripod Spiderfish',
     binomialName: 'Bathypterois grallator',
     japaneseName: 'イトヒキイワシ (Itohiki-iwashi)',
@@ -414,10 +546,10 @@ export const SPECIMENS: BiotaSpecimen[] = [
     ],
     papercraftType: 'tripod-fish'
   },
-  // 15. Hadal Trench (-8,145m)
+  // 21. Hadal (-8,145m)
   {
     id: 'mariana-snailfish',
-    plateNumber: 'PLATE 15 // HADALPELAGIC',
+    plateNumber: 'PLATE 21 // HADALPELAGIC',
     commonName: 'Mariana Snailfish',
     binomialName: 'Pseudoliparis swirei',
     japaneseName: 'マリアナスネイルフィッシュ',
@@ -436,10 +568,10 @@ export const SPECIMENS: BiotaSpecimen[] = [
     ],
     papercraftType: 'mariana-snailfish'
   },
-  // 16. Challenger Deep (-10,920m)
+  // 22. Challenger Deep (-10,920m)
   {
     id: 'hadal-amphipod',
-    plateNumber: 'PLATE 16 // HADALPELAGIC',
+    plateNumber: 'PLATE 22 // HADALPELAGIC',
     commonName: 'Giant Hadal Amphipod',
     binomialName: 'Hirondellea gigas',
     japaneseName: 'カイコウオオソコエビ (Kaikou-oosokoebi)',
