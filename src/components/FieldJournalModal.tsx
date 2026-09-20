@@ -159,26 +159,6 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
             {/* Rendered Specimen SVG */}
             <div className="relative z-10 transform scale-110 sm:scale-125 transition-transform duration-300 my-4">
               <SpecimenRenderer type={specimen.papercraftType} />
-
-              {/* Clickable Hotspot Pins overlay */}
-              {specimen.hotspots && specimen.hotspots.map((hs) => {
-                const isSelected = activeHotspot?.id === hs.id;
-                return (
-                  <button
-                    key={hs.id}
-                    onClick={() => handleSelectHotspot(hs)}
-                    style={{ left: `${hs.xPercent}%`, top: `${hs.yPercent}%` }}
-                    className={`absolute z-20 -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 shadow-paper-md ${
-                      isSelected
-                        ? 'bg-[#D95A47] text-white ring-4 ring-[#D95A47]/30 scale-125'
-                        : 'bg-[#FAF6EE] text-[#1E252B] border-2 border-[#1E252B] hover:scale-115 hover:bg-[#EAA838]'
-                    }`}
-                    title={`Examine: ${hs.title}`}
-                  >
-                    <span className="w-2 h-2 rounded-full bg-current" />
-                  </button>
-                );
-              })}
             </div>
 
             {/* Red Wax Stamp Indicator overlay */}
@@ -196,15 +176,35 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
             <div className="absolute bottom-3 left-3 px-2.5 py-1 bg-[#F4ECE1] border border-[#1E252B] rounded text-[10px] font-mono shadow-paper-sm">
               LENGTH: <span className="font-bold text-[#D95A47]">{specimen.lengthMeters} M</span>
             </div>
-
-            {/* Hotspots hint */}
-            {specimen.hotspots && specimen.hotspots.length > 0 && (
-              <div className="absolute bottom-3 right-3 text-[10px] font-mono text-[#626863] flex items-center gap-1 bg-[#F4ECE1]/80 px-2 py-0.5 rounded border border-[#DEC6AE]">
-                <Info className="w-3 h-3 text-[#D95A47]" />
-                <span>Click pins to inspect anatomy</span>
-              </div>
-            )}
           </div>
+
+          {/* Interactive Anatomical Adaptation Selector (Clean Pills Below, No Red Dots On Image!) */}
+          {specimen.hotspots && specimen.hotspots.length > 0 && (
+            <div className="space-y-2">
+              <div className="text-[10px] font-mono font-bold tracking-wider text-[#626863] uppercase flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3 text-[#D95A47]" />
+                <span>SELECT ANATOMICAL ADAPTATION TO EXAMINE:</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {specimen.hotspots.map((hs) => {
+                  const isSelected = activeHotspot?.id === hs.id;
+                  return (
+                    <button
+                      key={hs.id}
+                      onClick={() => handleSelectHotspot(hs)}
+                      className={`px-3 py-1.5 rounded-lg border font-mono text-xs font-semibold transition-all ${
+                        isSelected
+                          ? 'bg-[#1E252B] text-white border-[#1E252B] shadow-paper-sm'
+                          : 'bg-[#F4ECE1] text-[#1E252B] border-[#DEC6AE] hover:bg-[#EBDDCB]'
+                      }`}
+                    >
+                      {hs.title}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Active Hotspot Callout Card */}
           {activeHotspot && (

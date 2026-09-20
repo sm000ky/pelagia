@@ -279,6 +279,187 @@ class PelagiaAudioEngine {
     this.playPaperRustle();
     this.playWaterBubble();
   }
+
+  /**
+   * Submarine warning alarm ping
+   */
+  public playAlarmPing(): void {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+    try {
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(880, t);
+      osc.frequency.setValueAtTime(440, t + 0.12);
+
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.linearRampToValueAtTime(0.2, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(t);
+      osc.stop(t + 0.4);
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
+   * Deep metallic hull groaning sound
+   */
+  public playHullGroan(): void {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+    try {
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const filter = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(55, t);
+      osc.frequency.linearRampToValueAtTime(68, t + 0.5);
+      osc.frequency.linearRampToValueAtTime(42, t + 1.2);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(200, t);
+      filter.Q.setValueAtTime(5, t);
+
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.linearRampToValueAtTime(0.28, t + 0.2);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 1.4);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(t);
+      osc.stop(t + 1.5);
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
+   * Glass / reality crack sound
+   */
+  public playGlassCrack(): void {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+    try {
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const t = this.ctx.currentTime;
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.15);
+      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.2));
+      }
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.setValueAtTime(3200, t);
+
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.35, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.masterGain);
+      noise.start(t);
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
+   * Magnificent cosmic core orchestral swell chord
+   */
+  public playCosmicSwell(): void {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+    try {
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const t = this.ctx.currentTime;
+      const chord = [220, 277.18, 329.63, 440, 554.37, 659.25]; // A Major 9 celestial voicing
+
+      chord.forEach((freq, idx) => {
+        const osc = this.ctx!.createOscillator();
+        const gain = this.ctx!.createGain();
+        osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+        osc.frequency.setValueAtTime(freq, t);
+
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.linearRampToValueAtTime(0.08 / chord.length, t + 1.2 + idx * 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 4.5);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain!);
+        osc.start(t);
+        osc.stop(t + 5.0);
+      });
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
+   * Bottle cork pop sound for easter egg
+   */
+  public playBottlePop(): void {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+    try {
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(140, t);
+      osc.frequency.exponentialRampToValueAtTime(950, t + 0.05);
+
+      gain.gain.setValueAtTime(0.3, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(t);
+      osc.stop(t + 0.15);
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
+   * Deep Leviathan Rumble
+   */
+  public playLeviathanRumble(): void {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+    try {
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(45, t);
+      osc.frequency.linearRampToValueAtTime(30, t + 2.0);
+
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.linearRampToValueAtTime(0.3, t + 0.6);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 3.0);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(t);
+      osc.stop(t + 3.2);
+    } catch {
+      // ignore
+    }
+  }
 }
 
 export const pelagiaAudio = new PelagiaAudioEngine();
