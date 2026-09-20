@@ -18,6 +18,14 @@ export interface ZoneData {
   quote: string;
 }
 
+export interface AnatomyHotspot {
+  id: string;
+  title: string;
+  description: string;
+  xPercent: number; // 0 to 100 for pin positioning
+  yPercent: number;
+}
+
 export interface BiotaSpecimen {
   id: string;
   plateNumber: string;
@@ -33,27 +41,7 @@ export interface BiotaSpecimen {
   discoveryYear: string;
   observationNotes: string;
   anatomicalFeatures: string[];
-  papercraftType: 
-    | 'ghost-crab'
-    | 'seagull'
-    | 'clownfish-anemone'
-    | 'green-turtle'
-    | 'manta-ray'
-    | 'lions-mane-jelly'
-    | 'whale-shark'
-    | 'blue-whale'
-    | 'giant-octopus'
-    | 'giant-oarfish'
-    | 'barreleye'
-    | 'glass-squid'
-    | 'viperfish'
-    | 'anglerfish'
-    | 'gulper-eel'
-    | 'giant-squid'
-    | 'vampire-squid'
-    | 'coelacanth'
-    | 'dumbo-octopus'
-    | 'tripod-fish'
-    | 'mariana-snailfish'
-    | 'hadal-amphipod';
+  hotspots?: AnatomyHotspot[];
+  papercraftType: string;
+  tagCategory?: 'Fish' | 'Cephalopod' | 'Mammal' | 'Crustacean' | 'Reptile' | 'Jelly' | 'Bioluminescent';
 }

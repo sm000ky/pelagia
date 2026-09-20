@@ -7,12 +7,14 @@ interface CoastalShoreProps {
   specimens: BiotaSpecimen[];
   zone: ZoneData;
   onSelectSpecimen: (specimen: BiotaSpecimen) => void;
+  discoveredIds?: Set<string>;
 }
 
 export const CoastalShore: React.FC<CoastalShoreProps> = ({
   specimens,
   zone,
   onSelectSpecimen,
+  discoveredIds,
 }) => {
   return (
     <section className="relative w-full pt-28 pb-16 px-4 select-none overflow-hidden">
@@ -66,6 +68,7 @@ export const CoastalShore: React.FC<CoastalShoreProps> = ({
             zone={zone}
             index={idx}
             onSelect={onSelectSpecimen}
+            isDiscovered={discoveredIds?.has(specimen.id)}
           />
         ))}
       </div>

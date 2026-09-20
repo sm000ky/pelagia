@@ -1,5 +1,5 @@
 import React from 'react';
-import { Compass, Volume2, VolumeX, Waves, ChevronDown } from 'lucide-react';
+import { Compass, Volume2, VolumeX, Waves, ChevronDown, BookOpen, Sparkles } from 'lucide-react';
 import { ZoneData } from '../types';
 import { ZONES } from '../data/oceanData';
 
@@ -10,6 +10,9 @@ interface MechanicalDepthGaugeProps {
   onToggleMute: () => void;
   onJumpToZone: (zoneId: string) => void;
   scrollProgress: number; // 0 to 1
+  discoveredCount?: number;
+  totalSpecimens?: number;
+  onToggleLogbookDrawer?: () => void;
 }
 
 export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
@@ -19,6 +22,9 @@ export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
   onToggleMute,
   onJumpToZone,
   scrollProgress,
+  discoveredCount = 0,
+  totalSpecimens = 50,
+  onToggleLogbookDrawer,
 }) => {
   const rawAtm = Math.max(1, 1.0 + Math.max(0, currentDepth) * 0.0987);
   const pressureDisplay = rawAtm > 999 ? rawAtm.toFixed(0) : rawAtm.toFixed(1);
@@ -30,37 +36,58 @@ export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
   const sign = isAboveWater ? '+' : '-';
   const formattedMeters = Math.abs(Math.round(currentDepth)).toString().padStart(5, '0');
 
-  const isDarkZone = currentZone.id === 'midnight' || currentZone.id === 'abyss' || currentZone.id === 'hadal';
+  const isDarkZone =
+    currentZone.id === 'twilight' ||
+    currentZone.id === 'midnight' ||
+    currentZone.id === 'abyss' ||
+    currentZone.id === 'hadal';
 
   return (
     <>
       {/* Top Status Header Rail */}
       <header
-        className={`fixed top-0 left-0 right-0 z-40 px-4 sm:px-8 py-3 transition-colors duration-500 border-b select-none backdrop-blur-md ${
+        className={`fixed top-0 left-0 right-0 z-40 px-3 sm:px-8 py-2.5 transition-colors duration-500 border-b select-none backdrop-blur-md ${
           isDarkZone
-            ? 'bg-[#0B0F14]/85 border-[#232F3E] text-[#F9F7F1]'
-            : 'bg-[#FAF6EE]/90 border-[#EBDDCB] text-[#1E252B]'
+            ? 'bg-[#0B0F14]/90 border-[#232F3E] text-[#F9F7F1]'
+            : 'bg-[#FAF6EE]/95 border-[#EBDDCB] text-[#1E252B]'
         }`}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 font-mono text-xs">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 font-mono text-xs">
           {/* Brand */}
           <div className="flex items-center gap-2 sm:gap-3">
             <span className="w-2.5 h-2.5 rounded-full bg-[#D95A47] inline-block animate-ping" />
             <span className="font-bold tracking-widest uppercase text-[11px] sm:text-xs">
-              PELAGIA // EXPEDITION 002
+              PELAGIA // EXPEDITION
             </span>
             <span className="hidden md:inline text-current opacity-30 text-[10px]">·</span>
             <span className="hidden md:inline text-[10px] opacity-60">
-              PACIFIC BATHYMETRIC DESCENT
+              50 BIOTA BATHYMETRIC CATALOGUE
             </span>
           </div>
 
-          {/* Quick Zone Navigator & Audio Button */}
-          <div className="flex items-center gap-3">
-            {/* Zone Selector */}
+          {/* Quick Zone Navigator & Audio Button & Logbook */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Logbook Counter Pill */}
+            {onToggleLogbookDrawer && (
+              <button
+                onClick={onToggleLogbookDrawer}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded border font-mono text-[10px] font-bold tracking-wider uppercase transition-all shadow-paper-sm active:translate-y-0.5 cursor-pointer ${
+                  isDarkZone
+                    ? 'bg-[#142433] border-[#3B5366] text-[#38BDF8] hover:bg-[#1E3345]'
+                    : 'bg-[#FAF6EE] border-[#DEC6AE] text-[#D95A47] hover:bg-[#EBDDCB]'
+                }`}
+                title="Open Expedition Field Logbook (50 Species)"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">LOGBOOK:</span>
+                <span>{discoveredCount}/{totalSpecimens}</span>
+              </button>
+            )}
+
+            {/* Zone Selector Dropdown */}
             <div className="relative group">
               <button
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded border font-mono text-[11px] tracking-wider transition-colors shadow-paper-sm ${
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded border font-mono text-[10px] sm:text-[11px] tracking-wider transition-colors shadow-paper-sm ${
                   isDarkZone
                     ? 'bg-[#192430] border-[#3B5366] text-[#EAA838] hover:bg-[#243342]'
                     : 'bg-[#F4ECE1] border-[#DEC6AE] text-[#2F6D68] hover:bg-[#EBDDCB]'
@@ -73,7 +100,7 @@ export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
               </button>
 
               <div
-                className={`absolute right-0 top-full mt-1.5 w-56 p-1.5 rounded-lg border shadow-paper-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 ${
+                className={`absolute right-0 top-full mt-1.5 w-60 p-1.5 rounded-lg border shadow-paper-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 ${
                   isDarkZone
                     ? 'bg-[#141C24] border-[#2C4251] text-[#F9F7F1]'
                     : 'bg-[#FAF6EE] border-[#DEC6AE] text-[#1E252B]'
@@ -98,24 +125,30 @@ export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
               </div>
             </div>
 
-            {/* Clear, Prominent Audio Toggle Pill */}
+            {/* Audio Toggle Button with Live Wave Visualizer */}
             <button
               onClick={onToggleMute}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded border text-[10px] font-mono font-bold tracking-wider transition-all shadow-paper-sm active:translate-y-0.5 cursor-pointer ${
                 isMuted
-                  ? 'bg-red-950/40 border-red-500/50 text-red-300 hover:bg-red-900/40'
-                  : 'bg-[#EAA838]/20 border-[#EAA838] text-[#EAA838] hover:bg-[#EAA838]/30 animate-pulse'
+                  ? 'bg-rose-950/40 border-rose-500/50 text-rose-300 hover:bg-rose-900/40'
+                  : 'bg-emerald-950/30 border-emerald-500/60 text-emerald-300 hover:bg-emerald-900/40'
               }`}
+              title={isMuted ? 'Turn on Ocean Ambient Audio' : 'Mute Ambient Audio'}
             >
               {isMuted ? (
                 <>
-                  <VolumeX className="w-3.5 h-3.5 text-red-400" />
-                  <span>SOUND: MUTED</span>
+                  <VolumeX className="w-3.5 h-3.5 text-rose-400" />
+                  <span>SOUND OFF</span>
                 </>
               ) : (
                 <>
-                  <Volume2 className="w-3.5 h-3.5 text-[#EAA838]" />
-                  <span>SOUND: ON</span>
+                  <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <div className="flex items-end gap-0.5 h-3">
+                    <span className="w-0.5 h-2 bg-emerald-400 animate-pulse" />
+                    <span className="w-0.5 h-3 bg-emerald-400 animate-pulse delay-75" />
+                    <span className="w-0.5 h-1.5 bg-emerald-400 animate-pulse delay-150" />
+                  </div>
+                  <span>OCEAN SOUND</span>
                 </>
               )}
             </button>
@@ -138,44 +171,31 @@ export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
           </span>
         </div>
 
-        {/* Stepped Ticker Digits */}
-        <div className="flex items-baseline gap-1 bg-[#1E252B] text-[#FAF6EE] px-2.5 py-1 rounded-lg border border-[#3B5366] shadow-inner font-bold tracking-widest text-lg sm:text-2xl">
-          <span className="text-[#EAA838]">{sign}</span>
-          <span>{formattedMeters}</span>
-          <span className="text-[10px] text-white/50 ml-0.5">M</span>
+        {/* Roller Odometer Numbers */}
+        <div className="flex items-baseline gap-1">
+          <span className="text-xl sm:text-2xl font-bold font-serif text-[#D95A47]">
+            {sign}
+          </span>
+          <span className="text-xl sm:text-2xl font-bold tracking-tight">
+            {formattedMeters}
+          </span>
+          <span className="text-[10px] font-bold opacity-70">METERS</span>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-dashed border-current/20 text-[9px]">
-          <div>
-            <div className="opacity-50">PRESSURE</div>
-            <div className="font-bold">{pressureDisplay} ATM</div>
-          </div>
-          <div className="text-right">
-            <div className="opacity-50">WATER TEMP</div>
-            <div className="font-bold">{tempC}°C</div>
-          </div>
+        {/* Environmental Indicators */}
+        <div className="mt-2 pt-2 border-t border-current/15 flex items-center justify-between text-[10px] opacity-75">
+          <span>{pressureDisplay} ATM</span>
+          <span>·</span>
+          <span>{tempC}°C</span>
         </div>
-      </div>
 
-      {/* Left Vertical Progress Track */}
-      <div className="fixed left-3 sm:left-6 top-24 bottom-12 w-2.5 sm:w-3 z-30 flex flex-col items-center select-none pointer-events-none">
-        <div
-          className={`relative w-1 flex-1 rounded-full transition-colors ${
-            isDarkZone ? 'bg-white/10' : 'bg-black/10'
-          }`}
-        >
+        {/* Depth Progress Wire */}
+        <div className="w-full bg-current/10 h-1 rounded-full mt-2 overflow-hidden">
           <div
-            className="absolute top-0 left-0 right-0 bg-[#D95A47] rounded-full transition-all duration-150"
-            style={{ height: `${scrollProgress * 100}%` }}
+            className="bg-[#D95A47] h-full transition-all duration-150"
+            style={{ width: `${scrollProgress * 100}%` }}
           />
-          <div
-            className="absolute -left-2 w-5 h-5 rounded-full bg-[#FAF6EE] border-2 border-[#1E252B] shadow-paper-sm flex items-center justify-center transition-all duration-150 -translate-y-1/2"
-            style={{ top: `${scrollProgress * 100}%` }}
-          >
-            <div className="w-1.5 h-1.5 rounded-full bg-[#D95A47]" />
-          </div>
         </div>
-        <span className="text-[8px] font-mono opacity-50 mt-2">11km</span>
       </div>
     </>
   );

@@ -6,9 +6,10 @@ import { CoastalShore } from './components/CoastalShore';
 import { WaterlineThreshold } from './components/WaterlineThreshold';
 import { SpecimenItem } from './components/SpecimenItem';
 import { FieldJournalModal } from './components/FieldJournalModal';
+import { LogbookDrawer } from './components/LogbookDrawer';
 import { ChallengerDeepFinale } from './components/ChallengerDeepFinale';
 import { pelagiaAudio } from './lib/audioEngine';
-import { Compass } from 'lucide-react';
+import { Compass, Sparkles, Volume2 } from 'lucide-react';
 
 export function App() {
   const [currentDepth, setCurrentDepth] = useState<number>(-5);
@@ -16,8 +17,20 @@ export function App() {
   const [scrollProgress, setScrollProgress] = useState<number>(0);
   const [selectedSpecimen, setSelectedSpecimen] = useState<BiotaSpecimen | null>(null);
   const [isMuted, setIsMuted] = useState<boolean>(true);
+  const [isLogbookOpen, setIsLogbookOpen] = useState<boolean>(false);
+  const [showAudioPrompt, setShowAudioPrompt] = useState<boolean>(true);
 
-  const lastTickDepthRef = useRef<number>(-5);
+  // LocalStorage discovery tracker for all 50 species
+  const [discoveredIds, setDiscoveredIds] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('pelagia_discovered_ids');
+      if (saved) return new Set(JSON.parse(saved));
+    } catch {
+      // ignore
+    }
+    return new Set<string>();
+  });
+
   const lastZoneIdRef = useRef<string>('coastal');
 
   // Track vertical scroll to calculate depth accurately
@@ -30,23 +43,16 @@ export function App() {
       const progress = Math.min(1, Math.max(0, scrollY / maxScroll));
       setScrollProgress(progress);
 
-      // Depth mapping curve:
-      // 0.00 -> -10m (Coast)
-      // 0.07 -> 0m (Waterline)
-      // 0.25 -> 200m (Sunlight)
-      // 0.45 -> 1,000m (Twilight)
-      // 0.72 -> 4,000m (Midnight)
-      // 0.88 -> 6,000m (Abyss)
-      // 1.00 -> 10,994m (Hadal)
+      // Bathymetric depth mapping curve across 50 specimens
       let depth = 0;
-      if (progress < 0.07) {
-        depth = -10 + (progress / 0.07) * 10;
-      } else if (progress < 0.25) {
-        depth = ((progress - 0.07) / 0.18) * 200;
-      } else if (progress < 0.45) {
-        depth = 200 + ((progress - 0.25) / 0.20) * 800;
+      if (progress < 0.06) {
+        depth = -10 + (progress / 0.06) * 10;
+      } else if (progress < 0.26) {
+        depth = ((progress - 0.06) / 0.20) * 200;
+      } else if (progress < 0.46) {
+        depth = 200 + ((progress - 0.26) / 0.20) * 800;
       } else if (progress < 0.72) {
-        depth = 1000 + ((progress - 0.45) / 0.27) * 3000;
+        depth = 1000 + ((progress - 0.46) / 0.26) * 3000;
       } else if (progress < 0.88) {
         depth = 4000 + ((progress - 0.72) / 0.16) * 2000;
       } else {
@@ -55,7 +61,7 @@ export function App() {
 
       setCurrentDepth(depth);
 
-      // Determine Zone
+      // Determine active zone
       let activeZone = ZONES[0];
       if (depth >= 6000) activeZone = ZONES[5];
       else if (depth >= 4000) activeZone = ZONES[4];
@@ -65,16 +71,10 @@ export function App() {
 
       setCurrentZone(activeZone);
 
-      // Update audio depth filter
+      // Update ambient audio depth filter
       pelagiaAudio.updateDepthFilter(depth);
 
-      // Audio feedback: mechanical odometer tick every ~120 meters
-      if (Math.abs(depth - lastTickDepthRef.current) > 120) {
-        pelagiaAudio.playMechanicalTick();
-        lastTickDepthRef.current = depth;
-      }
-
-      // Audio feedback: zone crossing chime
+      // Zone crossing chime
       if (activeZone.id !== lastZoneIdRef.current) {
         pelagiaAudio.playZoneChime(depth);
         lastZoneIdRef.current = activeZone.id;
@@ -85,10 +85,25 @@ export function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Save discovered specimens to localStorage
+  const handleStampDiscovered = (specimenId: string) => {
+    setDiscoveredIds((prev) => {
+      const next = new Set(prev);
+      next.add(specimenId);
+      try {
+        localStorage.setItem('pelagia_discovered_ids', JSON.stringify(Array.from(next)));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
+
   // Audio Toggle
   const handleToggleMute = () => {
     const muted = pelagiaAudio.toggleMute();
     setIsMuted(muted);
+    setShowAudioPrompt(false);
   };
 
   // Jump to Zone helper
@@ -111,21 +126,21 @@ export function App() {
     <div
       className="relative min-h-screen select-none paper-grain"
       style={{
-        // Seamless continuous ocean descent background gradient (No hard cuts!)
+        // Seamless continuous ocean descent background gradient from Shore (+10m) to Challenger Deep (-10,994m)
         background: `linear-gradient(
           to bottom,
           #F4E7D3 0%,
-          #E8D5BC 3%,
-          #DDECE5 6%,
-          #6CAE9E 14%,
-          #46857C 20%,
+          #E8D5BC 2.5%,
+          #DDECE5 5%,
+          #6CAE9E 12%,
+          #46857C 18%,
           #2C6A7B 25%,
-          #1D4A62 35%,
-          #143345 45%,
-          #102434 55%,
-          #0D1C28 65%,
-          #09141D 75%,
-          #060D14 85%,
+          #1D4A62 34%,
+          #143345 44%,
+          #102434 54%,
+          #0D1C28 64%,
+          #09141D 74%,
+          #060D14 84%,
           #04080D 92%,
           #020407 100%
         )`,
@@ -139,16 +154,36 @@ export function App() {
         onToggleMute={handleToggleMute}
         onJumpToZone={handleJumpToZone}
         scrollProgress={scrollProgress}
+        discoveredCount={discoveredIds.size}
+        totalSpecimens={SPECIMENS.length}
+        onToggleLogbookDrawer={() => setIsLogbookOpen(true)}
       />
 
+      {/* Ambient Audio Starter Banner Toast (Shown until user toggles or dismisses) */}
+      {showAudioPrompt && isMuted && (
+        <div className="fixed bottom-4 left-4 z-40 max-w-sm bg-[#FAF6EE] text-[#1E252B] border-2 border-[#1E252B] p-3.5 rounded-xl shadow-paper-lg paper-grain flex items-center justify-between gap-3 animate-bounce">
+          <div className="flex items-center gap-2 font-mono text-xs">
+            <Volume2 className="w-4 h-4 text-[#D95A47]" />
+            <span>Enable real ocean ambient audio?</span>
+          </div>
+          <button
+            onClick={handleToggleMute}
+            className="px-3 py-1 bg-[#D95A47] text-white rounded font-mono text-[10px] font-bold uppercase hover:bg-[#E06D53] transition-colors"
+          >
+            PLAY SOUND
+          </button>
+        </div>
+      )}
+
       {/* ===================================================================
-       * 1. COASTAL SHORE & DUNES (+10m to 0m)
+       * 1. COASTAL SHORE & DUNES (+10m to 0m) — 5 SPECIES
        * =================================================================== */}
       <div id="zone-coastal">
         <CoastalShore
           specimens={SPECIMENS.filter((s) => s.zoneId === 'coastal')}
           zone={ZONES[0]}
           onSelectSpecimen={setSelectedSpecimen}
+          discoveredIds={discoveredIds}
         />
       </div>
 
@@ -158,19 +193,22 @@ export function App() {
       <WaterlineThreshold />
 
       {/* ===================================================================
-       * 3. THE SUNLIGHT REALM (0m to -200m)
+       * 3. THE SUNLIGHT REALM (0m to -200m) — 12 SPECIES
        * =================================================================== */}
       <section id="zone-sunlight" className="relative py-16 px-4">
-        {/* Floating Minimal Zone Marker (Zero Box!) */}
-        <div className="max-w-4xl mx-auto text-center space-y-2 mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF6EE]/80 border border-[#2F6D68]/30 text-[#1B322D] font-mono text-xs font-bold tracking-widest uppercase shadow-paper-sm">
-            <Compass className="w-3.5 h-3.5 text-[#2F6D68]" />
+        {/* Shimmering Surface Caustic Ray Overlays */}
+        <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
+
+        {/* Paper Placard Zone Banner (100% Readable!) */}
+        <div className="max-w-xl mx-auto p-5 rounded-2xl bg-[#FAF6EE] text-[#1E252B] border-2 border-[#1E252B] shadow-paper-md text-center space-y-2 mb-14 paper-grain">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F4ECE1] border border-[#2F6D68]/40 text-[#2F6D68] font-mono text-xs font-bold tracking-widest uppercase">
+            <Compass className="w-3.5 h-3.5" />
             <span>ZONE 01 // EPIPELAGIC (0M TO -200M)</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-serif font-bold tracking-tight text-[#1B322D]">
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1E252B]">
             The Sunlight Realm
           </h2>
-          <p className="font-serif text-sm sm:text-base text-[#2E4A44] max-w-lg mx-auto italic">
+          <p className="font-serif text-xs sm:text-sm text-[#4B5563] italic max-w-md mx-auto">
             "{ZONES[1].summary}"
           </p>
         </div>
@@ -183,23 +221,25 @@ export function App() {
             zone={ZONES[1]}
             index={idx}
             onSelect={setSelectedSpecimen}
+            isDiscovered={discoveredIds.has(specimen.id)}
           />
         ))}
       </section>
 
       {/* ===================================================================
-       * 4. THE TWILIGHT DOMAIN (-200m to -1,000m)
+       * 4. THE TWILIGHT DOMAIN (-200m to -1,000m) — 11 SPECIES
        * =================================================================== */}
       <section id="zone-twilight" className="relative py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center space-y-2 mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#163244]/80 border border-[#5DADE2]/40 text-[#5DADE2] font-mono text-xs font-bold tracking-widest uppercase shadow-paper-sm">
-            <Compass className="w-3.5 h-3.5" />
+        {/* Paper Placard Zone Banner */}
+        <div className="max-w-xl mx-auto p-5 rounded-2xl bg-[#FAF6EE] text-[#1E252B] border-2 border-[#1E252B] shadow-paper-md text-center space-y-2 mb-14 paper-grain">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F4ECE1] border border-[#5DADE2]/60 text-[#1D4A62] font-mono text-xs font-bold tracking-widest uppercase">
+            <Compass className="w-3.5 h-3.5 text-[#5DADE2]" />
             <span>ZONE 02 // MESOPELAGIC (-200M TO -1,000M)</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-serif font-bold tracking-tight text-[#EDE8DF]">
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1E252B]">
             The Twilight Domain
           </h2>
-          <p className="font-serif text-sm sm:text-base text-[#94A3B8] max-w-lg mx-auto italic">
+          <p className="font-serif text-xs sm:text-sm text-[#4B5563] italic max-w-md mx-auto">
             "{ZONES[2].summary}"
           </p>
         </div>
@@ -211,23 +251,24 @@ export function App() {
             zone={ZONES[2]}
             index={idx}
             onSelect={setSelectedSpecimen}
+            isDiscovered={discoveredIds.has(specimen.id)}
           />
         ))}
       </section>
 
       {/* ===================================================================
-       * 5. THE MIDNIGHT REALM (-1,000m to -4,000m)
+       * 5. THE MIDNIGHT REALM (-1,000m to -4,000m) — 10 SPECIES
        * =================================================================== */}
       <section id="zone-midnight" className="relative py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center space-y-2 mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0C1620]/80 border border-[#EAA838]/40 text-[#EAA838] font-mono text-xs font-bold tracking-widest uppercase shadow-paper-sm">
-            <Compass className="w-3.5 h-3.5" />
+        <div className="max-w-xl mx-auto p-5 rounded-2xl bg-[#FAF6EE] text-[#1E252B] border-2 border-[#1E252B] shadow-paper-md text-center space-y-2 mb-14 paper-grain">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F4ECE1] border border-[#EAA838]/60 text-[#8C5810] font-mono text-xs font-bold tracking-widest uppercase">
+            <Sparkles className="w-3.5 h-3.5 text-[#EAA838]" />
             <span>ZONE 03 // BATHYPELAGIC (-1,000M TO -4,000M)</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-serif font-bold tracking-tight text-white">
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1E252B]">
             The Midnight Realm
           </h2>
-          <p className="font-serif text-sm sm:text-base text-[#8EA2B3] max-w-lg mx-auto italic">
+          <p className="font-serif text-xs sm:text-sm text-[#4B5563] italic max-w-md mx-auto">
             "{ZONES[3].summary}"
           </p>
         </div>
@@ -239,23 +280,24 @@ export function App() {
             zone={ZONES[3]}
             index={idx}
             onSelect={setSelectedSpecimen}
+            isDiscovered={discoveredIds.has(specimen.id)}
           />
         ))}
       </section>
 
       {/* ===================================================================
-       * 6. THE ABYSSAL PLAINS (-4,000m to -6,000m)
+       * 6. THE ABYSS (-4,000m to -6,000m) — 6 SPECIES
        * =================================================================== */}
       <section id="zone-abyss" className="relative py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center space-y-2 mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#060A0E]/80 border border-[#6BB7B9]/40 text-[#6BB7B9] font-mono text-xs font-bold tracking-widest uppercase shadow-paper-sm">
-            <Compass className="w-3.5 h-3.5" />
+        <div className="max-w-xl mx-auto p-5 rounded-2xl bg-[#FAF6EE] text-[#1E252B] border-2 border-[#1E252B] shadow-paper-md text-center space-y-2 mb-14 paper-grain">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F4ECE1] border border-[#8E44AD]/40 text-[#5B2C6F] font-mono text-xs font-bold tracking-widest uppercase">
+            <Compass className="w-3.5 h-3.5 text-[#8E44AD]" />
             <span>ZONE 04 // ABYSSOPELAGIC (-4,000M TO -6,000M)</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-serif font-bold tracking-tight text-white">
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1E252B]">
             The Abyssal Plains
           </h2>
-          <p className="font-serif text-sm sm:text-base text-[#7D8F9E] max-w-lg mx-auto italic">
+          <p className="font-serif text-xs sm:text-sm text-[#4B5563] italic max-w-md mx-auto">
             "{ZONES[4].summary}"
           </p>
         </div>
@@ -267,23 +309,24 @@ export function App() {
             zone={ZONES[4]}
             index={idx}
             onSelect={setSelectedSpecimen}
+            isDiscovered={discoveredIds.has(specimen.id)}
           />
         ))}
       </section>
 
       {/* ===================================================================
-       * 7. THE HADAL TRENCHES (-6,000m to -10,994m)
+       * 7. THE TRENCHES / HADAL REALM (-6,000m to -10,994m) — 6 SPECIES
        * =================================================================== */}
       <section id="zone-hadal" className="relative py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center space-y-2 mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#010204]/80 border border-red-500/40 text-[#E06D53] font-mono text-xs font-bold tracking-widest uppercase shadow-paper-sm">
-            <Compass className="w-3.5 h-3.5" />
+        <div className="max-w-xl mx-auto p-5 rounded-2xl bg-[#FAF6EE] text-[#1E252B] border-2 border-[#1E252B] shadow-paper-md text-center space-y-2 mb-14 paper-grain">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F4ECE1] border border-red-500/40 text-[#991B1B] font-mono text-xs font-bold tracking-widest uppercase">
+            <Sparkles className="w-3.5 h-3.5 text-red-500" />
             <span>ZONE 05 // HADALPELAGIC (-6,000M TO -10,994M)</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-serif font-bold tracking-tight text-white">
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#1E252B]">
             The Hadal Trenches
           </h2>
-          <p className="font-serif text-sm sm:text-base text-[#94A3B8] max-w-lg mx-auto italic">
+          <p className="font-serif text-xs sm:text-sm text-[#4B5563] italic max-w-md mx-auto">
             "{ZONES[5].summary}"
           </p>
         </div>
@@ -295,6 +338,7 @@ export function App() {
             zone={ZONES[5]}
             index={idx}
             onSelect={setSelectedSpecimen}
+            isDiscovered={discoveredIds.has(specimen.id)}
           />
         ))}
       </section>
@@ -304,16 +348,27 @@ export function App() {
        * =================================================================== */}
       <ChallengerDeepFinale onScrollToTop={handleScrollToTop} />
 
-      {/* ===================================================================
-       * 9. FIELD JOURNAL SPECIMEN INSPECTION MODAL
-       * =================================================================== */}
+      {/* Interactive Field Journal Modal Drawer */}
       <FieldJournalModal
         specimen={selectedSpecimen}
         zone={selectedZoneData}
         onClose={() => setSelectedSpecimen(null)}
+        isDiscovered={selectedSpecimen ? discoveredIds.has(selectedSpecimen.id) : false}
+        onStampDiscovered={handleStampDiscovered}
+      />
+
+      {/* Expedition Logbook Drawer (50 Species) */}
+      <LogbookDrawer
+        isOpen={isLogbookOpen}
+        onClose={() => setIsLogbookOpen(false)}
+        discoveredIds={discoveredIds}
+        onSelectSpecimen={(s) => {
+          setIsLogbookOpen(false);
+          setSelectedSpecimen(s);
+        }}
+        onJumpToSpecimenDepth={() => {}}
       />
     </div>
   );
 }
-
 export default App;
