@@ -11,9 +11,13 @@ import { EasterEggs } from './components/EasterEggs';
 import { ChallengerDeepFinale } from './components/ChallengerDeepFinale';
 import { ForbiddenAbyssSequence } from './components/ForbiddenAbyssSequence';
 import { pelagiaAudio } from './lib/audioEngine';
+import { Language, DICTIONARY } from './lib/i18n';
 import { Compass, Sparkles, Volume2 } from 'lucide-react';
 
 export function App() {
+  const [currentLang, setCurrentLang] = useState<Language>('en');
+  const t = DICTIONARY[currentLang];
+
   const [currentDepth, setCurrentDepth] = useState<number>(-5);
   const [currentZone, setCurrentZone] = useState<ZoneData>(ZONES[0]);
   const [scrollProgress, setScrollProgress] = useState<number>(0);
@@ -127,11 +131,16 @@ export function App() {
     ? ZONES.find((z) => z.id === selectedSpecimen.zoneId) || null
     : null;
 
+  // Psychology of exploration: Next specimen Sonar Radar indicator
+  const upcomingSpecimen = SPECIMENS.find((s) => s.depthMeters > currentDepth && s.depthMeters > 0);
+  const nextSpecimenDist = upcomingSpecimen ? Math.round(upcomingSpecimen.depthMeters - currentDepth) : undefined;
+  const nextSpecimenName = upcomingSpecimen ? upcomingSpecimen.commonName : undefined;
+
   return (
     <div
       className="relative min-h-screen select-none paper-grain"
       style={{
-        // Seamless ocean gradient extending through the crust into the star-core!
+        // Seamless ocean gradient extending into the subterranean cosmos!
         background: `linear-gradient(
           to bottom,
           #F4E7D3 0%,
@@ -154,7 +163,7 @@ export function App() {
         )`,
       }}
     >
-      {/* Sticky Mechanical Depth Gauge HUD */}
+      {/* Sticky Mechanical Depth Gauge HUD with Language Selector & Radar */}
       <MechanicalDepthGauge
         currentDepth={currentDepth}
         currentZone={currentZone}
@@ -165,11 +174,16 @@ export function App() {
         discoveredCount={discoveredIds.size}
         totalSpecimens={SPECIMENS.length}
         onToggleLogbookDrawer={() => setIsLogbookOpen(true)}
+        currentLang={currentLang}
+        onSelectLanguage={setCurrentLang}
+        t={t}
+        nextSpecimenName={nextSpecimenName}
+        nextSpecimenDist={nextSpecimenDist}
       />
 
-      {/* Ambient Audio Starter Banner Toast */}
+      {/* Ambient Audio Starter Banner Toast (Steady craft card, zero kelap-kelip) */}
       {showAudioPrompt && isMuted && (
-        <div className="fixed bottom-4 left-4 z-40 max-w-sm bg-[#FAF6EE] text-[#1E252B] border-2 border-[#1E252B] p-3.5 rounded-xl shadow-paper-lg paper-grain flex items-center justify-between gap-3 animate-bounce">
+        <div className="fixed bottom-4 left-4 z-40 max-w-sm bg-[#FAF6EE] text-[#1E252B] border-2 border-[#1E252B] p-3.5 rounded-xl shadow-paper-lg paper-grain flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 font-mono text-xs">
             <Volume2 className="w-4 h-4 text-[#D95A47]" />
             <span>Enable real ocean ambient audio?</span>
@@ -192,6 +206,7 @@ export function App() {
           zone={ZONES[0]}
           onSelectSpecimen={setSelectedSpecimen}
           discoveredIds={discoveredIds}
+          t={t}
         />
       </div>
 
@@ -366,15 +381,17 @@ export function App() {
       <ForbiddenAbyssSequence
         currentDepth={currentDepth}
         onScrollToTop={handleScrollToTop}
+        t={t}
       />
 
-      {/* Interactive Field Journal Modal Drawer */}
+      {/* Interactive Field Journal Modal Drawer Adapted to Depth Zone */}
       <FieldJournalModal
         specimen={selectedSpecimen}
         zone={selectedZoneData}
         onClose={() => setSelectedSpecimen(null)}
         isDiscovered={selectedSpecimen ? discoveredIds.has(selectedSpecimen.id) : false}
         onStampDiscovered={handleStampDiscovered}
+        t={t}
       />
 
       {/* Expedition Logbook Drawer (50 Species) */}

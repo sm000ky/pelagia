@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Sparkles, X, Compass, Anchor, AlertTriangle, Eye } from 'lucide-react';
+import { Sparkles, X, AlertTriangle, Eye } from 'lucide-react';
 import { pelagiaAudio } from '../lib/audioEngine';
 
 interface EasterEggProps {
   currentDepth: number;
 }
 
-export const EasterEggs: React.FC<EasterEggProps> = ({ currentDepth }) => {
+export const EasterEggs: React.FC<EasterEggProps> = () => {
   const [activeNote, setActiveNote] = useState<{ title: string; content: string; sign: string } | null>(null);
 
   const openNote = (title: string, content: string, sign: string, soundType: 'pop' | 'bubble' | 'rumble' = 'bubble') => {
@@ -26,8 +26,8 @@ export const EasterEggs: React.FC<EasterEggProps> = ({ currentDepth }) => {
           onClick={() =>
             openNote(
               'ORIGAMI EXPEDITION VESSEL #002',
-              'A small folded paper boat drifting on the surface swells. Scrawled inside the hull in vermilion ink is an oath:\n\n"Burung Jian hanya punya satu sayap. Kita harus saling merengkuh untuk bisa menembus batas langit dan samudra. Ayo menyelam sampai ke dasarnya, Darling!"',
-              'Zero Two (Code: 002) × sm000ky',
+              'A small folded paper boat drifting on the surface swells. Scrawled inside the hull in vermilion ink is an ancient naturalist oath:\n\n"Burung Jian hanya terlahir dengan satu sayap. Mereka harus saling merengkuh untuk bisa terbang menembus batas langit dan samudra. Mari kita selami samudra ini hingga ke palung terdalam."',
+              'Strelizia Expedition Record — sm000ky & Zero Two',
               'pop'
             )
           }
@@ -43,7 +43,7 @@ export const EasterEggs: React.FC<EasterEggProps> = ({ currentDepth }) => {
           <div className="text-left font-mono text-[11px]">
             <div className="font-bold text-[#D95A47] flex items-center gap-1">
               <Sparkles className="w-3 h-3" />
-              <span>EASTER EGG // DRIFTING PAPER VESSEL</span>
+              <span>EASTER EGG // DRIFTING PAPERCRAFT VESSEL</span>
             </div>
             <div className="text-[#626863] text-[10px]">Click to unfold message inside</div>
           </div>
@@ -65,7 +65,7 @@ export const EasterEggs: React.FC<EasterEggProps> = ({ currentDepth }) => {
           title="Recover Message in a Bottle"
         >
           {/* Glass Bottle SVG */}
-          <svg viewBox="0 0 30 60" className="w-6 h-12 text-cyan-400 group-hover:rotate-12 transition-transform" fill="currentColor">
+          <svg viewBox="0 0 30 60" className="w-6 h-12 text-cyan-400 group-hover:rotate-6 transition-transform" fill="currentColor">
             <rect x="11" y="2" width="8" height="8" rx="1" fill="#D97706" />
             <path d="M10 10 L20 10 L22 22 L26 30 L26 54 C26 58, 4 58, 4 54 L4 30 L8 22 Z" fill="#0E7490" fillOpacity="0.7" stroke="#38BDF8" strokeWidth="1.5" />
             <rect x="8" y="28" width="14" height="18" rx="1" fill="#FEF3C7" opacity="0.8" />
@@ -84,26 +84,26 @@ export const EasterEggs: React.FC<EasterEggProps> = ({ currentDepth }) => {
         <div
           onClick={() =>
             openNote(
-              'CLASSIFIED BIO-ACOUSTIC CONTACT: "THE KLAXOSAUR LEVIATHAN"',
-              'Hydrophone sensors registered a massive biological sonic anomaly (14 Hz ultra-low infrasound pulse). A silhouette measuring over 120 meters in length just glided past the research bathyscaphe.\n\n"Darling... did you see that gigantic shadow? That is not an ordinary whale. Its bio-resonance matches the ancestral Klaxosaur bio-core!"',
+              'BIO-ACOUSTIC CONTACT: "THE GIGANTIC PELAGIC TITAN"',
+              'Hydrophone sensors registered an enormous biological sonic pulse (14 Hz ultra-low infrasound frequency). A silhouette measuring over 120 meters in length just glided past the research bathyscaphe.\n\n"Sonar alert: Visual confirmation of an colossal creature swimming through the bathyal trench. Its scale dwarfs any modern blue whale!"',
               'Strelizia Acoustic Sensor Log // Depth: -2,600m',
               'rumble'
             )
           }
           className="cursor-pointer group relative p-5 rounded-2xl border-2 border-[#EAA838]/40 hover:border-[#EAA838] bg-[#0A1017]/90 hover:bg-[#0F1823] transition-all shadow-[0_0_25px_rgba(234,168,56,0.15)] flex flex-col sm:flex-row items-center justify-between gap-4"
         >
-          {/* Radar Blip Animation */}
+          {/* Steady Illuminated Beacon (Zero Kelap-Kelip) */}
           <div className="flex items-center gap-3 font-mono">
-            <div className="relative w-10 h-10 rounded-full border border-[#EAA838] flex items-center justify-center bg-[#171F2C]">
-              <span className="w-2 h-2 rounded-full bg-[#EAA838] animate-ping" />
-              <Eye className="w-4 h-4 text-[#EAA838]" />
+            <div className="relative w-10 h-10 rounded-full border border-[#EAA838] flex items-center justify-center bg-[#171F2C] shadow-[0_0_10px_rgba(234,168,56,0.3)]">
+              <span className="w-2 h-2 rounded-full bg-[#EAA838] shadow-[0_0_6px_#EAA838]" />
+              <Eye className="w-4 h-4 text-[#EAA838] ml-1" />
             </div>
             <div>
               <div className="font-bold text-[#F59E0B] text-xs flex items-center gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5 text-[#F59E0B]" />
-                <span>SONAR ANOMALY DETECTED // 120-METER BIO-CONTACT</span>
+                <span>SONAR ANOMALY DETECTED // 120-METER CONTACT</span>
               </div>
-              <div className="text-slate-400 text-[10px]">Click to decode sonar intercept transcript</div>
+              <div className="text-slate-400 text-[10px]">Click to decode acoustic intercept</div>
             </div>
           </div>
 
@@ -119,7 +119,7 @@ export const EasterEggs: React.FC<EasterEggProps> = ({ currentDepth }) => {
           onClick={() =>
             openNote(
               'HOMO SAPIENS ARTIFACT: ANCIENT EXPEDITION MUG',
-              'Resting upright on the Marianas hadal silt at 1,000 atmospheres of crushing pressure sits a single porcelain coffee mug.\n\nPrinted on its side is a faded logo:\n"NO SLEEP TILL CHALLENGER DEEP // ZERO TWO & SM000KY".\n\nUnder 16,000 PSI of water, steel collapses, but this mug stands eternal.',
+              'Resting upright on the Marianas hadal silt under 1,000 atmospheres of crushing pressure sits a single porcelain coffee mug.\n\nPrinted on its side is an indelible inscription:\n"NO SLEEP TILL CHALLENGER DEEP // EXPEDITION 002".\n\nUnder 16,000 PSI of water, steel collapses, but this porcelain artifact stands eternal.',
               'Hadal Trench Observation Camera // -10,200m',
               'bubble'
             )
@@ -155,11 +155,11 @@ export const EasterEggs: React.FC<EasterEggProps> = ({ currentDepth }) => {
             <div className="flex items-center justify-between border-b border-dashed border-[#1E252B]/30 pb-3">
               <span className="font-mono text-[10px] font-bold text-[#D95A47] tracking-widest uppercase flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>SECRET EXPEDITION LOG</span>
+                <span>SECRET ARCHIVE RECORD</span>
               </span>
               <button
                 onClick={() => setActiveNote(null)}
-                className="p-1 rounded-lg border border-[#1E252B] hover:bg-[#D95A47] hover:text-white transition-colors"
+                className="p-1 rounded-lg border border-[#1E252B] hover:bg-[#D95A47] hover:text-white transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>

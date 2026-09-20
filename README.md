@@ -12,17 +12,17 @@
 [![Authors: sm000ky & Zero Two](https://img.shields.io/badge/Crafted_by-sm000ky_%26_Zero_Two-FF3366?style=for-the-badge&logo=github)](https://github.com/sm000ky)
 
 <p align="center">
-  <b>Sebuah penjelajahan interaktif bawah laut dari bukit pasir pantai (+10m) menembus batas ombak (0m) hingga ke jurang abadi Challenger Deep (-11.000m). Menolak keras grafis AI licin/murahan, Pelagia dibangun murni dengan seni guntingan kertas (SVG Layered Papercraft) dan animasi stop-motion 12-FPS bergaya film Wes Anderson & Studio Ghibli.</b>
+  <b>Sebuah penjelajahan interaktif bawah laut dari bukit pasir pantai (+10m) menembus batas ombak (0m) hingga ke jurang abadi Challenger Deep (-11.000m). Pelagia dibangun murni dengan seni guntingan kertas (SVG Layered Papercraft) dan animasi stop-motion 12-FPS bergaya film Wes Anderson & Studio Ghibli.</b>
 </p>
 
 ```
   📜 PELAGIA // BATHYMETRIC FIELD EXPEDITION LOG
   ==============================================================
   [SURFACE]   +10M (COASTAL DUNES, GULLS & GHOST CRABS)
-  [DESCENT]   0M WATERLINE -> -10,994M CHALLENGER DEEP
-  [SPECIMENS] 16 HANDCRAFTED PAPER CUTOUT MARINE SPECIES
-  [AESTHETIC] 12-FPS STEPPED MOTION · RISOGRAPH PALETTE · NO-AI
-  [AUDIO]     PROCEDURAL TAPE HISS & MECHANICAL ODOMETER CLICKS
+  [DESCENT]   0M WATERLINE -> -13,000M SUBTERRANEAN STAR SEA
+  [SPECIMENS] 50 HANDCRAFTED PAPER CUTOUT MARINE SPECIES
+  [AESTHETIC] 12-FPS STEPPED MOTION · RISOGRAPH PALETTE
+  [AUDIO]     REAL OCEAN AMBIENT LOOP & ADAPTIVE DEPTH FILTER
   ==============================================================
 ```
 
@@ -30,12 +30,12 @@
 
 ---
 
-## 📖 Filosofi Desain: Kenapa Tanpa AI & Tanpa Animasi Licin?
+## 📖 Filosofi Desain: Seni Kertas Taktil & Stop-Motion 12-FPS
 
-Kebanyakan website laut modern memaksakan model 3D berkilau seperti lilin atau gambar AI generatif yang berminyak, tanpa konsistensi anatomi dan hampa rasa. 
+Kebanyakan website laut modern memaksakan model 3D generik tanpa jiwa, tanpa konsistensi anatomi dan hampa rasa. 
 
 **Pelagia mengambil jalur berlawanan yang berkelas tinggi:**
-1. **Handcrafted SVG Papercraft:** Seluruh 16 biota laut digambar manual lapis demi lapis menggunakan vektor matematis dengan teknik cetak *Risograph* (garis tinta tegas, arsiran *stipple*, bayangan kertas fisik bertumpuk).
+1. **Handcrafted SVG Papercraft:** Seluruh 50 biota laut digambar manual lapis demi lapis menggunakan vektor matematis dengan estetika kertas fisik (garis tinta tegas, palet perkamen, bayangan kertas fisik bertumpuk).
 2. **Stepped 12-FPS Stop-Motion (`steps(3)` / `steps(4)`):** Sirip, ekor, dan tentakel tidak meliuk-liuk licin seperti jeli 60 FPS, melainkan berdenyut dalam irama patah-patah berseni layaknya boneka wayang kertas (*paper cutout puppets*).
 3. **Penyelaman Berkelanjutan (Continuous Depth Scroll):** Scroll vertikal yang memetakan kedalaman nyata dari daratan pantai hingga ke dasar kerak bumi.
 

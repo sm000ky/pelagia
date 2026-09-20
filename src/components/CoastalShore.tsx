@@ -2,12 +2,14 @@ import React from 'react';
 import { BiotaSpecimen, ZoneData } from '../types';
 import { SpecimenItem } from './SpecimenItem';
 import { ChevronDown } from 'lucide-react';
+import { Translations } from '../lib/i18n';
 
 interface CoastalShoreProps {
   specimens: BiotaSpecimen[];
   zone: ZoneData;
   onSelectSpecimen: (specimen: BiotaSpecimen) => void;
   discoveredIds?: Set<string>;
+  t?: Translations;
 }
 
 export const CoastalShore: React.FC<CoastalShoreProps> = ({
@@ -15,16 +17,17 @@ export const CoastalShore: React.FC<CoastalShoreProps> = ({
   zone,
   onSelectSpecimen,
   discoveredIds,
+  t,
 }) => {
   return (
     <section className="relative w-full pt-28 pb-16 px-4 select-none overflow-hidden">
       {/* Background Warm Paper Sun & Dunes */}
-      <div className="absolute top-16 left-1/2 -translate-x-1/2 w-44 h-44 rounded-full bg-[#EAA838]/20 border border-[#EAA838]/40 pointer-events-none" />
+      <div className="absolute top-16 left-1/2 -translate-x-1/2 w-44 h-44 rounded-full bg-[#EAA838]/20 border border-[#EAA838]/40 pointer-events-none shadow-[0_0_30px_rgba(234,168,56,0.15)]" />
 
-      {/* Hero Title (Clean, Minimalist, No Wall of Text) */}
+      {/* Hero Title (Clean, Editorial, Handcrafted Papercraft, Steady Illuminated) */}
       <div className="relative z-10 max-w-3xl mx-auto text-center space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EBDDCB] border border-[#DEC6AE] text-[#D95A47] font-mono text-xs font-bold tracking-widest uppercase shadow-paper-sm">
-          <span>THE PACIFIC SHORELINE (+10M)</span>
+          <span>{t?.shorelineTag || 'THE PACIFIC SHORELINE (+10M)'}</span>
         </div>
 
         <h1 className="text-6xl sm:text-8xl font-serif font-bold tracking-tight text-[#1E252B]">
@@ -36,13 +39,13 @@ export const CoastalShore: React.FC<CoastalShoreProps> = ({
         </p>
 
         <p className="font-serif text-base sm:text-lg text-[#556058] max-w-md mx-auto italic leading-relaxed">
-          "From the warm sand dunes, scroll down to enter the Pacific and descend eleven kilometers into the deep."
+          "{t?.diveSubtitle || 'From the warm sand dunes, scroll down to enter the Pacific and descend eleven kilometers into the deep.'}"
         </p>
 
-        {/* Minimal Scroll Down Cue */}
+        {/* Minimal Scroll Down Cue (Steady Craft Indicator) */}
         <div className="pt-6 flex flex-col items-center gap-1 font-mono text-xs text-[#8A968E]">
-          <span className="tracking-widest uppercase">SCROLL TO DIVE</span>
-          <ChevronDown className="w-5 h-5 text-[#D95A47] animate-bounce" />
+          <span className="tracking-widest uppercase">{t?.scrollDownToDive || 'SCROLL TO DIVE'}</span>
+          <ChevronDown className="w-5 h-5 text-[#D95A47] transition-transform duration-300 group-hover:translate-y-1" />
         </div>
       </div>
 
@@ -59,7 +62,7 @@ export const CoastalShore: React.FC<CoastalShoreProps> = ({
         </svg>
       </div>
 
-      {/* Free-floating Coastal Specimens (Gull & Ghost Crab) */}
+      {/* Free-floating Coastal Specimens */}
       <div className="relative z-10">
         {specimens.map((specimen, idx) => (
           <SpecimenItem
