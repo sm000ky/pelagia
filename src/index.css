@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #FAF6EE;
+    color: #1E252B;
+    font-family: 'Newsreader', Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+}
+
+/* =========================================================================
+ * 12-FPS STOP-MOTION STEPPED KEYFRAMES (Anti-Fluid, Tangible Papercraft)
+ * ========================================================================= */
+
+/* Paper sway like a cutout hung by string: 3 discrete steps */
+@keyframes paperSway {
+  0% { transform: rotate(-1.5deg) translateY(0px); }
+  33% { transform: rotate(0deg) translateY(-2px); }
+  66% { transform: rotate(1.5deg) translateY(1px); }
+  100% { transform: rotate(-1.5deg) translateY(0px); }
+}
+
+.animate-paper-sway {
+  animation: paperSway 2.4s steps(3, end) infinite;
+  transform-origin: center center;
+}
+
+/* Fin / Wing flap: 4 discrete stop-motion steps */
+@keyframes finFlap {
+  0% { transform: rotate(-8deg) scaleY(1); }
+  25% { transform: rotate(-2deg) scaleY(0.95); }
+  50% { transform: rotate(6deg) scaleY(1.05); }
+  75% { transform: rotate(1deg) scaleY(0.98); }
+  100% { transform: rotate(-8deg) scaleY(1); }
+}
+
+.animate-fin-flap {
+  animation: finFlap 1.6s steps(4, end) infinite;
+  transform-origin: 20% 50%;
+}
+
+/* Reverse fin for opposite side */
+@keyframes finFlapReverse {
+  0% { transform: rotate(8deg) scaleY(1); }
+  25% { transform: rotate(2deg) scaleY(0.95); }
+  50% { transform: rotate(-6deg) scaleY(1.05); }
+  75% { transform: rotate(-1deg) scaleY(0.98); }
+  100% { transform: rotate(8deg) scaleY(1); }
+}
+
+.animate-fin-flap-rev {
+  animation: finFlapReverse 1.6s steps(4, end) infinite;
+  transform-origin: 80% 50%;
+}
+
+/* Tail wave: 3 discrete steps */
+@keyframes tailWave {
+  0% { transform: rotate(-12deg); }
+  50% { transform: rotate(12deg); }
+  100% { transform: rotate(-12deg); }
+}
+
+.animate-tail-wave {
+  animation: tailWave 1.2s steps(3, end) infinite;
+  transform-origin: 10% 50%;
+}
+
+/* Stepped bulb / light flicker */
+@keyframes bulbFlicker {
+  0%, 100% { opacity: 0.95; filter: drop-shadow(0 0 8px #EAA838); }
+  50% { opacity: 0.35; filter: drop-shadow(0 0 2px #EAA838); }
+}
+
+.animate-bulb-flicker {
+  animation: bulbFlicker 1.8s steps(2, start) infinite;
+}
+
+/* Subtle marine snow paper flakes drift */
+@keyframes paperDrift {
+  0% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(12px) rotate(8deg); }
+  66% { transform: translateY(24px) rotate(-6deg); }
+  100% { transform: translateY(36px) rotate(4deg); }
+}
+
+.animate-paper-drift {
+  animation: paperDrift 4s steps(4, end) infinite;
+}
+
+/* Wave ripple stepped motion */
+@keyframes waveRipple {
+  0% { transform: translateX(0px); }
+  50% { transform: translateX(-16px); }
+  100% { transform: translateX(0px); }
+}
+
+.animate-wave-ripple {
+  animation: waveRipple 2.2s steps(3, end) infinite;
+}
+
+/* =========================================================================
+ * PAPERCRAFT TACTILE STYLING (Risograph Edges & Crisp Cutouts)
+ * ========================================================================= */
+
+.paper-cutout {
+  filter: drop-shadow(2px 3px 0px rgba(18, 24, 30, 0.22));
+  transition: transform 0.2s steps(2, end);
+}
+
+.paper-cutout:hover {
+  filter: drop-shadow(4px 6px 0px rgba(18, 24, 30, 0.28));
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Deep sea dark paper cutout */
+.paper-cutout-dark {
+  filter: drop-shadow(2px 3px 0px rgba(0, 0, 0, 0.65));
+  transition: transform 0.2s steps(2, end);
+}
+
+.paper-cutout-dark:hover {
+  filter: drop-shadow(4px 6px 0px rgba(0, 0, 0, 0.85));
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Stipple / Paper grain overlay */
+.paper-grain {
+  background-image: radial-gradient(rgba(30, 37, 43, 0.08) 1px, transparent 0);
+  background-size: 8px 8px;
+}
+
+.paper-grain-dark {
+  background-image: radial-gradient(rgba(242, 239, 235, 0.06) 1px, transparent 0);
+  background-size: 8px 8px;
+}
+
+/* Stamp Border (Field Journal aesthetic) */
+.stamp-border {
+  border: 2px dashed rgba(30, 37, 43, 0.25);
+}
+
+.stamp-border-dark {
+  border: 2px dashed rgba(242, 239, 235, 0.2);
+}
+
+/* Custom minimal scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(30, 37, 43, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(30, 37, 43, 0.25);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(30, 37, 43, 0.45);
+}
