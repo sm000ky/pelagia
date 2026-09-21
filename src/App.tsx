@@ -10,6 +10,7 @@ import { LogbookDrawer } from './components/LogbookDrawer';
 import { EasterEggs } from './components/EasterEggs';
 import { ChallengerDeepFinale } from './components/ChallengerDeepFinale';
 import { ForbiddenAbyssSequence } from './components/ForbiddenAbyssSequence';
+import { DepthScrubberRail } from './components/DepthScrubberRail';
 import { pelagiaAudio } from './lib/audioEngine';
 import { Language, DICTIONARY } from './lib/i18n';
 import { getLocalizedSpecimen } from './lib/biotaTranslations';
@@ -180,6 +181,13 @@ export function App() {
         t={t}
         nextSpecimenName={nextSpecimenName}
         nextSpecimenDist={nextSpecimenDist}
+      />
+
+      {/* Floating Kinetic Bathymetric Depth Scrubber Rail */}
+      <DepthScrubberRail
+        currentDepth={currentDepth}
+        scrollProgress={scrollProgress}
+        onJumpToZone={handleJumpToZone}
       />
 
       {/* Ambient Audio Starter Banner Toast (Steady craft card, zero kelap-kelip) */}

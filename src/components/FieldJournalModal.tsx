@@ -245,26 +245,34 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
 
         {/* Scrollable Journal Notebook Body */}
         <div className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-6">
-          {/* Specimen Showcase Arena (Clean vector without any red dots!) */}
-          <div className={`relative p-6 sm:p-10 rounded-xl border ${theme.innerBorder} ${theme.innerBg} shadow-inner flex flex-col items-center justify-center min-h-[260px] overflow-hidden`}>
-            {/* Background graph grid */}
-            <div className="absolute inset-0 bg-[radial-gradient(currentColor_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
+          {/* Specimen Showcase Arena with High-Contrast Archival Mounting Mat */}
+          <div className={`relative p-6 sm:p-10 rounded-xl border ${theme.innerBorder} ${theme.innerBg} shadow-inner flex flex-col items-center justify-center min-h-[280px] overflow-hidden`}>
+            {/* Luminous Naturalist Mounting Mat (Ensures 100% visibility for black & deep-sea creatures!) */}
+            <div className="absolute inset-3 sm:inset-4 rounded-lg bg-[#FAF6EE] text-[#1E252B] border border-[#DEC6AE] shadow-paper-sm flex flex-col items-center justify-center overflow-hidden">
+              {/* Subtle Millimeter Graph Pattern */}
+              <div className="absolute inset-0 bg-[radial-gradient(#1E252B_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
+              {/* Corner Archival Photo Corners */}
+              <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-[#1E252B]/40" />
+              <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-[#1E252B]/40" />
+              <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-[#1E252B]/40" />
+              <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-[#1E252B]/40" />
+            </div>
 
-            {/* Specimen SVG */}
+            {/* Specimen SVG mounted cleanly on the mat */}
             <div className="relative z-10 transform scale-110 sm:scale-125 transition-transform duration-300 my-4">
               <SpecimenRenderer type={specimen.papercraftType} />
             </div>
 
             {/* Red Wax Stamp Indicator overlay if logged */}
             {stamped && (
-              <div className="absolute top-4 right-4 border-2 border-[#D95A47] text-[#D95A47] font-mono font-bold text-xs uppercase px-3 py-1 rounded rotate-[-10deg] bg-black/40 backdrop-blur-xs shadow-paper-sm">
+              <div className="absolute top-6 right-6 z-20 border-2 border-[#D95A47] text-[#D95A47] font-mono font-bold text-xs uppercase px-3 py-1 rounded rotate-[-10deg] bg-[#FAF6EE]/90 shadow-paper-sm">
                 {t.stampExamined}
               </div>
             )}
 
             {/* Specimen Length Pill */}
-            <div className={`absolute bottom-3 left-3 px-2.5 py-1 ${theme.cardBg} border ${theme.innerBorder} rounded text-[10px] font-mono shadow-paper-sm`}>
-              {t.size}: <span className={`font-bold ${theme.accent}`}>{specimen.lengthMeters} M</span>
+            <div className="absolute bottom-5 left-5 z-20 px-2.5 py-1 bg-[#F4ECE1] text-[#1E252B] border border-[#DEC6AE] rounded text-[10px] font-mono shadow-paper-sm">
+              {t.size}: <span className="font-bold text-[#D95A47]">{specimen.lengthMeters} M</span>
             </div>
           </div>
 
@@ -448,13 +456,14 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
                   </span>
                 </div>
 
-                <div className="flex items-end gap-8 pt-6 pb-4 justify-center border-t border-dashed border-current/20 min-h-[160px]">
-                  <div className="flex flex-col items-center gap-1">
-                    <DiverScaleSVG className="w-10 h-20 text-current" />
+                <div className="relative flex items-end gap-8 pt-8 pb-4 justify-center rounded-lg bg-[#FAF6EE] text-[#1E252B] border border-[#DEC6AE] shadow-inner min-h-[170px] overflow-hidden">
+                  <div className="absolute inset-0 bg-[radial-gradient(#1E252B_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
+                  <div className="relative z-10 flex flex-col items-center gap-1">
+                    <DiverScaleSVG className="w-10 h-20 text-[#1E252B]" />
                     <span className="text-[10px] font-mono opacity-70">{comparisonSize} M</span>
                   </div>
 
-                  <div className="flex flex-col items-center gap-1">
+                  <div className="relative z-10 flex flex-col items-center gap-1">
                     <div
                       className="transform origin-bottom transition-transform duration-300"
                       style={{
@@ -463,7 +472,7 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
                     >
                       <SpecimenRenderer type={specimen.papercraftType} className="w-24 h-20" />
                     </div>
-                    <span className={`text-[10px] font-mono font-bold ${theme.accent}`}>
+                    <span className="text-[10px] font-mono font-bold text-[#D95A47]">
                       {specimen.lengthMeters} M ({specimen.commonName})
                     </span>
                   </div>

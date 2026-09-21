@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BiotaSpecimen } from '../types';
 import { SPECIMENS, ZONES } from '../data/oceanData';
-import { X, Sparkles, CheckCircle2, Filter } from 'lucide-react';
+import { X, Sparkles, CheckCircle2, Filter, Search } from 'lucide-react';
 import { pelagiaAudio } from '../lib/audioEngine';
 import { Language } from '../lib/i18n';
 import { getLocalizedSpecimen } from '../lib/biotaTranslations';
@@ -23,22 +23,30 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
   currentLang = 'en',
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   if (!isOpen) return null;
 
   const categories = ['all', 'Fish', 'Cephalopod', 'Crustacean', 'Mammal', 'Jelly', 'Bioluminescent'];
 
-  const filteredSpecimens = SPECIMENS.filter((s) => {
-    if (selectedCategory === 'all') return true;
-    if (selectedCategory === 'Bioluminescent') {
-      return (
-        s.tagCategory === 'Bioluminescent' ||
-        s.zoneId === 'midnight' ||
-        s.zoneId === 'abyss' ||
-        s.zoneId === 'hadal'
-      );
-    }
-    return s.tagCategory === selectedCategory;
+  const filteredSpecimens = SPECIMENS.filter((base) => {
+    const s = getLocalizedSpecimen(base, currentLang);
+    const matchesCategory =
+      selectedCategory === 'all' ||
+      (selectedCategory === 'Bioluminescent'
+        ? s.tagCategory === 'Bioluminescent' || s.zoneId === 'midnight' || s.zoneId === 'abyss' || s.zoneId === 'hadal'
+        : s.tagCategory === selectedCategory);
+
+    const q = searchQuery.toLowerCase().trim();
+    const matchesSearch =
+      !q ||
+      s.commonName.toLowerCase().includes(q) ||
+      s.binomialName.toLowerCase().includes(q) ||
+      s.japaneseName.toLowerCase().includes(q) ||
+      s.plateNumber.toLowerCase().includes(q) ||
+      s.observationNotes.toLowerCase().includes(q);
+
+    return matchesCategory && matchesSearch;
   });
 
   const discoveredCount = SPECIMENS.filter((s) => discoveredIds.has(s.id)).length;
@@ -87,6 +95,23 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
             className="bg-[#D95A47] h-full transition-all duration-500"
             style={{ width: `${progressPercent}%` }}
           />
+        </div>
+
+        {/* Live Search Input */}
+        <div className="px-4 py-2.5 border-b border-[#1E252B]/15 bg-[#FAF6EE] flex items-center gap-2">
+          <Search className="w-4 h-4 text-[#626863]" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search 50 species by name, plate, or trait..."
+            className="w-full bg-transparent border-none outline-none font-mono text-xs placeholder:text-[#626863]/60 text-[#1E252B]"
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery('')} className="p-0.5 hover:text-[#D95A47] cursor-pointer">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
         {/* Category Filter Pills */}
