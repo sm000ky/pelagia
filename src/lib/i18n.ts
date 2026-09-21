@@ -104,6 +104,7 @@ export interface Translations {
   povActive: string;
   halogenSpotlight: string;
   spotlightAim: string;
+  povHint: string;
 }
 
 export const DICTIONARY: Record<Language, Translations> = {
@@ -201,6 +202,7 @@ export const DICTIONARY: Record<Language, Translations> = {
     povActive: 'BATHYSCAPHE COCKPIT // POV ACTIVE',
     halogenSpotlight: 'SPOTLIGHT: HALOGEN 24,000 LUMENS',
     spotlightAim: 'AIM WITH CURSOR / TOUCH TO ILLUMINATE BIOTA',
+    povHint: 'Move cursor or drag finger to shine the spotlight on deep-sea creatures',
   },
 
   id: {
@@ -297,6 +299,7 @@ export const DICTIONARY: Record<Language, Translations> = {
     povActive: 'KOKPIT KAPAL SELAM // POV AKTIF',
     halogenSpotlight: 'LAMPU SOROT: HALOGEN 24.000 LUMENS',
     spotlightAim: 'ARAHKAN KURSOR / SENTUH UNTUK MENYINARI BIOTA',
+    povHint: 'Geser jarimu atau kursor untuk menyinari biota laut di kegelapan',
   },
 
   ja: {
@@ -393,5 +396,6 @@ export const DICTIONARY: Record<Language, Translations> = {
     povActive: '潜水艇コックピット // 主観視点起動',
     halogenSpotlight: '探照灯：ハロゲン 24,000ルーメン',
     spotlightAim: 'カーソルやタッチで生物を照らす',
+    povHint: '指やカーソルを動かして、暗闇の深海生物を照らしてください',
   },
 };

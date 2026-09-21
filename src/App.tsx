@@ -194,6 +194,7 @@ export function App() {
         isActive={isPOVActive}
         currentDepth={currentDepth}
         currentZone={currentZone}
+        t={t}
       />
 
       {/* Floating Kinetic Bathymetric Depth Scrubber Rail */}
