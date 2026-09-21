@@ -12,6 +12,7 @@ import { ChallengerDeepFinale } from './components/ChallengerDeepFinale';
 import { ForbiddenAbyssSequence } from './components/ForbiddenAbyssSequence';
 import { pelagiaAudio } from './lib/audioEngine';
 import { Language, DICTIONARY } from './lib/i18n';
+import { getLocalizedSpecimen } from './lib/biotaTranslations';
 import { Compass, Sparkles, Volume2 } from 'lucide-react';
 
 export function App() {
@@ -131,10 +132,10 @@ export function App() {
     ? ZONES.find((z) => z.id === selectedSpecimen.zoneId) || null
     : null;
 
-  // Psychology of exploration: Next specimen Sonar Radar indicator
+  // Psychology of exploration: Next upcoming specimen Sonar Radar indicator
   const upcomingSpecimen = SPECIMENS.find((s) => s.depthMeters > currentDepth && s.depthMeters > 0);
   const nextSpecimenDist = upcomingSpecimen ? Math.round(upcomingSpecimen.depthMeters - currentDepth) : undefined;
-  const nextSpecimenName = upcomingSpecimen ? upcomingSpecimen.commonName : undefined;
+  const nextSpecimenName = upcomingSpecimen ? getLocalizedSpecimen(upcomingSpecimen, currentLang).commonName : undefined;
 
   return (
     <div
@@ -202,7 +203,9 @@ export function App() {
        * =================================================================== */}
       <div id="zone-coastal">
         <CoastalShore
-          specimens={SPECIMENS.filter((s) => s.zoneId === 'coastal')}
+          specimens={SPECIMENS.filter((s) => s.zoneId === 'coastal').map((s) =>
+            getLocalizedSpecimen(s, currentLang)
+          )}
           zone={ZONES[0]}
           onSelectSpecimen={setSelectedSpecimen}
           discoveredIds={discoveredIds}
@@ -237,17 +240,19 @@ export function App() {
           </p>
         </div>
 
-        {/* Free-floating Biota in Open Water */}
-        {SPECIMENS.filter((s) => s.zoneId === 'sunlight').map((specimen, idx) => (
-          <SpecimenItem
-            key={specimen.id}
-            specimen={specimen}
-            zone={ZONES[1]}
-            index={idx}
-            onSelect={setSelectedSpecimen}
-            isDiscovered={discoveredIds.has(specimen.id)}
-          />
-        ))}
+        {/* Free-floating Biota in Open Water (Fully Localized!) */}
+        {SPECIMENS.filter((s) => s.zoneId === 'sunlight')
+          .map((s) => getLocalizedSpecimen(s, currentLang))
+          .map((specimen, idx) => (
+            <SpecimenItem
+              key={specimen.id}
+              specimen={specimen}
+              zone={ZONES[1]}
+              index={idx}
+              onSelect={setSelectedSpecimen}
+              isDiscovered={discoveredIds.has(specimen.id)}
+            />
+          ))}
       </section>
 
       {/* ===================================================================
@@ -268,16 +273,18 @@ export function App() {
           </p>
         </div>
 
-        {SPECIMENS.filter((s) => s.zoneId === 'twilight').map((specimen, idx) => (
-          <SpecimenItem
-            key={specimen.id}
-            specimen={specimen}
-            zone={ZONES[2]}
-            index={idx}
-            onSelect={setSelectedSpecimen}
-            isDiscovered={discoveredIds.has(specimen.id)}
-          />
-        ))}
+        {SPECIMENS.filter((s) => s.zoneId === 'twilight')
+          .map((s) => getLocalizedSpecimen(s, currentLang))
+          .map((specimen, idx) => (
+            <SpecimenItem
+              key={specimen.id}
+              specimen={specimen}
+              zone={ZONES[2]}
+              index={idx}
+              onSelect={setSelectedSpecimen}
+              isDiscovered={discoveredIds.has(specimen.id)}
+            />
+          ))}
       </section>
 
       {/* ===================================================================
@@ -298,16 +305,18 @@ export function App() {
           </p>
         </div>
 
-        {SPECIMENS.filter((s) => s.zoneId === 'midnight').map((specimen, idx) => (
-          <SpecimenItem
-            key={specimen.id}
-            specimen={specimen}
-            zone={ZONES[3]}
-            index={idx}
-            onSelect={setSelectedSpecimen}
-            isDiscovered={discoveredIds.has(specimen.id)}
-          />
-        ))}
+        {SPECIMENS.filter((s) => s.zoneId === 'midnight')
+          .map((s) => getLocalizedSpecimen(s, currentLang))
+          .map((specimen, idx) => (
+            <SpecimenItem
+              key={specimen.id}
+              specimen={specimen}
+              zone={ZONES[3]}
+              index={idx}
+              onSelect={setSelectedSpecimen}
+              isDiscovered={discoveredIds.has(specimen.id)}
+            />
+          ))}
       </section>
 
       {/* ===================================================================
@@ -328,16 +337,18 @@ export function App() {
           </p>
         </div>
 
-        {SPECIMENS.filter((s) => s.zoneId === 'abyss').map((specimen, idx) => (
-          <SpecimenItem
-            key={specimen.id}
-            specimen={specimen}
-            zone={ZONES[4]}
-            index={idx}
-            onSelect={setSelectedSpecimen}
-            isDiscovered={discoveredIds.has(specimen.id)}
-          />
-        ))}
+        {SPECIMENS.filter((s) => s.zoneId === 'abyss')
+          .map((s) => getLocalizedSpecimen(s, currentLang))
+          .map((specimen, idx) => (
+            <SpecimenItem
+              key={specimen.id}
+              specimen={specimen}
+              zone={ZONES[4]}
+              index={idx}
+              onSelect={setSelectedSpecimen}
+              isDiscovered={discoveredIds.has(specimen.id)}
+            />
+          ))}
       </section>
 
       {/* ===================================================================
@@ -358,16 +369,18 @@ export function App() {
           </p>
         </div>
 
-        {SPECIMENS.filter((s) => s.zoneId === 'hadal').map((specimen, idx) => (
-          <SpecimenItem
-            key={specimen.id}
-            specimen={specimen}
-            zone={ZONES[5]}
-            index={idx}
-            onSelect={setSelectedSpecimen}
-            isDiscovered={discoveredIds.has(specimen.id)}
-          />
-        ))}
+        {SPECIMENS.filter((s) => s.zoneId === 'hadal')
+          .map((s) => getLocalizedSpecimen(s, currentLang))
+          .map((specimen, idx) => (
+            <SpecimenItem
+              key={specimen.id}
+              specimen={specimen}
+              zone={ZONES[5]}
+              index={idx}
+              onSelect={setSelectedSpecimen}
+              isDiscovered={discoveredIds.has(specimen.id)}
+            />
+          ))}
       </section>
 
       {/* ===================================================================
@@ -386,7 +399,7 @@ export function App() {
 
       {/* Interactive Field Journal Modal Drawer Adapted to Depth Zone */}
       <FieldJournalModal
-        specimen={selectedSpecimen}
+        specimen={selectedSpecimen ? getLocalizedSpecimen(selectedSpecimen, currentLang) : null}
         zone={selectedZoneData}
         onClose={() => setSelectedSpecimen(null)}
         isDiscovered={selectedSpecimen ? discoveredIds.has(selectedSpecimen.id) : false}
@@ -404,6 +417,7 @@ export function App() {
           setSelectedSpecimen(s);
         }}
         onJumpToSpecimenDepth={() => {}}
+        currentLang={currentLang}
       />
     </div>
   );

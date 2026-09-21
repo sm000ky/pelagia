@@ -4,151 +4,125 @@
 
 @layer base {
   body {
-    margin: 0;
-    padding: 0;
-    background-color: #FAF6EE;
+    background-color: #F4E7D3;
     color: #1E252B;
-    font-family: 'Newsreader', Georgia, serif;
-    -webkit-font-smoothing: antialiased;
+    font-family: 'Newsreader', serif;
     overflow-x: hidden;
   }
 }
 
 /* =========================================================================
- * REALISTIC SWIMMING PHYSICS (12-FPS Stepped Stop-Motion)
+ * 12-FPS STEPPED STOP-MOTION ANIMATIONS (WES ANDERSON & STUDIO GHIBLI STYLE)
+ * Every keyframe uses steps(3) or steps(4) to simulate physical paper puppets.
  * ========================================================================= */
 
-/* 1. SEA TURTLE: Downstroke -> Glide Pause -> Recovery (3 steps) */
-@keyframes turtleStroke {
-  0% { transform: rotate(-12deg) translateY(0); }
-  33% { transform: rotate(14deg) translateY(-2px); } /* Power downstroke */
-  66% { transform: rotate(4deg) translateY(-3px); }  /* Glide hold */
-  100% { transform: rotate(-12deg) translateY(0); } /* Recovery */
+/* 1. WHALE SWIM (Colossal Cetaceans, Sharks, Leviathan) */
+@keyframes whaleSwim {
+  0% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-6px) rotate(-1.5deg); }
+  50% { transform: translateY(-2px) rotate(0.5deg); }
+  75% { transform: translateY(5px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
 }
 
-.animate-turtle-flipper {
-  animation: turtleStroke 2.2s steps(4, end) infinite;
-  transform-origin: 30% 20%;
+.animate-whale-swim {
+  animation: whaleSwim 3.6s steps(4, end) infinite;
+  transform-origin: 40% 50%;
 }
 
-.animate-turtle-flipper-rev {
-  animation: turtleStroke 2.2s steps(4, end) infinite;
-  transform-origin: 70% 20%;
-  animation-direction: reverse;
+/* 2. MANTA RAY WING FLAP */
+@keyframes mantaWing {
+  0% { transform: scaleY(1) rotate(0deg); }
+  25% { transform: scaleY(0.92) rotate(-2deg); }
+  50% { transform: scaleY(1.08) rotate(1deg); }
+  75% { transform: scaleY(0.96) rotate(-1deg); }
+  100% { transform: scaleY(1) rotate(0deg); }
 }
 
-/* 2. JELLYFISH: Rhythmic Bell Jet Contraction (3 steps) */
-@keyframes jellyPulse {
-  0% { transform: scale(1, 1) translateY(0); }
-  25% { transform: scale(0.82, 1.22) translateY(-8px); } /* Sudden jet pulse */
-  60% { transform: scale(1.08, 0.92) translateY(-14px); } /* Float upward */
-  100% { transform: scale(1, 1) translateY(0); }          /* Sink recovery */
+.animate-manta-wing {
+  animation: mantaWing 2.8s steps(4, end) infinite;
+  transform-origin: 50% 50%;
 }
 
-.animate-jelly-pulse {
-  animation: jellyPulse 2.8s steps(4, end) infinite;
-  transform-origin: 50% 20%;
+/* 3. SEA TURTLE PADDLE */
+@keyframes turtlePaddle {
+  0% { transform: translateY(0px) rotate(-2deg); }
+  33% { transform: translateY(-5px) rotate(2deg); }
+  66% { transform: translateY(-2px) rotate(0deg); }
+  100% { transform: translateY(0px) rotate(-2deg); }
 }
 
-/* 3. MANTA RAY: Pectoral Wing Undulation (4 steps) */
-@keyframes mantaWingLeft {
-  0% { transform: rotate(-10deg) scaleY(1); }
-  25% { transform: rotate(-4deg) scaleY(0.92); }
-  50% { transform: rotate(8deg) scaleY(1.08); }
-  75% { transform: rotate(0deg) scaleY(0.98); }
-  100% { transform: rotate(-10deg) scaleY(1); }
+.animate-turtle-paddle {
+  animation: turtlePaddle 2.6s steps(3, end) infinite;
+  transform-origin: 50% 40%;
 }
 
-@keyframes mantaWingRight {
-  0% { transform: rotate(10deg) scaleY(1); }
-  25% { transform: rotate(4deg) scaleY(0.92); }
-  50% { transform: rotate(-8deg) scaleY(1.08); }
-  75% { transform: rotate(0deg) scaleY(0.98); }
-  100% { transform: rotate(10deg) scaleY(1); }
-}
-
-.animate-manta-left {
-  animation: mantaWingLeft 2.0s steps(4, end) infinite;
-  transform-origin: 90% 50%;
-}
-
-.animate-manta-right {
-  animation: mantaWingRight 2.0s steps(4, end) infinite;
-  transform-origin: 10% 50%;
-}
-
-/* 4. FISH CARANGIFORM TAIL KICK (3 steps) */
+/* 4. FISH CARANGIFORM TAIL KICK */
 @keyframes fishTailKick {
-  0% { transform: rotate(-14deg); }
-  50% { transform: rotate(14deg); }
-  100% { transform: rotate(-14deg); }
+  0% { transform: rotate(-5deg) translateY(0); }
+  50% { transform: rotate(5deg) translateY(-2px); }
+  100% { transform: rotate(-5deg) translateY(0); }
 }
 
 .animate-fish-tail {
-  animation: fishTailKick 1.2s steps(3, end) infinite;
-  transform-origin: 15% 50%;
+  animation: fishTailKick 1.4s steps(3, end) infinite;
+  transform-origin: 30% 50%;
 }
 
-/* 5. WHALE FLUKE VERTICAL LOBTAILING (3 steps) */
-@keyframes flukeVertical {
-  0% { transform: translateY(0) scaleY(1); }
-  50% { transform: translateY(-8px) scaleY(0.85); }
-  100% { transform: translateY(0) scaleY(1); }
+/* 5. JELLYFISH JET PULSE */
+@keyframes jellyPulse {
+  0% { transform: scale(1, 1) translateY(0); }
+  25% { transform: scale(0.85, 1.2) translateY(-10px); }
+  60% { transform: scale(1.08, 0.92) translateY(-16px); }
+  100% { transform: scale(1, 1) translateY(0); }
 }
 
-.animate-whale-fluke {
-  animation: flukeVertical 2.6s steps(3, end) infinite;
-  transform-origin: center center;
+.animate-jelly-pulse {
+  animation: jellyPulse 3.0s steps(4, end) infinite;
+  transform-origin: 50% 30%;
 }
 
-/* 6. CRAB SCUTTLE (4 quick steps) */
+/* 6. CRAB SCUTTLE */
 @keyframes crabScuttle {
   0% { transform: translateX(0) rotate(0); }
-  25% { transform: translateX(6px) rotate(2deg); }
-  50% { transform: translateX(12px) rotate(0); }
-  75% { transform: translateX(6px) rotate(-2deg); }
+  25% { transform: translateX(5px) rotate(1.5deg); }
+  50% { transform: translateX(10px) rotate(0); }
+  75% { transform: translateX(5px) rotate(-1.5deg); }
   100% { transform: translateX(0) rotate(0); }
 }
 
 .animate-crab-scuttle {
-  animation: crabScuttle 1.4s steps(4, end) infinite;
+  animation: crabScuttle 1.6s steps(4, end) infinite;
+  transform-origin: 50% 50%;
 }
 
-/* 7. OCTOPUS & SQUID TENTACLES DRIFT */
-@keyframes tentacleDrift {
-  0% { transform: rotate(-6deg); }
-  50% { transform: rotate(6deg); }
-  100% { transform: rotate(-6deg); }
-}
-
-.animate-tentacle-drift {
-  animation: tentacleDrift 2.4s steps(3, end) infinite;
-  transform-origin: 50% 10%;
-}
-
-/* 8. BIOLUMINESCENT FLICKER (2 steps) */
-@keyframes bulbFlicker {
-  0%, 100% { opacity: 0.95; filter: drop-shadow(0 0 10px #EAA838); }
-  50% { opacity: 0.25; filter: drop-shadow(0 0 2px #EAA838); }
-}
-
-.animate-bulb-flicker {
-  animation: bulbFlicker 1.8s steps(2, start) infinite;
-}
-
-/* 9. SUBTLE PAPER FLOAT SWAY */
+/* 7. PAPER FLOAT SWAY (Plankton, Anglerfish, Dumbo) */
 @keyframes paperFloat {
-  0% { transform: translateY(0px) rotate(-1deg); }
-  50% { transform: translateY(-4px) rotate(1deg); }
-  100% { transform: translateY(0px) rotate(-1deg); }
+  0% { transform: translateY(0px) rotate(-1.5deg); }
+  50% { transform: translateY(-6px) rotate(1.5deg); }
+  100% { transform: translateY(0px) rotate(-1.5deg); }
 }
 
 .animate-paper-float {
-  animation: paperFloat 3.2s steps(3, end) infinite;
+  animation: paperFloat 3.2s steps(4, end) infinite;
+  transform-origin: 50% 50%;
+}
+
+/* 8. CELESTIAL LEVIATHAN MAJESTIC SWIM */
+@keyframes celestialLeviathan {
+  0% { transform: translateY(0px) rotate(-1deg) scale(1); }
+  33% { transform: translateY(-14px) rotate(1.5deg) scale(1.02); }
+  66% { transform: translateY(-4px) rotate(0deg) scale(0.99); }
+  100% { transform: translateY(0px) rotate(-1deg) scale(1); }
+}
+
+.animate-leviathan {
+  animation: celestialLeviathan 5.0s steps(4, end) infinite;
+  transform-origin: 45% 50%;
 }
 
 /* =========================================================================
- * PAPERCRAFT TACTILE STYLING & RISOGRAPH FILTER
+ * PAPERCRAFT TACTILE STYLING & RISOGRAPH GRAIN
  * ========================================================================= */
 
 .paper-cutout {
@@ -171,7 +145,6 @@
   transform: translateY(-4px) scale(1.03);
 }
 
-/* Grain overlays */
 .paper-grain {
   background-image: radial-gradient(rgba(30, 37, 43, 0.08) 1px, transparent 0);
   background-size: 8px 8px;

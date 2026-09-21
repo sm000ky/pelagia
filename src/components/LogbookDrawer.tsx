@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { BiotaSpecimen, ZoneData } from '../types';
+import { BiotaSpecimen } from '../types';
 import { SPECIMENS, ZONES } from '../data/oceanData';
-import { X, BookOpen, Sparkles, CheckCircle2, Compass, Filter } from 'lucide-react';
+import { X, Sparkles, CheckCircle2, Filter } from 'lucide-react';
 import { pelagiaAudio } from '../lib/audioEngine';
+import { Language } from '../lib/i18n';
+import { getLocalizedSpecimen } from '../lib/biotaTranslations';
 
 interface LogbookDrawerProps {
   isOpen: boolean;
@@ -10,6 +12,7 @@ interface LogbookDrawerProps {
   discoveredIds: Set<string>;
   onSelectSpecimen: (specimen: BiotaSpecimen) => void;
   onJumpToSpecimenDepth: (depthMeters: number) => void;
+  currentLang?: Language;
 }
 
 export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
@@ -17,7 +20,7 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
   onClose,
   discoveredIds,
   onSelectSpecimen,
-  onJumpToSpecimenDepth,
+  currentLang = 'en',
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -72,7 +75,7 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-lg border-2 border-[#1E252B] bg-[#FAF6EE] hover:bg-[#D95A47] hover:text-white transition-colors shadow-paper-sm"
+            className="p-2 rounded-lg border-2 border-[#1E252B] bg-[#FAF6EE] hover:bg-[#D95A47] hover:text-white transition-colors shadow-paper-sm cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -96,7 +99,7 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
                 pelagiaAudio.playWaterBubble();
                 setSelectedCategory(cat);
               }}
-              className={`px-2.5 py-1 rounded-full border whitespace-nowrap transition-colors uppercase font-bold ${
+              className={`px-2.5 py-1 rounded-full border whitespace-nowrap transition-colors uppercase font-bold cursor-pointer ${
                 selectedCategory === cat
                   ? 'bg-[#1E252B] text-white border-[#1E252B]'
                   : 'bg-[#FAF6EE] text-[#626863] border-[#DEC6AE] hover:bg-[#EBDDCB]'
@@ -109,7 +112,8 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
 
         {/* Specimen List */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3">
-          {filteredSpecimens.map((specimen) => {
+          {filteredSpecimens.map((baseSpecimen) => {
+            const specimen = getLocalizedSpecimen(baseSpecimen, currentLang);
             const isLogged = discoveredIds.has(specimen.id);
             const zone = ZONES.find((z) => z.id === specimen.zoneId);
 
