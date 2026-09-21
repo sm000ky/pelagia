@@ -134,7 +134,10 @@ export const SpecimenItem: React.FC<SpecimenItemProps> = ({
   };
 
   return (
-    <div className="relative w-full max-w-5xl mx-auto my-20 sm:my-32 px-4 select-none">
+    <div
+      id={`specimen-${specimen.id}`}
+      className="relative w-full max-w-5xl mx-auto my-20 sm:my-32 px-4 select-none"
+    >
       <div
         className={`flex flex-col ${
           isEven ? 'md:flex-row' : 'md:flex-row-reverse'

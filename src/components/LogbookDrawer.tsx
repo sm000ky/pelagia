@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { BiotaSpecimen } from '../types';
 import { SPECIMENS, ZONES } from '../data/oceanData';
-import { X, Sparkles, CheckCircle2, Filter, Search } from 'lucide-react';
+import { X, Sparkles, CheckCircle2, Filter, Search, Compass } from 'lucide-react';
 import { pelagiaAudio } from '../lib/audioEngine';
-import { Language } from '../lib/i18n';
+import { Language, DICTIONARY } from '../lib/i18n';
 import { getLocalizedSpecimen } from '../lib/biotaTranslations';
 
 interface LogbookDrawerProps {
@@ -24,6 +24,7 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const t = DICTIONARY[currentLang];
 
   if (!isOpen) return null;
 
@@ -57,6 +58,18 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
     onSelectSpecimen(specimen);
   };
 
+  const handleJumpToSpecimen = (e: React.MouseEvent, specimenId: string) => {
+    e.stopPropagation();
+    pelagiaAudio.playWaterBubble();
+    onClose();
+    setTimeout(() => {
+      const el = document.getElementById(`specimen-${specimenId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 200);
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm select-none transition-all duration-300"
@@ -74,16 +87,17 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
               <span>NATURALIST EXPEDITION LOGBOOK</span>
             </div>
             <h2 className="text-2xl font-serif font-bold text-[#1E252B]">
-              Pacific Bathymetric Roster
+              {t.rosterTitle}
             </h2>
             <div className="text-xs font-mono text-[#626863] flex items-center gap-2">
-              <span>{discoveredCount} of {SPECIMENS.length} Species Stamped ({progressPercent}%)</span>
+              <span>{discoveredCount} / {SPECIMENS.length} {t.speciesStamped} ({progressPercent}%)</span>
             </div>
           </div>
 
           <button
             onClick={onClose}
             className="p-2 rounded-lg border-2 border-[#1E252B] bg-[#FAF6EE] hover:bg-[#D95A47] hover:text-white transition-colors shadow-paper-sm cursor-pointer"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -104,7 +118,7 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search 50 species by name, plate, or trait..."
+            placeholder={t.searchPlaceholder}
             className="w-full bg-transparent border-none outline-none font-mono text-xs placeholder:text-[#626863]/60 text-[#1E252B]"
           />
           {searchQuery && (
@@ -135,7 +149,7 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
           ))}
         </div>
 
-        {/* Specimen List */}
+        {/* Specimen List with Swim/Jump Action */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3">
           {filteredSpecimens.map((baseSpecimen) => {
             const specimen = getLocalizedSpecimen(baseSpecimen, currentLang);
@@ -172,6 +186,15 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
                   <span className="font-bold text-[#D95A47]">
                     {specimen.depthMeters <= 0 ? `+${Math.abs(specimen.depthMeters)}m` : `-${specimen.depthMeters}m`}
                   </span>
+
+                  {/* Swim / Jump to Location Icon Button */}
+                  <button
+                    onClick={(e) => handleJumpToSpecimen(e, specimen.id)}
+                    className="p-1.5 rounded-lg border border-[#DEC6AE] bg-[#FAF6EE] hover:bg-[#D95A47] hover:text-white transition-colors ml-1 cursor-pointer"
+                    title={`Swim down to ${specimen.commonName}`}
+                  >
+                    <Compass className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
             );
