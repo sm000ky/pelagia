@@ -11,6 +11,8 @@ import { EasterEggs } from './components/EasterEggs';
 import { ChallengerDeepFinale } from './components/ChallengerDeepFinale';
 import { ForbiddenAbyssSequence } from './components/ForbiddenAbyssSequence';
 import { DepthScrubberRail } from './components/DepthScrubberRail';
+import { BathyscapheCockpitOverlay } from './components/BathyscapheCockpitOverlay';
+import { NaturalistCertificateModal } from './components/NaturalistCertificateModal';
 import { pelagiaAudio } from './lib/audioEngine';
 import { Language, DICTIONARY } from './lib/i18n';
 import { getLocalizedSpecimen } from './lib/biotaTranslations';
@@ -27,6 +29,8 @@ export function App() {
   const [isMuted, setIsMuted] = useState<boolean>(true);
   const [isLogbookOpen, setIsLogbookOpen] = useState<boolean>(false);
   const [showAudioPrompt, setShowAudioPrompt] = useState<boolean>(true);
+  const [isPOVActive, setIsPOVActive] = useState<boolean>(false);
+  const [isCertificateOpen, setIsCertificateOpen] = useState<boolean>(false);
 
   // LocalStorage discovery tracker for all 50 species
   const [discoveredIds, setDiscoveredIds] = useState<Set<string>>(() => {
@@ -181,6 +185,15 @@ export function App() {
         t={t}
         nextSpecimenName={nextSpecimenName}
         nextSpecimenDist={nextSpecimenDist}
+        isPOVActive={isPOVActive}
+        onTogglePOV={() => setIsPOVActive(!isPOVActive)}
+      />
+
+      {/* Full Release: Submersible Viewport & Halogen Spotlight Overlay */}
+      <BathyscapheCockpitOverlay
+        isActive={isPOVActive}
+        currentDepth={currentDepth}
+        currentZone={currentZone}
       />
 
       {/* Floating Kinetic Bathymetric Depth Scrubber Rail */}
@@ -394,7 +407,10 @@ export function App() {
       {/* ===================================================================
        * 8. CHALLENGER DEEP (-10,994M)
        * =================================================================== */}
-      <ChallengerDeepFinale onScrollToTop={handleScrollToTop} />
+      <ChallengerDeepFinale
+        onScrollToTop={handleScrollToTop}
+        onOpenCertificate={() => setIsCertificateOpen(true)}
+      />
 
       {/* ===================================================================
        * 9. THE FORBIDDEN ABYSS WARNINGS & THE SUBTERRANEAN STAR SEA CLIMAX!
@@ -426,6 +442,14 @@ export function App() {
         }}
         onJumpToSpecimenDepth={() => {}}
         currentLang={currentLang}
+      />
+
+      {/* Full Release: Printable Official Expedition Diploma Modal */}
+      <NaturalistCertificateModal
+        isOpen={isCertificateOpen}
+        onClose={() => setIsCertificateOpen(false)}
+        discoveredCount={discoveredIds.size}
+        totalCount={SPECIMENS.length}
       />
     </div>
   );

@@ -133,6 +133,7 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
   const [activeHotspot, setActiveHotspot] = useState<AnatomyHotspot | null>(null);
   const [scaleMode, setScaleMode] = useState<'diver' | 'submersible' | 'hand'>('diver');
   const [stamped, setStamped] = useState<boolean>(isDiscovered);
+  const [isXRay, setIsXRay] = useState<boolean>(false);
 
   useEffect(() => {
     if (specimen) {
@@ -258,14 +259,36 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
               <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-[#1E252B]/40" />
             </div>
 
-            {/* Specimen SVG mounted cleanly on the mat */}
-            <div className="relative z-10 transform scale-110 sm:scale-125 transition-transform duration-300 my-4">
+            {/* Full Release Feature: Papercraft X-Ray / Radiogram View */}
+            <button
+              onClick={() => {
+                pelagiaAudio.playWaterBubble();
+                setIsXRay(!isXRay);
+              }}
+              className={`absolute top-5 left-5 z-20 px-2.5 py-1 rounded-md border font-mono text-[9px] font-bold tracking-wider uppercase transition-all shadow-paper-sm cursor-pointer ${
+                isXRay
+                  ? 'bg-[#0B1E2B] text-cyan-300 border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.4)]'
+                  : 'bg-[#F4ECE1] text-[#1E252B] border-[#DEC6AE] hover:bg-[#EBDDCB]'
+              }`}
+              title="Toggle Anatomical Fluoroscopy X-Ray Layer"
+            >
+              {isXRay ? '🔬 X-RAY: RADIOGRAM' : '🏷️ PAPERCRAFT: EXTERIOR'}
+            </button>
+
+            {/* Specimen SVG mounted cleanly on the mat with dynamic X-Ray inversion filter */}
+            <div
+              className={`relative z-10 transform scale-110 sm:scale-125 transition-all duration-500 my-4 ${
+                isXRay
+                  ? 'invert brightness-125 contrast-125 hue-rotate-180 drop-shadow-[0_0_15px_rgba(6,182,212,0.7)]'
+                  : ''
+              }`}
+            >
               <SpecimenRenderer type={specimen.papercraftType} />
             </div>
 
             {/* Red Wax Stamp Indicator overlay if logged */}
             {stamped && (
-              <div className="absolute top-6 right-6 z-20 border-2 border-[#D95A47] text-[#D95A47] font-mono font-bold text-xs uppercase px-3 py-1 rounded rotate-[-10deg] bg-[#FAF6EE]/90 shadow-paper-sm">
+              <div className="absolute top-5 right-5 z-20 border-2 border-[#D95A47] text-[#D95A47] font-mono font-bold text-xs uppercase px-3 py-1 rounded rotate-[-10deg] bg-[#FAF6EE]/90 shadow-paper-sm">
                 {t.stampExamined}
               </div>
             )}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Compass, Volume2, VolumeX, Waves, ChevronDown, BookOpen, Globe, Radio } from 'lucide-react';
+import { Compass, Volume2, VolumeX, Waves, ChevronDown, BookOpen, Globe, Radio, Lightbulb } from 'lucide-react';
 import { ZoneData } from '../types';
 import { ZONES } from '../data/oceanData';
 import { Language, Translations } from '../lib/i18n';
@@ -20,6 +20,8 @@ interface MechanicalDepthGaugeProps {
   t: Translations;
   nextSpecimenName?: string;
   nextSpecimenDist?: number;
+  isPOVActive?: boolean;
+  onTogglePOV?: () => void;
 }
 
 export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
@@ -37,6 +39,8 @@ export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
   t,
   nextSpecimenName,
   nextSpecimenDist,
+  isPOVActive = false,
+  onTogglePOV,
 }) => {
   const rawAtm = Math.max(1, 1.0 + Math.max(0, currentDepth) * 0.0987);
   const pressureDisplay = rawAtm > 999 ? rawAtm.toFixed(0) : rawAtm.toFixed(1);
@@ -163,6 +167,28 @@ export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
                 ))}
               </div>
             </div>
+
+            {/* Submersible POV Spotlight Mode Toggle */}
+            {onTogglePOV && (
+              <button
+                onClick={() => {
+                  pelagiaAudio.playWaterBubble();
+                  onTogglePOV();
+                }}
+                className={`flex items-center gap-1.5 px-2 py-1 rounded border text-[10px] font-mono font-bold tracking-wider uppercase transition-all shadow-paper-sm active:translate-y-0.5 cursor-pointer ${
+                  isPOVActive
+                    ? 'bg-cyan-500 text-[#080E17] border-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.5)]'
+                    : isDarkZone
+                    ? 'bg-[#142433] border-[#3B5366] text-cyan-300 hover:bg-[#1E3345]'
+                    : 'bg-[#FAF6EE] border-[#DEC6AE] text-[#2F6D68] hover:bg-[#EBDDCB]'
+                }`}
+                title="Toggle Submersible POV Cockpit & Halogen Light"
+              >
+                <Lightbulb className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">POV:</span>
+                <span>{isPOVActive ? 'ON' : 'OFF'}</span>
+              </button>
+            )}
 
             {/* Audio Toggle Button with Steady Illuminated State */}
             <button

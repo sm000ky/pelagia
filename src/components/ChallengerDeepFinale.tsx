@@ -4,10 +4,12 @@ import { ArrowUp, Award, Compass, Sparkles } from 'lucide-react';
 
 interface ChallengerDeepFinaleProps {
   onScrollToTop: () => void;
+  onOpenCertificate?: () => void;
 }
 
 export const ChallengerDeepFinale: React.FC<ChallengerDeepFinaleProps> = ({
   onScrollToTop,
+  onOpenCertificate,
 }) => {
   const triggerCelebration = () => {
     confetti({
@@ -65,11 +67,21 @@ export const ChallengerDeepFinale: React.FC<ChallengerDeepFinaleProps> = ({
               triggerCelebration();
               onScrollToTop();
             }}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-[#D95A47] hover:bg-[#E06D53] text-white font-mono text-xs font-bold transition-all shadow-paper active:translate-y-0.5"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-[#D95A47] hover:bg-[#E06D53] text-white font-mono text-xs font-bold transition-all shadow-paper active:translate-y-0.5 cursor-pointer"
           >
             <ArrowUp className="w-4 h-4" />
             <span>RETURN TO THE SUNLIT SHORE</span>
           </button>
+
+          {onOpenCertificate && (
+            <button
+              onClick={onOpenCertificate}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border-2 border-[#EAA838] bg-[#1E252B] hover:bg-[#2C3844] text-[#EAA838] font-mono text-xs font-bold transition-all shadow-paper cursor-pointer"
+            >
+              <Award className="w-4 h-4" />
+              <span>VIEW EXPEDITION DIPLOMA</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BiotaSpecimen, ZoneData } from '../types';
 import { SpecimenItem } from './SpecimenItem';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Moon, Sun } from 'lucide-react';
 import { Translations } from '../lib/i18n';
 
 interface CoastalShoreProps {
@@ -19,10 +19,28 @@ export const CoastalShore: React.FC<CoastalShoreProps> = ({
   discoveredIds,
   t,
 }) => {
+  const currentHour = new Date().getHours();
+  const isNight = currentHour >= 19 || currentHour < 5;
+  const isSunset = currentHour >= 17 && currentHour < 19;
+
   return (
     <section className="relative w-full pt-28 pb-16 px-4 select-none overflow-hidden">
-      {/* Background Warm Paper Sun & Dunes */}
-      <div className="absolute top-16 left-1/2 -translate-x-1/2 w-44 h-44 rounded-full bg-[#EAA838]/20 border border-[#EAA838]/40 pointer-events-none shadow-[0_0_30px_rgba(234,168,56,0.15)]" />
+      {/* Dynamic Real-time Celestial Orb (Paper Sun or Crescent Moon) */}
+      <div className="absolute top-16 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none">
+        {isNight ? (
+          <div className="w-40 h-40 rounded-full bg-[#E2E8F0]/30 border border-[#E2E8F0]/50 shadow-[0_0_40px_rgba(226,232,240,0.25)] flex items-center justify-center">
+            <Moon className="w-16 h-16 text-[#F8FAFC]/80" />
+          </div>
+        ) : isSunset ? (
+          <div className="w-44 h-44 rounded-full bg-[#EA580C]/25 border border-[#EA580C]/40 shadow-[0_0_40px_rgba(234,88,12,0.2)] flex items-center justify-center">
+            <Sun className="w-16 h-16 text-[#EA580C]/80" />
+          </div>
+        ) : (
+          <div className="w-44 h-44 rounded-full bg-[#EAA838]/20 border border-[#EAA838]/40 shadow-[0_0_35px_rgba(234,168,56,0.18)] flex items-center justify-center">
+            <Sun className="w-16 h-16 text-[#EAA838]/80" />
+          </div>
+        )}
+      </div>
 
       {/* Hero Title (Clean, Editorial, Handcrafted Papercraft, Steady Illuminated) */}
       <div className="relative z-10 max-w-3xl mx-auto text-center space-y-4">
@@ -35,7 +53,7 @@ export const CoastalShore: React.FC<CoastalShoreProps> = ({
         </h1>
 
         <p className="font-mono text-xs sm:text-sm text-[#D95A47] tracking-widest uppercase">
-          A STOP-MOTION PAPERCRAFT OCEAN DESCENT
+          A STOP-MOTION PAPERCRAFT OCEAN DESCENT // FULL RELEASE v1.0.0
         </p>
 
         <p className="font-serif text-base sm:text-lg text-[#556058] max-w-md mx-auto italic leading-relaxed">
