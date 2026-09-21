@@ -254,10 +254,10 @@ export function App() {
             <span>ZONE 01 // EPIPELAGIC (0M TO -200M)</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#0F332B]">
-            The Sunlight Realm
+            {t.zone1Title}
           </h2>
           <p className="font-serif text-xs sm:text-sm text-[#3B665D] italic max-w-md mx-auto">
-            "{ZONES[1].summary}"
+            "{t.zone1Summary}"
           </p>
         </div>
 
@@ -287,10 +287,10 @@ export function App() {
             <span>ZONE 02 // MESOPELAGIC (-200M TO -1,000M)</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#F8FAFC]">
-            The Twilight Domain
+            {t.zone2Title}
           </h2>
           <p className="font-serif text-xs sm:text-sm text-[#94A3B8] italic max-w-md mx-auto">
-            "{ZONES[2].summary}"
+            "{t.zone2Summary}"
           </p>
         </div>
 
@@ -319,10 +319,10 @@ export function App() {
             <span>ZONE 03 // BATHYPELAGIC (-1,000M TO -4,000M)</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#FFFBEB]">
-            The Midnight Realm
+            {t.zone3Title}
           </h2>
           <p className="font-serif text-xs sm:text-sm text-[#94A3B8] italic max-w-md mx-auto">
-            "{ZONES[3].summary}"
+            "{t.zone3Summary}"
           </p>
         </div>
 
@@ -351,10 +351,10 @@ export function App() {
             <span>ZONE 04 // ABYSSOPELAGIC (-4,000M TO -6,000M)</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#FAF5FF]">
-            The Abyssal Plains
+            {t.zone4Title}
           </h2>
           <p className="font-serif text-xs sm:text-sm text-[#C4B5FD] italic max-w-md mx-auto">
-            "{ZONES[4].summary}"
+            "{t.zone4Summary}"
           </p>
         </div>
 
@@ -383,10 +383,10 @@ export function App() {
             <span>ZONE 05 // HADALPELAGIC (-6,000M TO -10,994M)</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-white">
-            The Hadal Trenches
+            {t.zone5Title}
           </h2>
           <p className="font-serif text-xs sm:text-sm text-[#94A3B8] italic max-w-md mx-auto">
-            "{ZONES[5].summary}"
+            "{t.zone5Summary}"
           </p>
         </div>
 

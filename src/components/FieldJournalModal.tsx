@@ -11,7 +11,6 @@ import {
   Gauge,
   Thermometer,
   CheckCircle2,
-  Info
 } from 'lucide-react';
 import { pelagiaAudio } from '../lib/audioEngine';
 import { Translations } from '../lib/i18n';
@@ -24,6 +23,55 @@ interface FieldJournalModalProps {
   onStampDiscovered?: (specimenId: string) => void;
   t: Translations;
 }
+
+// Real Paper Tint Palette per Depth Zone (Guaranteed High Contrast for All Creatures)
+const getRealPaperMatTheme = (zoneId: string) => {
+  switch (zoneId) {
+    case 'coastal':
+      return {
+        paperBg: 'bg-[#F7EFE3]',
+        paperBorder: 'border-[#DEC6AE]',
+        fiberTint: 'bg-[#DEC6AE]/20',
+        cornerColor: 'border-[#8C6D4F]/50',
+      };
+    case 'sunlight':
+      return {
+        paperBg: 'bg-[#E4F5F1]',
+        paperBorder: 'border-[#50857D]',
+        fiberTint: 'bg-[#50857D]/15',
+        cornerColor: 'border-[#2F6D68]/60',
+      };
+    case 'twilight':
+      return {
+        paperBg: 'bg-[#DCEAF4]',
+        paperBorder: 'border-[#38BDF8]/60',
+        fiberTint: 'bg-[#38BDF8]/15',
+        cornerColor: 'border-[#1D4A62]/60',
+      };
+    case 'midnight':
+      return {
+        paperBg: 'bg-[#F6EEDF]',
+        paperBorder: 'border-[#EAA838]/70',
+        fiberTint: 'bg-[#EAA838]/15',
+        cornerColor: 'border-[#B8781B]/60',
+      };
+    case 'abyss':
+      return {
+        paperBg: 'bg-[#EFEAF8]',
+        paperBorder: 'border-[#A855F7]/70',
+        fiberTint: 'bg-[#A855F7]/15',
+        cornerColor: 'border-[#6B21A8]/60',
+      };
+    case 'hadal':
+    default:
+      return {
+        paperBg: 'bg-[#ECECF0]',
+        paperBorder: 'border-[#EF4444]/70',
+        fiberTint: 'bg-[#EF4444]/15',
+        cornerColor: 'border-[#991B1B]/60',
+      };
+  }
+};
 
 const getModalZoneTheme = (zoneId: string) => {
   switch (zoneId) {
@@ -147,7 +195,6 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
     }
   }, [specimen, isDiscovered]);
 
-  // Handle ESC key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -159,17 +206,22 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
   if (!specimen || !zone) return null;
 
   const theme = getModalZoneTheme(zone.id);
+  const matTheme = getRealPaperMatTheme(zone.id);
 
-  // Pressure and environmental math
+  // Environmental calculations
   const rawAtm = Math.max(1, 1.0 + Math.max(0, specimen.depthMeters) * 0.0987);
   const psi = (rawAtm * 14.696).toFixed(0);
   const kgPerCm2 = (rawAtm * 1.0332).toFixed(1);
   const fraction = Math.min(1, Math.max(0, specimen.depthMeters / 10994));
   const tempC = specimen.depthMeters <= 0 ? '28.4' : (28.4 * Math.pow(0.04, fraction)).toFixed(1);
 
-  // Scale ratio based on comparison target
   const comparisonSize = scaleMode === 'diver' ? 1.8 : scaleMode === 'submersible' ? 8.0 : 0.2;
-  const comparisonLabel = scaleMode === 'diver' ? 'Human Diver (1.8m)' : scaleMode === 'submersible' ? 'Deep Submersible (8.0m)' : 'Scuba Mask (0.2m)';
+  const comparisonLabel =
+    scaleMode === 'diver'
+      ? t.diverScale
+      : scaleMode === 'submersible'
+      ? t.submersibleScale
+      : t.maskScale;
   const scaleRatio = (specimen.lengthMeters / comparisonSize).toFixed(1);
 
   const handleStamp = () => {
@@ -191,7 +243,7 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md select-none transition-all duration-300"
       onClick={onClose}
     >
-      {/* Origami Field Journal Notebook Adapted to Depth Theme */}
+      {/* Origami Field Journal Notebook */}
       <div
         onClick={(e) => e.stopPropagation()}
         className={`relative w-full max-w-3xl max-h-[94vh] flex flex-col ${theme.bg} ${theme.text} border-2 ${theme.border} ${theme.glow} rounded-2xl overflow-hidden paper-grain animate-in zoom-in-95 fade-in-0 duration-300 ease-out`}
@@ -200,7 +252,7 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
         {/* Bookmark Tag Header */}
         <div className={`flex items-center justify-between px-5 sm:px-8 py-3.5 border-b-2 ${theme.border} ${theme.headerBg}`}>
           <div className="flex items-center gap-3 font-mono">
-            <div className={`w-6 h-6 rounded bg-[#EAA838] border border-black/20 flex items-center justify-center font-bold text-xs text-[#1E252B] shadow-paper-sm`}>
+            <div className="w-6 h-6 rounded bg-[#EAA838] border border-black/20 flex items-center justify-center font-bold text-xs text-[#1E252B] shadow-paper-sm">
               {specimen.plateNumber.replace('PL-', '')}
             </div>
             <div>
@@ -228,7 +280,7 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
                   ? 'bg-emerald-950/40 border-emerald-500 text-emerald-300 cursor-default'
                   : 'bg-transparent border-current hover:bg-white/10 active:scale-95'
               }`}
-              title={stamped ? 'Specimen already recorded' : 'Stamp specimen into journal'}
+              title={stamped ? 'Specimen recorded' : 'Stamp specimen'}
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>{stamped ? t.logged : t.stampLog}</span>
@@ -246,41 +298,50 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
 
         {/* Scrollable Journal Notebook Body */}
         <div className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-6">
-          {/* Specimen Showcase Arena with High-Contrast Archival Mounting Mat */}
-          <div className={`relative p-6 sm:p-10 rounded-xl border ${theme.innerBorder} ${theme.innerBg} shadow-inner flex flex-col items-center justify-center min-h-[280px] overflow-hidden`}>
-            {/* Luminous Naturalist Mounting Mat (Ensures 100% visibility for black & deep-sea creatures!) */}
-            <div className="absolute inset-3 sm:inset-4 rounded-lg bg-[#FAF6EE] text-[#1E252B] border border-[#DEC6AE] shadow-paper-sm flex flex-col items-center justify-center overflow-hidden">
-              {/* Subtle Millimeter Graph Pattern */}
-              <div className="absolute inset-0 bg-[radial-gradient(#1E252B_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
-              {/* Corner Archival Photo Corners */}
-              <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-[#1E252B]/40" />
-              <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-[#1E252B]/40" />
-              <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-[#1E252B]/40" />
-              <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-[#1E252B]/40" />
+          {/* Specimen Showcase Arena with REAL PAPER TEXTURED MOUNTING MAT */}
+          <div className={`relative p-6 sm:p-10 rounded-xl border ${theme.innerBorder} ${theme.innerBg} shadow-inner flex flex-col items-center justify-center min-h-[290px] overflow-hidden`}>
+            {/* Real Handmade Paper Mounting Board (Tinted to depth, high-contrast, deckled edges) */}
+            <div
+              className={`absolute inset-3 sm:inset-5 rounded-xl ${matTheme.paperBg} text-[#1E252B] border-2 ${matTheme.paperBorder} shadow-[0_4px_16px_rgba(0,0,0,0.18)] flex flex-col items-center justify-center overflow-hidden`}
+              style={{
+                boxShadow: 'inset 0 0 30px rgba(0,0,0,0.06), 0 4px 18px rgba(0,0,0,0.22)',
+              }}
+            >
+              {/* Paper Fiber Grain Specks */}
+              <div className="absolute inset-0 bg-[radial-gradient(#1E252B_1px,transparent_1px)] [background-size:14px_14px] opacity-10 pointer-events-none" />
+              
+              {/* Subtle Center Fold Crease Line */}
+              <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-px bg-black/8 pointer-events-none" />
+
+              {/* Archival Photo Corner Mount Brackets */}
+              <div className={`absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 ${matTheme.cornerColor}`} />
+              <div className={`absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 ${matTheme.cornerColor}`} />
+              <div className={`absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 ${matTheme.cornerColor}`} />
+              <div className={`absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 ${matTheme.cornerColor}`} />
             </div>
 
-            {/* Full Release Feature: Papercraft X-Ray / Radiogram View */}
+            {/* X-Ray / Radiogram Layer Toggle Button */}
             <button
               onClick={() => {
                 pelagiaAudio.playWaterBubble();
                 setIsXRay(!isXRay);
               }}
-              className={`absolute top-5 left-5 z-20 px-2.5 py-1 rounded-md border font-mono text-[9px] font-bold tracking-wider uppercase transition-all shadow-paper-sm cursor-pointer ${
+              className={`absolute top-6 left-6 z-20 px-2.5 py-1 rounded-md border font-mono text-[9px] font-bold tracking-wider uppercase transition-all shadow-paper-sm cursor-pointer ${
                 isXRay
                   ? 'bg-[#0B1E2B] text-cyan-300 border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.4)]'
-                  : 'bg-[#F4ECE1] text-[#1E252B] border-[#DEC6AE] hover:bg-[#EBDDCB]'
+                  : 'bg-[#FAF6EE] text-[#1E252B] border-[#DEC6AE] hover:bg-[#EBDDCB]'
               }`}
               title="Toggle Anatomical Fluoroscopy X-Ray Layer"
             >
-              {isXRay ? '🔬 X-RAY: RADIOGRAM' : '🏷️ PAPERCRAFT: EXTERIOR'}
+              {isXRay ? t.toggleXRay : t.toggleExterior}
             </button>
 
-            {/* Specimen SVG mounted cleanly on the mat with dynamic X-Ray inversion filter */}
+            {/* Specimen SVG mounted with 100% crisp visibility on real paper */}
             <div
               className={`relative z-10 transform scale-110 sm:scale-125 transition-all duration-500 my-4 ${
                 isXRay
                   ? 'invert brightness-125 contrast-125 hue-rotate-180 drop-shadow-[0_0_15px_rgba(6,182,212,0.7)]'
-                  : ''
+                  : 'drop-shadow-[2px_4px_6px_rgba(0,0,0,0.25)]'
               }`}
             >
               <SpecimenRenderer type={specimen.papercraftType} />
@@ -288,18 +349,18 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
 
             {/* Red Wax Stamp Indicator overlay if logged */}
             {stamped && (
-              <div className="absolute top-5 right-5 z-20 border-2 border-[#D95A47] text-[#D95A47] font-mono font-bold text-xs uppercase px-3 py-1 rounded rotate-[-10deg] bg-[#FAF6EE]/90 shadow-paper-sm">
+              <div className="absolute top-6 right-6 z-20 border-2 border-[#D95A47] text-[#D95A47] font-mono font-bold text-xs uppercase px-3 py-1 rounded rotate-[-10deg] bg-[#FAF6EE]/90 shadow-paper-sm">
                 {t.stampExamined}
               </div>
             )}
 
             {/* Specimen Length Pill */}
-            <div className="absolute bottom-5 left-5 z-20 px-2.5 py-1 bg-[#F4ECE1] text-[#1E252B] border border-[#DEC6AE] rounded text-[10px] font-mono shadow-paper-sm">
+            <div className="absolute bottom-6 left-6 z-20 px-2.5 py-1 bg-[#FAF6EE] text-[#1E252B] border border-[#DEC6AE] rounded text-[10px] font-mono shadow-paper-sm">
               {t.size}: <span className="font-bold text-[#D95A47]">{specimen.lengthMeters} M</span>
             </div>
           </div>
 
-          {/* Interactive Anatomical Adaptation Selector (Clean Pills Below, Zero Red Dots!) */}
+          {/* Interactive Anatomical Adaptation Selector */}
           {specimen.hotspots && specimen.hotspots.length > 0 && (
             <div className="space-y-2">
               <div className={`text-[10px] font-mono font-bold tracking-wider ${theme.subtext} uppercase flex items-center gap-1.5`}>
@@ -333,9 +394,9 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
               <div className="flex items-center justify-between font-mono text-xs">
                 <span className={`font-bold ${theme.accent} flex items-center gap-1.5 uppercase tracking-wider`}>
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>ADAPTATION: {activeHotspot.title}</span>
+                  <span>{activeHotspot.title}</span>
                 </span>
-                <span className={`text-[10px] ${theme.subtext}`}>FEATURE NOTE</span>
+                <span className={`text-[10px] ${theme.subtext}`}>{t.featureNote}</span>
               </div>
               <p className="font-serif text-sm leading-relaxed">
                 {activeHotspot.description}
@@ -344,7 +405,7 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
           )}
 
           {/* Titles & Taxonomy */}
-          <div className={`border-b border-dashed border-current/20 pb-4`}>
+          <div className="border-b border-dashed border-current/20 pb-4">
             <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight">
               {specimen.commonName}
             </h2>
@@ -364,7 +425,7 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
           </div>
 
           {/* Inspection Navigation Tabs */}
-          <div className={`flex items-center gap-2 border-b border-current/20 pb-2 font-mono text-xs`}>
+          <div className="flex items-center gap-2 border-b border-current/20 pb-2 font-mono text-xs">
             <button
               onClick={() => {
                 pelagiaAudio.playWaterBubble();
@@ -408,7 +469,7 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
               <div className={`space-y-1.5 ${theme.cardBg} p-4 sm:p-5 rounded-xl border ${theme.innerBorder} shadow-paper-sm`}>
                 <div className={`text-[10px] font-mono tracking-widest uppercase font-bold ${theme.accent} flex items-center gap-1.5`}>
                   <BookOpen className="w-3.5 h-3.5" />
-                  <span>NATURALIST OBSERVATION LOG</span>
+                  <span>{t.observationLog}</span>
                 </div>
                 <p className="font-serif text-base sm:text-lg leading-relaxed italic">
                   "{specimen.observationNotes}"
@@ -424,7 +485,7 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
               {/* Key Features */}
               <div className="space-y-2">
                 <div className="text-xs font-mono font-bold tracking-widest uppercase opacity-80">
-                  KEY ANATOMICAL ADAPTATIONS
+                  {t.keyAdaptations}
                 </div>
                 <div className="grid grid-cols-1 gap-2.5">
                   {specimen.anatomicalFeatures.map((feature, i) => (
@@ -450,26 +511,26 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
                 <div className="flex items-center justify-between text-xs font-mono">
                   <div className="flex items-center gap-2">
                     <span className="font-bold uppercase tracking-wider">
-                      SCALE //
+                      {t.scale}
                     </span>
                     <div className="inline-flex rounded border border-current overflow-hidden text-[10px]">
                       <button
                         onClick={() => setScaleMode('diver')}
                         className={`px-2 py-0.5 ${scaleMode === 'diver' ? theme.tabActive : 'opacity-70'}`}
                       >
-                        Diver (1.8m)
+                        {t.diverScale}
                       </button>
                       <button
                         onClick={() => setScaleMode('submersible')}
                         className={`px-2 py-0.5 border-l border-current ${scaleMode === 'submersible' ? theme.tabActive : 'opacity-70'}`}
                       >
-                        Submersible (8m)
+                        {t.submersibleScale}
                       </button>
                       <button
                         onClick={() => setScaleMode('hand')}
                         className={`px-2 py-0.5 border-l border-current ${scaleMode === 'hand' ? theme.tabActive : 'opacity-70'}`}
                       >
-                        Mask (0.2m)
+                        {t.maskScale}
                       </button>
                     </div>
                   </div>

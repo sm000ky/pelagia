@@ -1,7 +1,8 @@
 /**
  * Pelagia Ocean & Papercraft Sound Engine
- * Hybrid: Real Ocean Ambient Audio Loop + Web Audio Biquad Depth Filter + Procedural Tactile Sound FX
+ * Hybrid: Real Ocean Ambient Audio Loop + Web Audio Depth Filter + Procedural Tactile Sound FX
  * Zero external audio libraries. 100% browser native.
+ * Features DynamicsCompressorNode to completely prevent digital crackling, clipping, or popping.
  */
 
 class PelagiaAudioEngine {
@@ -10,11 +11,14 @@ class PelagiaAudioEngine {
   private isInitialized: boolean = false;
 
   private masterGain: GainNode | null = null;
+  private compressor: DynamicsCompressorNode | null = null;
   private oceanFilter: BiquadFilterNode | null = null;
   private oceanGain: GainNode | null = null;
   private audioElement: HTMLAudioElement | null = null;
   private mediaSourceNode: MediaElementAudioSourceNode | null = null;
-  private isAudioElementPlaying: boolean = false;
+
+  private lastFilterUpdate = 0;
+  private lastDepth = -999;
 
   // Analyser node for UI visualizer
   public analyser: AnalyserNode | null = null;
@@ -33,22 +37,32 @@ class PelagiaAudioEngine {
 
       // Master output node
       this.masterGain = this.ctx.createGain();
-      this.masterGain.gain.setValueAtTime(this.isMuted ? 0.0 : 0.85, this.ctx.currentTime);
+      this.masterGain.gain.setValueAtTime(this.isMuted ? 0.0 : 0.8, this.ctx.currentTime);
+
+      // Dynamics Compressor to eliminate clipping, pops, and crackle
+      this.compressor = this.ctx.createDynamicsCompressor();
+      this.compressor.threshold.setValueAtTime(-14, this.ctx.currentTime);
+      this.compressor.knee.setValueAtTime(24, this.ctx.currentTime);
+      this.compressor.ratio.setValueAtTime(6, this.ctx.currentTime);
+      this.compressor.attack.setValueAtTime(0.005, this.ctx.currentTime);
+      this.compressor.release.setValueAtTime(0.2, this.ctx.currentTime);
 
       // Visualizer Analyser
       this.analyser = this.ctx.createAnalyser();
       this.analyser.fftSize = 64;
-      this.masterGain.connect(this.analyser);
+
+      this.masterGain.connect(this.compressor);
+      this.compressor.connect(this.analyser);
       this.analyser.connect(this.ctx.destination);
 
       // Depth Biquad Lowpass Filter for Ocean Ambient
       this.oceanFilter = this.ctx.createBiquadFilter();
       this.oceanFilter.type = 'lowpass';
-      this.oceanFilter.frequency.setValueAtTime(12000, this.ctx.currentTime);
-      this.oceanFilter.Q.setValueAtTime(1.0, this.ctx.currentTime);
+      this.oceanFilter.frequency.setValueAtTime(10000, this.ctx.currentTime);
+      this.oceanFilter.Q.setValueAtTime(0.7, this.ctx.currentTime);
 
       this.oceanGain = this.ctx.createGain();
-      this.oceanGain.gain.setValueAtTime(0.7, this.ctx.currentTime);
+      this.oceanGain.gain.setValueAtTime(0.65, this.ctx.currentTime);
 
       this.oceanFilter.connect(this.oceanGain);
       this.oceanGain.connect(this.masterGain);
@@ -70,16 +84,11 @@ class PelagiaAudioEngine {
       this.audioElement.loop = true;
       this.audioElement.preload = 'auto';
 
-      // Connect media element into Web Audio graph for real-time depth filtering
       this.mediaSourceNode = this.ctx.createMediaElementSource(this.audioElement);
       this.mediaSourceNode.connect(this.oceanFilter);
 
       if (!this.isMuted) {
-        this.audioElement.play().then(() => {
-          this.isAudioElementPlaying = true;
-        }).catch(() => {
-          // Handled on first user interaction
-        });
+        this.audioElement.play().catch(() => {});
       }
     } catch (e) {
       console.warn('Could not hook ocean-ambient.mp3 into AudioContext:', e);
@@ -87,21 +96,34 @@ class PelagiaAudioEngine {
   }
 
   /**
-   * Dynamically adjust lowpass filter and sub-bass resonance as user dives
+   * Throttled and ramped filter adjustment to eliminate parameter crackle on scroll
    */
   public updateDepthFilter(depthMeters: number): void {
     if (!this.ctx || !this.oceanFilter || !this.oceanGain) return;
 
-    // Depth: -10m to 10,994m
+    const now = performance.now();
+    // Throttle to 60ms and minimum 25m delta to avoid parameter chatter
+    if (now - this.lastFilterUpdate < 60 && Math.abs(depthMeters - this.lastDepth) < 25) {
+      return;
+    }
+    this.lastFilterUpdate = now;
+    this.lastDepth = depthMeters;
+
+    const t = this.ctx.currentTime;
     const frac = Math.max(0, Math.min(1, Math.max(0, depthMeters) / 10994));
 
-    // Frequency cutoff transitions from bright surface (12,000 Hz) down to deep trench rumble (320 Hz)
-    const cutoff = Math.max(320, 12000 * Math.pow(0.026, frac));
-    this.oceanFilter.frequency.setTargetAtTime(cutoff, this.ctx.currentTime, 0.25);
+    // Smooth exponential cutoff from 10,000 Hz down to 380 Hz
+    const cutoff = Math.max(380, 10000 * Math.pow(0.038, frac));
 
-    // Q resonance increases slightly at depth for hydrophone hull feel
-    const resonance = 1.0 + frac * 2.5;
-    this.oceanFilter.Q.setTargetAtTime(resonance, this.ctx.currentTime, 0.25);
+    try {
+      this.oceanFilter.frequency.cancelScheduledValues(t);
+      this.oceanFilter.frequency.linearRampToValueAtTime(cutoff, t + 0.12);
+
+      this.oceanFilter.Q.cancelScheduledValues(t);
+      this.oceanFilter.Q.linearRampToValueAtTime(0.7, t + 0.12);
+    } catch {
+      // ignore
+    }
   }
 
   /**
@@ -116,17 +138,16 @@ class PelagiaAudioEngine {
     }
 
     if (this.masterGain && this.ctx) {
-      this.masterGain.gain.setTargetAtTime(this.isMuted ? 0.0 : 0.85, this.ctx.currentTime, 0.1);
+      const t = this.ctx.currentTime;
+      this.masterGain.gain.cancelScheduledValues(t);
+      this.masterGain.gain.linearRampToValueAtTime(this.isMuted ? 0.0 : 0.8, t + 0.08);
     }
 
     if (this.audioElement) {
       if (!this.isMuted) {
-        this.audioElement.play().then(() => {
-          this.isAudioElementPlaying = true;
-        }).catch(() => {});
+        this.audioElement.play().catch(() => {});
       } else {
         this.audioElement.pause();
-        this.isAudioElementPlaying = false;
       }
     }
 
@@ -138,7 +159,7 @@ class PelagiaAudioEngine {
   }
 
   /**
-   * Gentle, satisfying underwater bubble sound on specimen hover/interaction
+   * Smooth, satisfying water bubble sound
    */
   public playWaterBubble(): void {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
@@ -150,13 +171,12 @@ class PelagiaAudioEngine {
       const gain = this.ctx.createGain();
 
       osc.type = 'sine';
-      // Pitch bend upwards mimicking bubble release
-      const baseFreq = 380 + Math.random() * 160;
+      const baseFreq = 360 + Math.random() * 140;
       osc.frequency.setValueAtTime(baseFreq, t);
-      osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.9, t + 0.12);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.8, t + 0.12);
 
       gain.gain.setValueAtTime(0.001, t);
-      gain.gain.linearRampToValueAtTime(0.18, t + 0.02);
+      gain.gain.linearRampToValueAtTime(0.14, t + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
 
       osc.connect(gain);
@@ -170,7 +190,7 @@ class PelagiaAudioEngine {
   }
 
   /**
-   * Tactile paper rustle sound when opening or closing field journal notebooks
+   * Smooth paper rustle sound
    */
   public playPaperRustle(): void {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
@@ -178,12 +198,12 @@ class PelagiaAudioEngine {
     try {
       if (this.ctx.state === 'suspended') this.ctx.resume();
       const t = this.ctx.currentTime;
-      const bufferSize = Math.floor(this.ctx.sampleRate * 0.18);
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.14);
       const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
       const output = noiseBuffer.getChannelData(0);
 
       for (let i = 0; i < bufferSize; i++) {
-        output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
+        output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
       }
 
       const whiteNoise = this.ctx.createBufferSource();
@@ -191,13 +211,13 @@ class PelagiaAudioEngine {
 
       const filter = this.ctx.createBiquadFilter();
       filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(1400, t);
-      filter.Q.setValueAtTime(1.5, t);
+      filter.frequency.setValueAtTime(1200, t);
+      filter.Q.setValueAtTime(1.2, t);
 
       const gain = this.ctx.createGain();
       gain.gain.setValueAtTime(0.001, t);
-      gain.gain.linearRampToValueAtTime(0.22, t + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+      gain.gain.linearRampToValueAtTime(0.16, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
 
       whiteNoise.connect(filter);
       filter.connect(gain);
@@ -210,7 +230,7 @@ class PelagiaAudioEngine {
   }
 
   /**
-   * Satisfying vintage wax/ink seal stamp thud when recording a specimen into the logbook
+   * Satisfying vintage wax seal stamp thud
    */
   public playStampThud(): void {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
@@ -219,22 +239,20 @@ class PelagiaAudioEngine {
       if (this.ctx.state === 'suspended') this.ctx.resume();
       const t = this.ctx.currentTime;
 
-      // Heavy body thump
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(110, t);
-      osc.frequency.exponentialRampToValueAtTime(32, t + 0.18);
+      osc.frequency.setValueAtTime(105, t);
+      osc.frequency.exponentialRampToValueAtTime(34, t + 0.16);
 
-      gain.gain.setValueAtTime(0.35, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+      gain.gain.setValueAtTime(0.26, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
 
       osc.connect(gain);
       gain.connect(this.masterGain);
       osc.start(t);
-      osc.stop(t + 0.25);
+      osc.stop(t + 0.22);
 
-      // Paper click snap
       this.playPaperRustle();
     } catch {
       // ignore
@@ -242,7 +260,7 @@ class PelagiaAudioEngine {
   }
 
   /**
-   * Resonant atmospheric sonar chime when crossing major bathymetric ocean zones
+   * Resonant atmospheric sonar chime
    */
   public playZoneChime(depthMeters: number): void {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
@@ -253,36 +271,29 @@ class PelagiaAudioEngine {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
-      // Deeper depth -> deeper resonant chime frequency
-      const freq = Math.max(140, 520 - (depthMeters / 10994) * 360);
+      const freq = Math.max(140, 480 - (depthMeters / 10994) * 320);
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, t);
 
       gain.gain.setValueAtTime(0.001, t);
-      gain.gain.linearRampToValueAtTime(0.24, t + 0.08);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+      gain.gain.linearRampToValueAtTime(0.18, t + 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.4);
 
       osc.connect(gain);
       gain.connect(this.masterGain);
 
       osc.start(t);
-      osc.stop(t + 1.7);
+      osc.stop(t + 1.5);
     } catch {
       // ignore
     }
   }
 
-  /**
-   * Specimen inspection chime
-   */
   public playSpecimenChime(): void {
     this.playPaperRustle();
     this.playWaterBubble();
   }
 
-  /**
-   * Submarine warning alarm ping
-   */
   public playAlarmPing(): void {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
     try {
@@ -291,26 +302,23 @@ class PelagiaAudioEngine {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(880, t);
-      osc.frequency.setValueAtTime(440, t + 0.12);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(780, t);
+      osc.frequency.setValueAtTime(390, t + 0.1);
 
       gain.gain.setValueAtTime(0.001, t);
-      gain.gain.linearRampToValueAtTime(0.2, t + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+      gain.gain.linearRampToValueAtTime(0.15, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
 
       osc.connect(gain);
       gain.connect(this.masterGain);
       osc.start(t);
-      osc.stop(t + 0.4);
+      osc.stop(t + 0.32);
     } catch {
       // ignore
     }
   }
 
-  /**
-   * Deep metallic hull groaning sound
-   */
   public playHullGroan(): void {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
     try {
@@ -321,51 +329,48 @@ class PelagiaAudioEngine {
       const gain = this.ctx.createGain();
 
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(55, t);
-      osc.frequency.linearRampToValueAtTime(68, t + 0.5);
-      osc.frequency.linearRampToValueAtTime(42, t + 1.2);
+      osc.frequency.setValueAtTime(50, t);
+      osc.frequency.linearRampToValueAtTime(62, t + 0.4);
+      osc.frequency.linearRampToValueAtTime(38, t + 1.0);
 
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(200, t);
-      filter.Q.setValueAtTime(5, t);
+      filter.frequency.setValueAtTime(180, t);
+      filter.Q.setValueAtTime(1.5, t);
 
       gain.gain.setValueAtTime(0.001, t);
-      gain.gain.linearRampToValueAtTime(0.28, t + 0.2);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 1.4);
+      gain.gain.linearRampToValueAtTime(0.2, t + 0.15);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
 
       osc.connect(filter);
       filter.connect(gain);
       gain.connect(this.masterGain);
       osc.start(t);
-      osc.stop(t + 1.5);
+      osc.stop(t + 1.3);
     } catch {
       // ignore
     }
   }
 
-  /**
-   * Glass / reality crack sound
-   */
   public playGlassCrack(): void {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
     try {
       if (this.ctx.state === 'suspended') this.ctx.resume();
       const t = this.ctx.currentTime;
-      const bufferSize = Math.floor(this.ctx.sampleRate * 0.15);
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.12);
       const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
       const data = buffer.getChannelData(0);
       for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.2));
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
       }
       const noise = this.ctx.createBufferSource();
       noise.buffer = buffer;
       const filter = this.ctx.createBiquadFilter();
       filter.type = 'highpass';
-      filter.frequency.setValueAtTime(3200, t);
+      filter.frequency.setValueAtTime(2800, t);
 
       const gain = this.ctx.createGain();
-      gain.gain.setValueAtTime(0.35, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      gain.gain.setValueAtTime(0.22, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
 
       noise.connect(filter);
       filter.connect(gain);
@@ -376,39 +381,33 @@ class PelagiaAudioEngine {
     }
   }
 
-  /**
-   * Magnificent cosmic core orchestral swell chord
-   */
   public playCosmicSwell(): void {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
     try {
       if (this.ctx.state === 'suspended') this.ctx.resume();
       const t = this.ctx.currentTime;
-      const chord = [220, 277.18, 329.63, 440, 554.37, 659.25]; // A Major 9 celestial voicing
+      const chord = [220, 277.18, 329.63, 440, 554.37, 659.25];
 
       chord.forEach((freq, idx) => {
         const osc = this.ctx!.createOscillator();
         const gain = this.ctx!.createGain();
-        osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+        osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, t);
 
         gain.gain.setValueAtTime(0.0001, t);
-        gain.gain.linearRampToValueAtTime(0.08 / chord.length, t + 1.2 + idx * 0.15);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t + 4.5);
+        gain.gain.linearRampToValueAtTime(0.05 / chord.length, t + 1.0 + idx * 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 4.0);
 
         osc.connect(gain);
         gain.connect(this.masterGain!);
         osc.start(t);
-        osc.stop(t + 5.0);
+        osc.stop(t + 4.2);
       });
     } catch {
       // ignore
     }
   }
 
-  /**
-   * Bottle cork pop sound for easter egg
-   */
   public playBottlePop(): void {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
     try {
@@ -418,24 +417,21 @@ class PelagiaAudioEngine {
       const gain = this.ctx.createGain();
 
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(140, t);
-      osc.frequency.exponentialRampToValueAtTime(950, t + 0.05);
+      osc.frequency.setValueAtTime(150, t);
+      osc.frequency.exponentialRampToValueAtTime(880, t + 0.05);
 
-      gain.gain.setValueAtTime(0.3, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      gain.gain.setValueAtTime(0.22, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
 
       osc.connect(gain);
       gain.connect(this.masterGain);
       osc.start(t);
-      osc.stop(t + 0.15);
+      osc.stop(t + 0.12);
     } catch {
       // ignore
     }
   }
 
-  /**
-   * Deep Leviathan Rumble
-   */
   public playLeviathanRumble(): void {
     if (!this.ctx || !this.masterGain || this.isMuted) return;
     try {
@@ -445,17 +441,17 @@ class PelagiaAudioEngine {
       const gain = this.ctx.createGain();
 
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(45, t);
-      osc.frequency.linearRampToValueAtTime(30, t + 2.0);
+      osc.frequency.setValueAtTime(48, t);
+      osc.frequency.linearRampToValueAtTime(32, t + 1.8);
 
       gain.gain.setValueAtTime(0.001, t);
-      gain.gain.linearRampToValueAtTime(0.3, t + 0.6);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 3.0);
+      gain.gain.linearRampToValueAtTime(0.22, t + 0.5);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 2.8);
 
       osc.connect(gain);
       gain.connect(this.masterGain);
       osc.start(t);
-      osc.stop(t + 3.2);
+      osc.stop(t + 3.0);
     } catch {
       // ignore
     }
