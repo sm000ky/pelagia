@@ -7,7 +7,7 @@ import { WaterlineThreshold } from './components/WaterlineThreshold';
 import { SpecimenItem } from './components/SpecimenItem';
 import { FieldJournalModal } from './components/FieldJournalModal';
 import { LogbookDrawer } from './components/LogbookDrawer';
-import { RelicMarker, RelicModal, SkyAlbatrossRelic } from './components/EasterEggs';
+import { TactileAnomalySpot, RelicModal } from './components/EasterEggs';
 import { EnvironmentalPhenomena } from './components/EnvironmentalPhenomena';
 import { APOCRYPHAL_RELICS } from './data/relicsData';
 import { ApocryphalRelic } from './types';
@@ -322,12 +322,12 @@ export function App() {
           onSelectSpecimen={setSelectedSpecimen}
           discoveredIds={discoveredIds}
           t={t}
-          renderSkyRelic={
-            <SkyAlbatrossRelic
-              isUnlocked={discoveredRelicIds.has('relic-albatross')}
-              onInspect={handleInspectRelic}
-            />
-          }
+        />
+        {/* Apocrypha 1: The Curious Cirrus Paper Cloud */}
+        <TactileAnomalySpot
+          relicId="relic-albatross"
+          isUnlocked={discoveredRelicIds.has('relic-albatross')}
+          onInspect={handleInspectRelic}
         />
       </div>
 
@@ -369,9 +369,9 @@ export function App() {
                 onSelect={setSelectedSpecimen}
                 isDiscovered={discoveredIds.has(specimen.id)}
               />
-              {/* Apocryphal Relic 2: Sunken Corsair Cutlass around -110m */}
+              {/* Apocryphal Relic 2: Ancient Staghorn Coral Shelf */}
               {idx === 5 && (
-                <RelicMarker
+                <TactileAnomalySpot
                   relicId="relic-cutlass"
                   isUnlocked={discoveredRelicIds.has('relic-cutlass')}
                   onInspect={handleInspectRelic}
@@ -410,9 +410,9 @@ export function App() {
                 onSelect={setSelectedSpecimen}
                 isDiscovered={discoveredIds.has(specimen.id)}
               />
-              {/* Apocryphal Relic 3: The Emerald Message Flask at -680m */}
+              {/* Apocryphal Relic 3: Heavy Volcanic Basalt Boulder (Emerald Flask underneath!) */}
               {idx === 4 && (
-                <RelicMarker
+                <TactileAnomalySpot
                   relicId="relic-bottle"
                   isUnlocked={discoveredRelicIds.has('relic-bottle')}
                   onInspect={handleInspectRelic}
@@ -452,18 +452,18 @@ export function App() {
                 onSelect={setSelectedSpecimen}
                 isDiscovered={discoveredIds.has(specimen.id)}
               />
-              {/* Apocryphal Relic 4: 120-Meter Titan Acoustic Contact at -2,400m */}
+              {/* Apocryphal Relic 4: Sealed Naval Pressure Hatch (120m Titan Sonar!) */}
               {idx === 3 && (
-                <RelicMarker
+                <TactileAnomalySpot
                   relicId="relic-titan"
                   isUnlocked={discoveredRelicIds.has('relic-titan')}
                   onInspect={handleInspectRelic}
                   onTriggerTitan={() => setIsTitanSwimming(true)}
                 />
               )}
-              {/* Apocryphal Relic 5: The 1930 Beebe Steel Bathysphere at -3,850m */}
+              {/* Apocryphal Relic 5: Tangled Abyssal Sponges & Lilies (1930 Beebe Bathysphere!) */}
               {idx === 7 && (
-                <RelicMarker
+                <TactileAnomalySpot
                   relicId="relic-bathysphere"
                   isUnlocked={discoveredRelicIds.has('relic-bathysphere')}
                   onInspect={handleInspectRelic}
@@ -503,9 +503,9 @@ export function App() {
                 onSelect={setSelectedSpecimen}
                 isDiscovered={discoveredIds.has(specimen.id)}
               />
-              {/* Apocryphal Relic 6: Phosphor Fluorescent Matrix at -5,100m */}
+              {/* Apocryphal Relic 6: Fossilized Sediment Silt Crust (Phosphor Matrix!) */}
               {idx === 2 && (
-                <RelicMarker
+                <TactileAnomalySpot
                   relicId="relic-blacklight"
                   isUnlocked={discoveredRelicIds.has('relic-blacklight')}
                   onInspect={handleInspectRelic}
@@ -545,9 +545,9 @@ export function App() {
                 onSelect={setSelectedSpecimen}
                 isDiscovered={discoveredIds.has(specimen.id)}
               />
-              {/* Apocryphal Relic 7: Indestructible Porcelain Mug at -10,250m */}
+              {/* Apocryphal Relic 7: Crushed Oil Barrel (Indestructible Mug!) */}
               {idx === 4 && (
-                <RelicMarker
+                <TactileAnomalySpot
                   relicId="relic-mug"
                   isUnlocked={discoveredRelicIds.has('relic-mug')}
                   onInspect={handleInspectRelic}
