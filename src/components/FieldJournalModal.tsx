@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BiotaSpecimen, ZoneData, AnatomyHotspot } from '../types';
 import { SpecimenRenderer } from './papercraft/SpecimenRenderer';
-import { DiverScaleSVG } from './papercraft/SpecimenSVGs';
+import { DiverScaleSVG, SubmersibleScaleSVG, HandScaleSVG } from './papercraft/SpecimenSVGs';
 import {
   X,
   Sparkles,
@@ -215,14 +215,44 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
   const fraction = Math.min(1, Math.max(0, specimen.depthMeters / 10994));
   const tempC = specimen.depthMeters <= 0 ? '28.4' : (28.4 * Math.pow(0.04, fraction)).toFixed(1);
 
-  const comparisonSize = scaleMode === 'diver' ? 1.8 : scaleMode === 'submersible' ? 8.0 : 0.2;
-  const comparisonLabel =
-    scaleMode === 'diver'
-      ? t.diverScale
-      : scaleMode === 'submersible'
-      ? t.submersibleScale
-      : t.maskScale;
-  const scaleRatio = (specimen.lengthMeters / comparisonSize).toFixed(1);
+  const refConfig = {
+    diver: {
+      size: 1.8,
+      label: t.diverScale || 'Human Diver (1.8m)',
+      shortName: 'Diver',
+      unitText: '1.8 M',
+      icon: <DiverScaleSVG className="h-20 sm:h-24 w-auto text-[#1E252B] drop-shadow-sm" />,
+    },
+    submersible: {
+      size: 8.0,
+      label: t.submersibleScale || 'Submersible (8.0m)',
+      shortName: 'Submersible',
+      unitText: '8.0 M',
+      icon: <SubmersibleScaleSVG className="w-28 sm:w-36 h-auto text-[#1E252B] drop-shadow-sm" />,
+    },
+    hand: {
+      size: 0.2,
+      label: t.maskScale || 'Hand & Mask (0.2m)',
+      shortName: 'Hand & Mask',
+      unitText: '0.2 M (20 cm)',
+      icon: <HandScaleSVG className="w-16 sm:w-20 h-auto text-[#1E252B] drop-shadow-sm" />,
+    },
+  }[scaleMode];
+
+  const specLength = specimen.lengthMeters;
+  const refLength = refConfig.size;
+  const lengthRatio = specLength / refLength;
+
+  let refScale = 1.0;
+  let specScale = 1.0;
+
+  if (lengthRatio > 1) {
+    refScale = Math.max(0.35, 1 / Math.pow(lengthRatio, 0.45));
+    specScale = Math.min(1.75, Math.pow(lengthRatio, 0.45));
+  } else {
+    refScale = 1.0;
+    specScale = Math.max(0.22, Math.pow(lengthRatio, 0.65));
+  }
 
   const handleStamp = () => {
     if (stamped) return;
@@ -508,7 +538,7 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
           {activeTab === 'scale' && (
             <div className="space-y-4 animate-in fade-in duration-200">
               <div className={`p-4 sm:p-5 rounded-xl border ${theme.innerBorder} ${theme.innerBg} shadow-paper-sm space-y-4`}>
-                <div className="flex items-center justify-between text-xs font-mono">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
                   <div className="flex items-center gap-2">
                     <span className="font-bold uppercase tracking-wider">
                       {t.scale}
@@ -516,50 +546,120 @@ export const FieldJournalModal: React.FC<FieldJournalModalProps> = ({
                     <div className="inline-flex rounded border border-current overflow-hidden text-[10px]">
                       <button
                         onClick={() => setScaleMode('diver')}
-                        className={`px-2 py-0.5 ${scaleMode === 'diver' ? theme.tabActive : 'opacity-70'}`}
+                        className={`px-2.5 py-1 font-bold cursor-pointer transition-colors ${
+                          scaleMode === 'diver' ? theme.tabActive : 'opacity-70 hover:opacity-100'
+                        }`}
                       >
-                        {t.diverScale}
+                        🤿 {t.diverScale} (1.8m)
                       </button>
                       <button
                         onClick={() => setScaleMode('submersible')}
-                        className={`px-2 py-0.5 border-l border-current ${scaleMode === 'submersible' ? theme.tabActive : 'opacity-70'}`}
+                        className={`px-2.5 py-1 border-l border-current font-bold cursor-pointer transition-colors ${
+                          scaleMode === 'submersible' ? theme.tabActive : 'opacity-70 hover:opacity-100'
+                        }`}
                       >
-                        {t.submersibleScale}
+                        🚢 {t.submersibleScale} (8.0m)
                       </button>
                       <button
                         onClick={() => setScaleMode('hand')}
-                        className={`px-2 py-0.5 border-l border-current ${scaleMode === 'hand' ? theme.tabActive : 'opacity-70'}`}
+                        className={`px-2.5 py-1 border-l border-current font-bold cursor-pointer transition-colors ${
+                          scaleMode === 'hand' ? theme.tabActive : 'opacity-70 hover:opacity-100'
+                        }`}
                       >
-                        {t.maskScale}
+                        ✋ {t.maskScale} (0.2m)
                       </button>
                     </div>
                   </div>
 
-                  <span className={`font-bold ${theme.accent}`}>
-                    ≈ {scaleRatio}× {comparisonLabel.split('(')[0].trim()}
+                  <span className={`font-bold text-xs ${theme.accent}`}>
+                    {lengthRatio >= 1 ? `≈ ${lengthRatio.toFixed(1)}× Larger` : `≈ ${(1 / lengthRatio).toFixed(1)}× Smaller`}
                   </span>
                 </div>
 
-                <div className="relative flex items-end gap-8 pt-8 pb-4 justify-center rounded-lg bg-[#FAF6EE] text-[#1E252B] border border-[#DEC6AE] shadow-inner min-h-[170px] overflow-hidden">
+                {/* Proportional Comparison Bay */}
+                <div className="relative flex items-end justify-around pt-8 pb-5 px-4 rounded-xl bg-[#FAF6EE] text-[#1E252B] border-2 border-[#DEC6AE] shadow-inner min-h-[200px] overflow-hidden">
                   <div className="absolute inset-0 bg-[radial-gradient(#1E252B_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none" />
-                  <div className="relative z-10 flex flex-col items-center gap-1">
-                    <DiverScaleSVG className="w-10 h-20 text-[#1E252B]" />
-                    <span className="text-[10px] font-mono opacity-70">{comparisonSize} M</span>
+                  
+                  {/* Reference Silhouette (Diver, Submersible, or Hand & Mask) */}
+                  <div className="relative z-10 flex flex-col items-center gap-2 transition-all duration-300">
+                    <div
+                      className="transition-transform duration-300 transform origin-bottom flex items-end justify-center min-h-[96px]"
+                      style={{ transform: `scale(${refScale})` }}
+                    >
+                      {refConfig.icon}
+                    </div>
+                    <div className="text-center">
+                      <span className="text-[10px] font-mono font-bold block text-[#1E252B]">
+                        {refConfig.shortName}
+                      </span>
+                      <span className="text-[9px] font-mono text-[#626863]">
+                        {refConfig.unitText}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="relative z-10 flex flex-col items-center gap-1">
-                    <div
-                      className="transform origin-bottom transition-transform duration-300"
-                      style={{
-                        transform: `scale(${Math.min(2.2, Math.max(0.35, specimen.lengthMeters / comparisonSize))})`,
-                      }}
-                    >
-                      <SpecimenRenderer type={specimen.papercraftType} className="w-24 h-20" />
+                  {/* Scale Divider Pill */}
+                  <div className="relative z-10 flex flex-col items-center justify-center my-auto px-2">
+                    <div className="px-2.5 py-1 rounded-full bg-[#F4ECE1] border border-[#1E252B]/30 font-mono text-[10px] font-bold text-[#D95A47] shadow-paper-sm text-center">
+                      {lengthRatio >= 1 ? (
+                        <span>{lengthRatio.toFixed(1)}×</span>
+                      ) : (
+                        <span>{(1 / lengthRatio).toFixed(1)}×</span>
+                      )}
                     </div>
-                    <span className="text-[10px] font-mono font-bold text-[#D95A47]">
-                      {specimen.lengthMeters} M ({specimen.commonName})
+                  </div>
+
+                  {/* Specimen Papercraft */}
+                  <div className="relative z-10 flex flex-col items-center gap-2 transition-all duration-300">
+                    <div
+                      className="transition-transform duration-300 transform origin-bottom flex items-end justify-center min-h-[96px]"
+                      style={{ transform: `scale(${specScale})` }}
+                    >
+                      <SpecimenRenderer type={specimen.papercraftType} className="w-24 sm:w-28 h-auto" />
+                    </div>
+                    <div className="text-center">
+                      <span className="text-[10px] font-mono font-bold block text-[#D95A47] max-w-[130px] truncate">
+                        {specimen.commonName}
+                      </span>
+                      <span className="text-[9px] font-mono font-bold text-[#D95A47]">
+                        {specimen.lengthMeters} M
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Plain Language Insight & Recommendation */}
+                <div className="p-3 rounded-lg bg-[#F4ECE1] border border-[#DEC6AE] font-mono text-xs text-[#2D312E] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">📏</span>
+                    <span>
+                      {lengthRatio >= 1.05 ? (
+                        <><strong>{specimen.commonName}</strong> ({specimen.lengthMeters}m) is <strong>{lengthRatio.toFixed(1)}× longer</strong> than {refConfig.shortName} ({refConfig.size}m).</>
+                      ) : lengthRatio <= 0.95 ? (
+                        <><strong>{specimen.commonName}</strong> ({specimen.lengthMeters}m) is <strong>{(1 / lengthRatio).toFixed(1)}× smaller</strong> than {refConfig.shortName} ({refConfig.size}m) (approx. {(lengthRatio * 100).toFixed(0)}% of its length).</>
+                      ) : (
+                        <><strong>{specimen.commonName}</strong> ({specimen.lengthMeters}m) is <strong>roughly identical in length</strong> to {refConfig.shortName} ({refConfig.size}m).</>
+                      )}
                     </span>
                   </div>
+
+                  {/* Recommendation shortcuts */}
+                  {specimen.lengthMeters <= 0.3 && scaleMode !== 'hand' && (
+                    <button
+                      onClick={() => setScaleMode('hand')}
+                      className="flex-shrink-0 px-2 py-0.5 rounded bg-[#EAA838]/20 border border-[#EAA838] text-[#9A6715] font-bold text-[10px] hover:bg-[#EAA838]/30 cursor-pointer"
+                    >
+                      Try Hand Scale ✋
+                    </button>
+                  )}
+                  {specimen.lengthMeters >= 6.0 && scaleMode !== 'submersible' && (
+                    <button
+                      onClick={() => setScaleMode('submersible')}
+                      className="flex-shrink-0 px-2 py-0.5 rounded bg-[#38BDF8]/20 border border-[#38BDF8] text-[#0284C7] font-bold text-[10px] hover:bg-[#38BDF8]/30 cursor-pointer"
+                    >
+                      Try Submersible 🚢
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

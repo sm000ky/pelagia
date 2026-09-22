@@ -187,6 +187,7 @@ export function App() {
         nextSpecimenDist={nextSpecimenDist}
         isPOVActive={isPOVActive}
         onTogglePOV={() => setIsPOVActive(!isPOVActive)}
+        onOpenCertificate={() => setIsCertificateOpen(true)}
       />
 
       {/* Full Release: Submersible Viewport & Halogen Spotlight Overlay */}
@@ -443,6 +444,7 @@ export function App() {
         }}
         onJumpToSpecimenDepth={() => {}}
         currentLang={currentLang}
+        onOpenCertificate={() => setIsCertificateOpen(true)}
       />
 
       {/* Full Release: Printable Official Expedition Diploma Modal */}
@@ -451,6 +453,7 @@ export function App() {
         onClose={() => setIsCertificateOpen(false)}
         discoveredCount={discoveredIds.size}
         totalCount={SPECIMENS.length}
+        terminalDepth={10994}
       />
     </div>
   );

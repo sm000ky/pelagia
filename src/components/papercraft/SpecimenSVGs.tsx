@@ -1,7 +1,7 @@
 import React from 'react';
 
 // =========================================================================
-// 1. HUMAN DIVER SCALE SILHOUETTE (1.8 Meters)
+// 1. SCALE COMPARISON SILHOUETTES (Diver 1.8m, Submersible 8.0m, Hand 0.2m)
 // =========================================================================
 export const DiverScaleSVG: React.FC<{ className?: string }> = ({ className = "w-6 h-12" }) => (
   <svg viewBox="0 0 40 100" className={className} fill="currentColor">
@@ -13,6 +13,61 @@ export const DiverScaleSVG: React.FC<{ className?: string }> = ({ className = "w
     <path d="M25 24 L32 40 L29 42 L24 28 Z" />
     <path d="M16 54 L14 82 L7 95 L14 95 L18 82 Z" />
     <path d="M24 54 L26 82 L33 95 L26 95 L22 82 Z" />
+  </svg>
+);
+
+// Deep-Sea Submersible DSV Limiting Factor (8.0 Meters)
+export const SubmersibleScaleSVG: React.FC<{ className?: string }> = ({ className = "w-28 h-16" }) => (
+  <svg viewBox="0 0 160 80" className={className} fill="currentColor">
+    {/* Overhead Syntactic Foam Buoyancy Fairing */}
+    <path d="M25 28 C25 18, 50 14, 90 14 C130 14, 145 22, 145 32 L135 44 L25 44 Z" opacity="0.85" />
+    {/* Main Titanium Pressure Sphere (Cockpit) */}
+    <circle cx="45" cy="42" r="22" opacity="0.95" />
+    {/* Front Circular Observation Viewport */}
+    <circle cx="30" cy="42" r="10" fill="#FAF6EE" opacity="0.3" stroke="currentColor" strokeWidth="3" />
+    <circle cx="30" cy="42" r="5" fill="#EAA838" opacity="0.6" />
+    {/* Forward LED Floodlight Pods */}
+    <path d="M24 28 L15 24 L17 33 Z" fill="#EAA838" />
+    <path d="M24 56 L15 60 L17 51 Z" fill="#EAA838" />
+    {/* Articulated Robotic Manipulator Arm */}
+    <path d="M36 58 L24 68 L12 65" stroke="currentColor" strokeWidth="4" strokeLinecap="round" fill="none" />
+    <path d="M12 65 L6 62 M12 65 L6 68" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    {/* Heavy Aft Propulsion Thrusters (Ducted Shrouds) */}
+    <rect x="132" y="30" width="22" height="14" rx="3" opacity="0.9" />
+    <path d="M154 33 L158 37 L154 41 Z" />
+    <rect x="110" y="48" width="18" height="10" rx="2" opacity="0.8" />
+    {/* Top Antenna & Transponder Beacon */}
+    <path d="M85 14 L85 6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    <circle cx="85" cy="5" r="2.5" fill="#D95A47" />
+    {/* Keel & Landing Skids */}
+    <rect x="40" y="64" width="75" height="4" rx="2" opacity="0.75" />
+    <path d="M50 58 L50 64 M95 58 L95 64" stroke="currentColor" strokeWidth="3" />
+  </svg>
+);
+
+// Human Hand & Scuba Mask (0.2 Meters / 20 cm)
+export const HandScaleSVG: React.FC<{ className?: string }> = ({ className = "w-16 h-16" }) => (
+  <svg viewBox="0 0 100 80" className={className} fill="currentColor">
+    {/* Scuba Mask Silhouette (Left side) */}
+    <g transform="translate(6, 12)">
+      <rect x="0" y="0" width="38" height="28" rx="14" stroke="currentColor" strokeWidth="3" fill="none" opacity="0.9" />
+      <circle cx="12" cy="14" r="7" fill="#FAF6EE" opacity="0.4" />
+      <circle cx="26" cy="14" r="7" fill="#FAF6EE" opacity="0.4" />
+      <path d="M16 18 C16 26, 22 26, 22 18 Z" opacity="0.8" />
+      <path d="M0 14 C-4 12, -4 16, 0 14" stroke="currentColor" strokeWidth="3" />
+      <path d="M38 14 C42 12, 42 16, 38 14" stroke="currentColor" strokeWidth="3" />
+    </g>
+
+    {/* Human Hand Outstretched Palm & Fingers (Right side) */}
+    <g transform="translate(50, 4)">
+      <rect x="14" y="52" width="18" height="20" rx="3" opacity="0.85" />
+      <path d="M8 32 C8 24, 38 24, 38 32 L36 54 C36 56, 12 56, 10 54 Z" opacity="0.9" />
+      <path d="M8 38 C2 34, 0 42, 6 48 L10 50 Z" opacity="0.95" />
+      <rect x="10" y="10" width="6" height="24" rx="3" opacity="0.95" />
+      <rect x="17" y="6" width="6.5" height="28" rx="3" opacity="0.95" />
+      <rect x="24.5" y="10" width="6" height="24" rx="3" opacity="0.95" />
+      <rect x="31.5" y="16" width="5.5" height="18" rx="2.5" opacity="0.95" />
+    </g>
   </svg>
 );
 

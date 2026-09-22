@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BiotaSpecimen } from '../types';
 import { SPECIMENS, ZONES } from '../data/oceanData';
-import { X, Sparkles, CheckCircle2, Filter, Search, Compass } from 'lucide-react';
+import { X, Sparkles, CheckCircle2, Filter, Search, Compass, Award } from 'lucide-react';
 import { pelagiaAudio } from '../lib/audioEngine';
 import { Language, DICTIONARY } from '../lib/i18n';
 import { getLocalizedSpecimen } from '../lib/biotaTranslations';
@@ -13,6 +13,7 @@ interface LogbookDrawerProps {
   onSelectSpecimen: (specimen: BiotaSpecimen) => void;
   onJumpToSpecimenDepth: (depthMeters: number) => void;
   currentLang?: Language;
+  onOpenCertificate?: () => void;
 }
 
 export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
@@ -21,6 +22,7 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
   discoveredIds,
   onSelectSpecimen,
   currentLang = 'en',
+  onOpenCertificate,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -110,6 +112,25 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
             style={{ width: `${progressPercent}%` }}
           />
         </div>
+
+        {/* Certificate / Share Diploma Action Bar */}
+        {onOpenCertificate && (
+          <div className="px-4 py-2 bg-[#F4ECE1] border-b border-[#1E252B]/15 flex items-center justify-between gap-2">
+            <span className="font-mono text-[11px] text-[#626863]">
+              Official Diploma:
+            </span>
+            <button
+              onClick={() => {
+                onClose();
+                onOpenCertificate();
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#EAA838]/25 border border-[#EAA838] text-[#9A6715] hover:bg-[#EAA838]/40 font-mono text-[10px] font-bold transition-all shadow-paper-sm cursor-pointer active:scale-95"
+            >
+              <Award className="w-3.5 h-3.5 text-[#B8781B]" />
+              <span>VIEW & SHARE DIPLOMA</span>
+            </button>
+          </div>
+        )}
 
         {/* Live Search Input */}
         <div className="px-4 py-2.5 border-b border-[#1E252B]/15 bg-[#FAF6EE] flex items-center gap-2">

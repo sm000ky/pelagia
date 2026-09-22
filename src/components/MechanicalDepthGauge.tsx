@@ -8,6 +8,7 @@ import {
   BookOpen,
   Radio,
   Lightbulb,
+  Award,
 } from 'lucide-react';
 import { ZoneData } from '../types';
 import { ZONES } from '../data/oceanData';
@@ -31,6 +32,7 @@ interface MechanicalDepthGaugeProps {
   nextSpecimenDist?: number;
   isPOVActive?: boolean;
   onTogglePOV?: () => void;
+  onOpenCertificate?: () => void;
 }
 
 export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
@@ -50,6 +52,7 @@ export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
   nextSpecimenDist,
   isPOVActive = false,
   onTogglePOV,
+  onOpenCertificate,
 }) => {
   const [isMobileZoneMenuOpen, setIsMobileZoneMenuOpen] = useState<boolean>(false);
 
@@ -137,6 +140,22 @@ export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>{t.logbook}:</span>
                 <span>{discoveredCount}/{totalSpecimens}</span>
+              </button>
+            )}
+
+            {/* Desktop Only: Diploma / Certificate Button */}
+            {onOpenCertificate && (
+              <button
+                onClick={onOpenCertificate}
+                className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded border font-mono text-[10px] font-bold tracking-wider uppercase transition-all shadow-paper-sm active:translate-y-0.5 cursor-pointer ${
+                  isDarkZone
+                    ? 'bg-[#1E252B] border-[#EAA838] text-[#EAA838] hover:bg-[#2C3844]'
+                    : 'bg-[#F4ECE1] border-[#EAA838] text-[#9A6715] hover:bg-[#EBDDCB]'
+                }`}
+                title="View & Share Official Expedition Diploma"
+              >
+                <Award className="w-3.5 h-3.5 text-[#EAA838]" />
+                <span className="hidden lg:inline">DIPLOMA</span>
               </button>
             )}
 
@@ -264,6 +283,18 @@ export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
           >
             <BookOpen className="w-3.5 h-3.5" />
             <span>{discoveredCount}/{totalSpecimens}</span>
+          </button>
+        )}
+
+        {/* Mobile Diploma Button */}
+        {onOpenCertificate && (
+          <button
+            onClick={onOpenCertificate}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-yellow-500/50 bg-[#241E0F] text-[#FBBF24] font-bold active:scale-95 cursor-pointer"
+            title="View & Share Diploma"
+          >
+            <Award className="w-3.5 h-3.5" />
+            <span>DIPLOMA</span>
           </button>
         )}
 
