@@ -486,6 +486,157 @@ class PelagiaAudioEngine {
       // ignore
     }
   }
+
+  /**
+   * Sound of vintage bottle cork popping under water
+   */
+  public playCorkPop(): void {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+    try {
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const t = this.ctx.currentTime;
+
+      // Pitch-shifted pop pulse
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(140, t);
+      osc.frequency.exponentialRampToValueAtTime(820, t + 0.025);
+      osc.frequency.exponentialRampToValueAtTime(90, t + 0.06);
+
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.linearRampToValueAtTime(0.35, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(t);
+      osc.stop(t + 0.12);
+
+      this.playWaterBubble();
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
+   * Deep-sea active hydrophone sonar sweep & echo
+   */
+  public playSonarPing(): void {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+    try {
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const t = this.ctx.currentTime;
+
+      // Primary ping tone (1120 Hz)
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1120, t);
+      osc.frequency.linearRampToValueAtTime(1080, t + 0.8);
+
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.linearRampToValueAtTime(0.28, t + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.8);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(t);
+      osc.stop(t + 2.9);
+
+      // Infrasound sub-bass rumble
+      const subOsc = this.ctx.createOscillator();
+      const subGain = this.ctx.createGain();
+      subOsc.type = 'sine';
+      subOsc.frequency.setValueAtTime(48, t);
+      subGain.gain.setValueAtTime(0.001, t);
+      subGain.gain.linearRampToValueAtTime(0.25, t + 0.2);
+      subGain.gain.exponentialRampToValueAtTime(0.0001, t + 3.2);
+
+      subOsc.connect(subGain);
+      subGain.connect(this.masterGain);
+      subOsc.start(t);
+      subOsc.stop(t + 3.3);
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
+   * Tactile heavy brass stamp pressing down into hot wax
+   */
+  public playWaxSquash(): void {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+    try {
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const t = this.ctx.currentTime;
+
+      // Heavy mechanical thud
+      const thudOsc = this.ctx.createOscillator();
+      const thudGain = this.ctx.createGain();
+      thudOsc.type = 'triangle';
+      thudOsc.frequency.setValueAtTime(95, t);
+      thudOsc.frequency.exponentialRampToValueAtTime(32, t + 0.12);
+
+      thudGain.gain.setValueAtTime(0.001, t);
+      thudGain.gain.linearRampToValueAtTime(0.4, t + 0.02);
+      thudGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+
+      thudOsc.connect(thudGain);
+      thudGain.connect(this.masterGain);
+      thudOsc.start(t);
+      thudOsc.stop(t + 0.38);
+
+      // Metal ring & warm squish
+      const ringOsc = this.ctx.createOscillator();
+      const ringGain = this.ctx.createGain();
+      ringOsc.type = 'sine';
+      ringOsc.frequency.setValueAtTime(1420, t + 0.01);
+
+      ringGain.gain.setValueAtTime(0.001, t);
+      ringGain.gain.linearRampToValueAtTime(0.15, t + 0.025);
+      ringGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
+
+      ringOsc.connect(ringGain);
+      ringGain.connect(this.masterGain);
+      ringOsc.start(t);
+      ringOsc.stop(t + 0.65);
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
+   * 1930s Gramophone / Vinyl needle crackle
+   */
+  public playVinylCrackle(): void {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+    try {
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const t = this.ctx.currentTime;
+
+      // Burst of micro crackles
+      for (let i = 0; i < 7; i++) {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const offset = t + Math.random() * 0.4;
+
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(180 + Math.random() * 900, offset);
+
+        gain.gain.setValueAtTime(0.001, offset);
+        gain.gain.linearRampToValueAtTime(0.04, offset + 0.005);
+        gain.gain.exponentialRampToValueAtTime(0.0001, offset + 0.02);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(offset);
+        osc.stop(offset + 0.025);
+      }
+    } catch {
+      // ignore
+    }
+  }
 }
 
 export const pelagiaAudio = new PelagiaAudioEngine();

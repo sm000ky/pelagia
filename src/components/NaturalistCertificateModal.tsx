@@ -44,6 +44,29 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
 
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [copiedToast, setCopiedToast] = useState<boolean>(false);
+  const [isWaxPressed, setIsWaxPressed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('pelagia_wax_pressed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const handlePressWax = () => {
+    pelagiaAudio.playWaxSquash();
+    setIsWaxPressed(true);
+    try {
+      localStorage.setItem('pelagia_wax_pressed', 'true');
+    } catch {
+      // ignore
+    }
+    confetti({
+      particleCount: 60,
+      spread: 70,
+      origin: { y: 0.7 },
+      colors: ['#EF4444', '#DC2626', '#EAA838', '#B91C1C'],
+    });
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -592,20 +615,45 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
               <div className="text-[9px] text-[#626863]">Chief Expedition Architect</div>
             </div>
 
-            {/* 3D Melted Wax Seal with Ribbon Tails */}
+            {/* Interactive 3D Melted Wax Stamping Ceremony */}
             <div className="relative flex flex-col items-center">
               {/* Ribbon tails hanging down */}
               <div className="absolute top-8 flex gap-1 pointer-events-none">
-                <div className="w-3 h-10 bg-[#B91C1C] -rotate-12 shadow-sm rounded-b" />
-                <div className="w-3 h-10 bg-[#991B1B] rotate-12 shadow-sm rounded-b" />
+                <div className="w-3.5 h-11 bg-[#B91C1C] -rotate-12 shadow-sm rounded-b" />
+                <div className="w-3.5 h-11 bg-[#991B1B] rotate-12 shadow-sm rounded-b" />
               </div>
 
-              {/* 3D Wax Seal Circle */}
-              <div className="relative z-10 w-16 h-16 rounded-full bg-gradient-to-br from-[#EF4444] via-[#DC2626] to-[#7F1D1D] text-[#FEF2F2] border-2 border-[#7F1D1D] shadow-md flex flex-col items-center justify-center font-bold text-[8px] rotate-[-4deg] flex-shrink-0">
-                <span className="tracking-tighter">OFFICIAL</span>
-                <span className="text-[10px]">SEAL</span>
-                <span className="text-[7px] opacity-80">-10,994M</span>
-              </div>
+              {/* 3D Wax Seal Circle / Stamping Station */}
+              <button
+                onClick={handlePressWax}
+                className={`relative z-10 w-16 h-16 rounded-full text-[#FEF2F2] border-2 shadow-md flex flex-col items-center justify-center font-bold text-[8px] transition-all cursor-pointer select-none active:scale-90 ${
+                  isWaxPressed
+                    ? relicsCount >= 8
+                      ? 'bg-gradient-to-br from-[#FDE047] via-[#EAB308] to-[#A16207] border-[#78350F] text-[#78350F] shadow-[0_0_20px_rgba(234,179,8,0.5)] rotate-[-4deg]'
+                      : 'bg-gradient-to-br from-[#EF4444] via-[#DC2626] to-[#7F1D1D] border-[#7F1D1D] rotate-[-4deg]'
+                    : 'bg-[#991B1B]/80 border-dashed border-[#FCA5A5] animate-bounce shadow-lg'
+                }`}
+                title={isWaxPressed ? 'Click to re-stamp official wax seal' : 'Tap to press heavy brass stamp into molten wax!'}
+              >
+                {isWaxPressed ? (
+                  <>
+                    <span className="tracking-tighter">{relicsCount >= 8 ? 'SOVEREIGN' : 'OFFICIAL'}</span>
+                    <span className="text-[10px]">{relicsCount >= 8 ? 'GOLD SEAL' : 'SEAL'}</span>
+                    <span className="text-[7px] opacity-90">-10,994M</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xs">♨️</span>
+                    <span className="text-[7px] font-mono tracking-tighter">PRESS STAMP</span>
+                  </>
+                )}
+              </button>
+
+              {!isWaxPressed && (
+                <div className="mt-2 font-mono text-[9px] font-bold text-[#DC2626] animate-pulse">
+                  TAP TO SEAL DIPLOMA
+                </div>
+              )}
             </div>
 
             {/* Zero Two Signature */}

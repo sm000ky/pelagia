@@ -8,6 +8,7 @@ import { SpecimenItem } from './components/SpecimenItem';
 import { FieldJournalModal } from './components/FieldJournalModal';
 import { LogbookDrawer } from './components/LogbookDrawer';
 import { RelicMarker, RelicModal } from './components/EasterEggs';
+import { EnvironmentalPhenomena } from './components/EnvironmentalPhenomena';
 import { APOCRYPHAL_RELICS } from './data/relicsData';
 import { ApocryphalRelic } from './types';
 import { ChallengerDeepFinale } from './components/ChallengerDeepFinale';
@@ -57,6 +58,12 @@ export function App() {
   });
 
   const [selectedRelic, setSelectedRelic] = useState<ApocryphalRelic | null>(null);
+
+  // Environmental Phenomenon States (Update: Sovereign Tide)
+  const [isPlanktonActive, setIsPlanktonActive] = useState<boolean>(false);
+  const [isTitanSwimming, setIsTitanSwimming] = useState<boolean>(false);
+  const [is1930sMode, setIs1930sMode] = useState<boolean>(false);
+  const [isUVMode, setIsUVMode] = useState<boolean>(false);
 
   const handleInspectRelic = (relic: ApocryphalRelic) => {
     pelagiaAudio.playRelicUnlock();
@@ -359,6 +366,7 @@ export function App() {
                   relicId="relic-bottle"
                   isUnlocked={discoveredRelicIds.has('relic-bottle')}
                   onInspect={handleInspectRelic}
+                  onTriggerPlankton={() => setIsPlanktonActive(true)}
                 />
               )}
             </React.Fragment>
@@ -400,6 +408,7 @@ export function App() {
                   relicId="relic-titan"
                   isUnlocked={discoveredRelicIds.has('relic-titan')}
                   onInspect={handleInspectRelic}
+                  onTriggerTitan={() => setIsTitanSwimming(true)}
                 />
               )}
               {/* Apocryphal Relic 5: The 1930 Beebe Steel Bathysphere at -3,850m */}
@@ -408,6 +417,7 @@ export function App() {
                   relicId="relic-bathysphere"
                   isUnlocked={discoveredRelicIds.has('relic-bathysphere')}
                   onInspect={handleInspectRelic}
+                  onToggle1930s={() => setIs1930sMode((v) => !v)}
                 />
               )}
             </React.Fragment>
@@ -449,6 +459,7 @@ export function App() {
                   relicId="relic-blacklight"
                   isUnlocked={discoveredRelicIds.has('relic-blacklight')}
                   onInspect={handleInspectRelic}
+                  onToggleUV={() => setIsUVMode((v) => !v)}
                 />
               )}
             </React.Fragment>
@@ -562,6 +573,18 @@ export function App() {
       <RelicModal
         relic={selectedRelic}
         onClose={() => setSelectedRelic(null)}
+      />
+
+      {/* Environmental Magic Engine (Update: Sovereign Tide) */}
+      <EnvironmentalPhenomena
+        isPlanktonActive={isPlanktonActive}
+        onTogglePlankton={(active) => setIsPlanktonActive(active ?? !isPlanktonActive)}
+        isTitanSwimming={isTitanSwimming}
+        onTitanFinish={() => setIsTitanSwimming(false)}
+        is1930sMode={is1930sMode}
+        onToggle1930sMode={(active) => setIs1930sMode(active ?? !is1930sMode)}
+        isUVMode={isUVMode}
+        onToggleUVMode={(active) => setIsUVMode(active ?? !isUVMode)}
       />
     </div>
   );
