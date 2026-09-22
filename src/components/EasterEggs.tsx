@@ -48,7 +48,10 @@ export const RelicMarker: React.FC<RelicMarkerProps> = ({
   };
 
   return (
-    <div className={`relative my-8 sm:my-14 flex justify-center select-none ${className}`}>
+    <div
+      id={relic.id}
+      className={`relative my-8 sm:my-14 flex justify-center select-none scroll-mt-32 transition-all duration-300 ${className}`}
+    >
       <button
         onClick={handleClick}
         className={`group cursor-pointer px-4 py-3.5 rounded-2xl border-2 transition-all duration-300 flex items-center gap-3.5 backdrop-blur-md active:scale-95 ${
@@ -164,6 +167,39 @@ export const RelicMarker: React.FC<RelicMarkerProps> = ({
           </div>
         </div>
       </button>
+    </div>
+  );
+};
+
+export const SkyAlbatrossRelic: React.FC<{
+  isUnlocked: boolean;
+  onInspect: (relic: ApocryphalRelic) => void;
+}> = ({ isUnlocked, onInspect }) => {
+  const relic = APOCRYPHAL_RELICS.find((r) => r.id === 'relic-albatross');
+  if (!relic) return null;
+
+  return (
+    <div
+      id="relic-albatross"
+      onClick={() => onInspect(relic)}
+      className="group cursor-pointer flex flex-col items-center select-none scroll-mt-28"
+      title="The Celestial Jian Origami Albatross (+12m)"
+    >
+      <div className="relative p-2.5 transition-transform duration-300 group-hover:scale-125">
+        <svg viewBox="0 0 60 40" className="w-12 h-9 text-[#D95A47] filter drop-shadow-md animate-bounce" fill="currentColor">
+          <polygon points="5,25 55,25 45,35 15,35" />
+          <polygon points="30,5 30,22 12,22" fill="#FAF6EE" stroke="#1E252B" strokeWidth="1.5" />
+          <polygon points="32,8 48,22 32,22" fill="#EAA838" stroke="#1E252B" strokeWidth="1.5" />
+        </svg>
+
+        {/* Shimmer sparkle hint */}
+        <Sparkles className="w-4 h-4 text-[#EAA838] absolute -top-1 -right-1 animate-spin" style={{ animationDuration: '6s' }} />
+      </div>
+
+      {/* Floating hint pill */}
+      <div className="px-2 py-0.5 rounded-full bg-[#FAF6EE] border border-[#1E252B] text-[#1E252B] font-mono text-[9px] font-bold shadow-paper-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+        {isUnlocked ? '✓ Jian Albatross' : '✨ Touch the Paper Bird'}
+      </div>
     </div>
   );
 };

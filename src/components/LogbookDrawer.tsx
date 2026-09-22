@@ -26,6 +26,7 @@ interface LogbookDrawerProps {
   onSelectSpecimen: (specimen: BiotaSpecimen) => void;
   onSelectRelic?: (relic: ApocryphalRelic) => void;
   onJumpToSpecimenDepth: (depthMeters: number) => void;
+  onJumpToRelic?: (relicId: string) => void;
   currentLang?: Language;
   onOpenCertificate?: () => void;
 }
@@ -37,6 +38,8 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
   discoveredRelicIds = new Set<string>(),
   onSelectSpecimen,
   onSelectRelic,
+  onJumpToSpecimenDepth,
+  onJumpToRelic,
   currentLang = 'en',
   onOpenCertificate,
 }) => {
@@ -360,6 +363,25 @@ export const LogbookDrawer: React.FC<LogbookDrawerProps> = ({
                             </p>
                           </div>
                         )}
+
+                        {/* Dive to Anomaly Location Action Button */}
+                        <div className="pt-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              pelagiaAudio.playWaterBubble();
+                              onClose();
+                              if (onJumpToRelic) {
+                                onJumpToRelic(relic.id);
+                              }
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#D95A47] hover:bg-[#E06D53] text-white font-mono text-[10px] font-bold transition-all shadow-paper-sm cursor-pointer active:scale-95"
+                            title={`Dive directly to ${relic.title}`}
+                          >
+                            <Compass className="w-3 h-3" />
+                            <span>DIVE TO VICINITY ({relic.depthMeters <= 0 ? `+${Math.abs(relic.depthMeters)}m` : `-${relic.depthMeters}m`})</span>
+                          </button>
+                        </div>
                       </div>
 
                       {isFound && (

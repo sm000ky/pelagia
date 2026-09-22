@@ -7,7 +7,7 @@ import { WaterlineThreshold } from './components/WaterlineThreshold';
 import { SpecimenItem } from './components/SpecimenItem';
 import { FieldJournalModal } from './components/FieldJournalModal';
 import { LogbookDrawer } from './components/LogbookDrawer';
-import { RelicMarker, RelicModal } from './components/EasterEggs';
+import { RelicMarker, RelicModal, SkyAlbatrossRelic } from './components/EasterEggs';
 import { EnvironmentalPhenomena } from './components/EnvironmentalPhenomena';
 import { APOCRYPHAL_RELICS } from './data/relicsData';
 import { ApocryphalRelic } from './types';
@@ -84,7 +84,7 @@ export function App() {
 
   const lastZoneIdRef = useRef<string>('coastal');
 
-  // Track vertical scroll to calculate depth accurately (from +10m down to -13,000m)
+  // Track vertical scroll to calculate depth accurately via real DOM benchmarks
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -94,35 +94,55 @@ export function App() {
       const progress = Math.min(1, Math.max(0, scrollY / maxScroll));
       setScrollProgress(progress);
 
-      // Bathymetric depth mapping curve across 50 specimens + Forbidden Abyss up to 13,000m
+      // Calibrated DOM-anchored Bathymetric Depth Mapping
+      const viewportCenter = scrollY + window.innerHeight * 0.38;
+
+      const zoneDefs = [
+        { id: 'zone-coastal', min: -10, max: 0, zone: ZONES[0] },
+        { id: 'zone-sunlight', min: 0, max: 200, zone: ZONES[1] },
+        { id: 'zone-twilight', min: 200, max: 1000, zone: ZONES[2] },
+        { id: 'zone-midnight', min: 1000, max: 4000, zone: ZONES[3] },
+        { id: 'zone-abyss', min: 4000, max: 6000, zone: ZONES[4] },
+        { id: 'zone-hadal', min: 6000, max: 10994, zone: ZONES[5] },
+        { id: 'zone-challenger', min: 10994, max: 10994, zone: ZONES[5] },
+        { id: 'zone-celestial-core', min: 10994, max: 13000, zone: ZONES[5] },
+      ];
+
       let depth = 0;
-      if (progress < 0.05) {
-        depth = -10 + (progress / 0.05) * 10;
-      } else if (progress < 0.22) {
-        depth = ((progress - 0.05) / 0.17) * 200;
-      } else if (progress < 0.40) {
-        depth = 200 + ((progress - 0.22) / 0.18) * 800;
-      } else if (progress < 0.62) {
-        depth = 1000 + ((progress - 0.40) / 0.22) * 3000;
-      } else if (progress < 0.78) {
-        depth = 4000 + ((progress - 0.62) / 0.16) * 2000;
-      } else if (progress < 0.90) {
-        depth = 6000 + ((progress - 0.78) / 0.12) * 4994;
-      } else {
-        // Beyond Challenger Deep (-10,994m to -13,000m)
-        depth = 10994 + ((progress - 0.90) / 0.10) * 2006;
+      let activeZone = ZONES[0];
+      let matched = false;
+
+      for (let i = 0; i < zoneDefs.length; i++) {
+        const def = zoneDefs[i];
+        const el = document.getElementById(def.id);
+        if (!el) continue;
+
+        const rect = el.getBoundingClientRect();
+        const top = rect.top + scrollY;
+        const height = rect.height;
+        const bottom = top + height;
+
+        if (viewportCenter >= top && viewportCenter <= bottom) {
+          const fraction = height > 0 ? (viewportCenter - top) / height : 0;
+          depth = def.min + fraction * (def.max - def.min);
+          activeZone = def.zone;
+          matched = true;
+          break;
+        }
+      }
+
+      if (!matched) {
+        const firstEl = document.getElementById('zone-coastal');
+        if (firstEl && viewportCenter < firstEl.getBoundingClientRect().top + scrollY) {
+          depth = -10;
+          activeZone = ZONES[0];
+        } else {
+          depth = 10994 + progress * 2006;
+          activeZone = ZONES[5];
+        }
       }
 
       setCurrentDepth(depth);
-
-      // Determine active zone
-      let activeZone = ZONES[0];
-      if (depth >= 6000) activeZone = ZONES[5];
-      else if (depth >= 4000) activeZone = ZONES[4];
-      else if (depth >= 1000) activeZone = ZONES[3];
-      else if (depth >= 200) activeZone = ZONES[2];
-      else if (depth > 0) activeZone = ZONES[1];
-
       setCurrentZone(activeZone);
 
       // Update ambient audio depth filter
@@ -136,6 +156,8 @@ export function App() {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    // Run once on load to calibrate initial position
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -160,11 +182,27 @@ export function App() {
     setShowAudioPrompt(false);
   };
 
-  // Jump to Zone helper
+  // Jump to Zone helper (calibrated to anchor IDs)
   const handleJumpToZone = (zoneId: string) => {
-    const el = document.getElementById(`zone-${zoneId}`);
+    let targetId = zoneId.startsWith('zone-') ? zoneId : `zone-${zoneId}`;
+    let el = document.getElementById(targetId);
+    if (!el) {
+      el = document.getElementById(zoneId);
+    }
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // Jump to Hidden Relic helper with golden illuminated locator beacon
+  const handleJumpToRelic = (relicId: string) => {
+    const el = document.getElementById(relicId) || document.getElementById(`relic-${relicId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('ring-4', 'ring-[#F59E0B]', 'shadow-[0_0_45px_rgba(245,158,11,0.85)]', 'animate-pulse');
+      setTimeout(() => {
+        el.classList.remove('ring-4', 'ring-[#F59E0B]', 'shadow-[0_0_45px_rgba(245,158,11,0.85)]', 'animate-pulse');
+      }, 4500);
     }
   };
 
@@ -180,6 +218,16 @@ export function App() {
   const upcomingSpecimen = SPECIMENS.find((s) => s.depthMeters > currentDepth && s.depthMeters > 0);
   const nextSpecimenDist = upcomingSpecimen ? Math.round(upcomingSpecimen.depthMeters - currentDepth) : undefined;
   const nextSpecimenName = upcomingSpecimen ? getLocalizedSpecimen(upcomingSpecimen, currentLang).commonName : undefined;
+
+  // Proximity Sonar Detector: Finds undiscovered apocryphal relic nearby!
+  const nearbyRelic = APOCRYPHAL_RELICS.find(
+    (r) =>
+      !discoveredRelicIds.has(r.id) &&
+      Math.abs(r.depthMeters - currentDepth) <= 180
+  );
+  const nearbyRelicHint = nearbyRelic
+    ? `${nearbyRelic.title} (${Math.abs(Math.round(nearbyRelic.depthMeters - currentDepth))}m)`
+    : undefined;
 
   return (
     <div
@@ -224,6 +272,7 @@ export function App() {
         t={t}
         nextSpecimenName={nextSpecimenName}
         nextSpecimenDist={nextSpecimenDist}
+        nearbyRelicHint={nearbyRelicHint}
         isPOVActive={isPOVActive}
         onTogglePOV={() => setIsPOVActive(!isPOVActive)}
         onOpenCertificate={() => setIsCertificateOpen(true)}
@@ -237,11 +286,12 @@ export function App() {
         t={t}
       />
 
-      {/* Floating Kinetic Bathymetric Depth Scrubber Rail */}
+      {/* Floating Kinetic Bathymetric Depth Scrubber Rail (Calibrated with Elevator Thumb) */}
       <DepthScrubberRail
         currentDepth={currentDepth}
         scrollProgress={scrollProgress}
         onJumpToZone={handleJumpToZone}
+        hasNearbyAnomaly={Boolean(nearbyRelic)}
       />
 
       {/* Ambient Audio Starter Banner Toast (Steady craft card, zero kelap-kelip) */}
@@ -272,12 +322,12 @@ export function App() {
           onSelectSpecimen={setSelectedSpecimen}
           discoveredIds={discoveredIds}
           t={t}
-        />
-        {/* Apocryphal Relic 1: The Celestial Jian Origami Albatross */}
-        <RelicMarker
-          relicId="relic-albatross"
-          isUnlocked={discoveredRelicIds.has('relic-albatross')}
-          onInspect={handleInspectRelic}
+          renderSkyRelic={
+            <SkyAlbatrossRelic
+              isUnlocked={discoveredRelicIds.has('relic-albatross')}
+              onInspect={handleInspectRelic}
+            />
+          }
         />
       </div>
 
@@ -510,24 +560,28 @@ export function App() {
       {/* ===================================================================
        * 8. CHALLENGER DEEP (-10,994M) + APOCRYPHA 8: KLAXOSAUR CORE
        * =================================================================== */}
-      <ChallengerDeepFinale
-        onScrollToTop={handleScrollToTop}
-        onOpenCertificate={() => setIsCertificateOpen(true)}
-        isKlaxosaurUnlocked={discoveredRelicIds.has('relic-klaxosaur')}
-        onUnlockKlaxosaur={() => {
-          const r = APOCRYPHAL_RELICS.find((x) => x.id === 'relic-klaxosaur');
-          if (r) handleInspectRelic(r);
-        }}
-      />
+      <div id="zone-challenger">
+        <ChallengerDeepFinale
+          onScrollToTop={handleScrollToTop}
+          onOpenCertificate={() => setIsCertificateOpen(true)}
+          isKlaxosaurUnlocked={discoveredRelicIds.has('relic-klaxosaur')}
+          onUnlockKlaxosaur={() => {
+            const r = APOCRYPHAL_RELICS.find((x) => x.id === 'relic-klaxosaur');
+            if (r) handleInspectRelic(r);
+          }}
+        />
+      </div>
 
       {/* ===================================================================
        * 9. THE FORBIDDEN ABYSS WARNINGS & THE SUBTERRANEAN STAR SEA CLIMAX!
        * =================================================================== */}
-      <ForbiddenAbyssSequence
-        currentDepth={currentDepth}
-        onScrollToTop={handleScrollToTop}
-        t={t}
-      />
+      <div id="zone-celestial-core">
+        <ForbiddenAbyssSequence
+          currentDepth={currentDepth}
+          onScrollToTop={handleScrollToTop}
+          t={t}
+        />
+      </div>
 
       {/* Interactive Field Journal Modal Drawer Adapted to Depth Zone */}
       <FieldJournalModal
@@ -554,6 +608,7 @@ export function App() {
           handleInspectRelic(r);
         }}
         onJumpToSpecimenDepth={() => {}}
+        onJumpToRelic={handleJumpToRelic}
         currentLang={currentLang}
         onOpenCertificate={() => setIsCertificateOpen(true)}
       />

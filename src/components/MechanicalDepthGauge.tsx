@@ -9,6 +9,7 @@ import {
   Radio,
   Lightbulb,
   Award,
+  Sparkles,
 } from 'lucide-react';
 import { ZoneData } from '../types';
 import { ZONES } from '../data/oceanData';
@@ -30,6 +31,7 @@ interface MechanicalDepthGaugeProps {
   t: Translations;
   nextSpecimenName?: string;
   nextSpecimenDist?: number;
+  nearbyRelicHint?: string;
   isPOVActive?: boolean;
   onTogglePOV?: () => void;
   onOpenCertificate?: () => void;
@@ -50,6 +52,7 @@ export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
   t,
   nextSpecimenName,
   nextSpecimenDist,
+  nearbyRelicHint,
   isPOVActive = false,
   onTogglePOV,
   onOpenCertificate,
@@ -275,6 +278,14 @@ export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
           </button>
         )}
 
+        {/* Mobile Anomaly Alert Pill */}
+        {nearbyRelicHint && (
+          <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-amber-400 bg-amber-950/90 text-amber-300 font-bold animate-pulse">
+            <Sparkles className="w-3 h-3 text-amber-400 animate-spin" />
+            <span className="text-[9px]">RELIC NEARBY!</span>
+          </div>
+        )}
+
         {/* Mobile Logbook Button */}
         {onToggleLogbookDrawer && (
           <button
@@ -379,19 +390,31 @@ export const MechanicalDepthGauge: React.FC<MechanicalDepthGaugeProps> = ({
         </div>
       </div>
 
-      {/* Desktop Only: Sonar Proximity Radar Indicator */}
-      {nextSpecimenName && nextSpecimenDist !== undefined && nextSpecimenDist > 0 && (
+      {/* Sonar Proximity Radar Indicator: Relic Anomaly Alert OR Next Specimen */}
+      {(nearbyRelicHint || (nextSpecimenName && nextSpecimenDist !== undefined && nextSpecimenDist > 0)) && (
         <div
-          className={`fixed bottom-4 right-4 z-40 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border shadow-paper font-mono text-[11px] backdrop-blur-md select-none transition-all ${
-            isDarkZone
+          className={`fixed bottom-4 right-4 z-40 hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-full border shadow-paper font-mono text-[11px] backdrop-blur-md select-none transition-all duration-300 ${
+            nearbyRelicHint
+              ? 'bg-[#2A1608]/95 border-[#F59E0B] text-[#FEF3C7] shadow-[0_0_20px_rgba(245,158,11,0.4)] animate-pulse'
+              : isDarkZone
               ? 'bg-[#0E1B26]/90 border-[#38BDF8]/50 text-[#F1F5F9]'
               : 'bg-[#FAF6EE]/95 border-[#DEC6AE] text-[#1E252B]'
           }`}
         >
-          <Radio className="w-3.5 h-3.5 text-[#D95A47]" />
-          <span className="opacity-70">{t.nextSpecimenIn}</span>
-          <span className="font-bold text-[#D95A47]">{nextSpecimenDist}m:</span>
-          <span className="font-bold">{nextSpecimenName}</span>
+          {nearbyRelicHint ? (
+            <>
+              <Sparkles className="w-4 h-4 text-[#F59E0B] animate-spin" style={{ animationDuration: '4s' }} />
+              <span className="font-bold text-[#F59E0B]">{nearbyRelicHint}</span>
+              <span className="text-[10px] opacity-75 font-serif italic">— look around the currents!</span>
+            </>
+          ) : (
+            <>
+              <Radio className="w-3.5 h-3.5 text-[#D95A47]" />
+              <span className="opacity-70">{t.nextSpecimenIn}</span>
+              <span className="font-bold text-[#D95A47]">{nextSpecimenDist}m:</span>
+              <span className="font-bold">{nextSpecimenName}</span>
+            </>
+          )}
         </div>
       )}
     </>

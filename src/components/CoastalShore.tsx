@@ -10,6 +10,7 @@ interface CoastalShoreProps {
   onSelectSpecimen: (specimen: BiotaSpecimen) => void;
   discoveredIds?: Set<string>;
   t?: Translations;
+  renderSkyRelic?: React.ReactNode;
 }
 
 export const CoastalShore: React.FC<CoastalShoreProps> = ({
@@ -18,6 +19,7 @@ export const CoastalShore: React.FC<CoastalShoreProps> = ({
   onSelectSpecimen,
   discoveredIds,
   t,
+  renderSkyRelic,
 }) => {
   const currentHour = new Date().getHours();
   const isNight = currentHour >= 19 || currentHour < 5;
@@ -25,6 +27,13 @@ export const CoastalShore: React.FC<CoastalShoreProps> = ({
 
   return (
     <section className="relative w-full pt-28 pb-16 px-4 select-none overflow-hidden">
+      {/* Sky Origami Relic: Celestial Jian Albatross floating in the Pacific sky */}
+      {renderSkyRelic && (
+        <div className="absolute top-14 right-4 sm:right-24 z-20">
+          {renderSkyRelic}
+        </div>
+      )}
+
       {/* Dynamic Real-time Celestial Orb (Paper Sun or Crescent Moon) */}
       <div className="absolute top-16 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none">
         {isNight ? (
