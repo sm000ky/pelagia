@@ -7,7 +7,16 @@ import { WaterlineThreshold } from './components/WaterlineThreshold';
 import { SpecimenItem } from './components/SpecimenItem';
 import { FieldJournalModal } from './components/FieldJournalModal';
 import { LogbookDrawer } from './components/LogbookDrawer';
-import { TactileAnomalySpot, RelicModal } from './components/EasterEggs';
+import {
+  InWorldPaperCloud,
+  InWorldGiantClam,
+  InWorldLiftableRock,
+  InWorldTrenchEyes,
+  InWorldBeebeSphere,
+  InWorldCoralOrgan,
+  InWorldCrushedDrum,
+  SecretNotificationToast,
+} from './components/EasterEggs';
 import { EnvironmentalPhenomena } from './components/EnvironmentalPhenomena';
 import { APOCRYPHAL_RELICS } from './data/relicsData';
 import { ApocryphalRelic } from './types';
@@ -57,7 +66,11 @@ export function App() {
     return new Set<string>();
   });
 
-  const [selectedRelic, setSelectedRelic] = useState<ApocryphalRelic | null>(null);
+  const [secretToast, setSecretToast] = useState<{
+    title: string;
+    relicNumber: string;
+    depthText: string;
+  } | null>(null);
 
   // Environmental Phenomenon States (Update: Sovereign Tide)
   const [isPlanktonActive, setIsPlanktonActive] = useState<boolean>(false);
@@ -65,9 +78,8 @@ export function App() {
   const [is1930sMode, setIs1930sMode] = useState<boolean>(false);
   const [isUVMode, setIsUVMode] = useState<boolean>(false);
 
-  const handleInspectRelic = (relic: ApocryphalRelic) => {
+  const handleUnlockSecret = (relic: ApocryphalRelic) => {
     pelagiaAudio.playRelicUnlock();
-    setSelectedRelic(relic);
     if (!discoveredRelicIds.has(relic.id)) {
       setDiscoveredRelicIds((prev) => {
         const next = new Set(prev);
@@ -80,6 +92,13 @@ export function App() {
         return next;
       });
     }
+
+    const depthText = relic.depthMeters <= 0 ? `+${Math.abs(relic.depthMeters)}m` : `-${relic.depthMeters}m`;
+    setSecretToast({
+      title: relic.title,
+      relicNumber: relic.relicNumber,
+      depthText,
+    });
   };
 
   const lastZoneIdRef = useRef<string>('coastal');
@@ -323,11 +342,10 @@ export function App() {
           discoveredIds={discoveredIds}
           t={t}
         />
-        {/* Apocrypha 1: The Curious Cirrus Paper Cloud */}
-        <TactileAnomalySpot
-          relicId="relic-albatross"
+        {/* In-World Anomaly 1: The Aerial Cloud & Jian Origami Albatross (+12m) */}
+        <InWorldPaperCloud
           isUnlocked={discoveredRelicIds.has('relic-albatross')}
-          onInspect={handleInspectRelic}
+          onUnlock={handleUnlockSecret}
         />
       </div>
 
@@ -369,12 +387,11 @@ export function App() {
                 onSelect={setSelectedSpecimen}
                 isDiscovered={discoveredIds.has(specimen.id)}
               />
-              {/* Apocryphal Relic 2: Ancient Staghorn Coral Shelf */}
+              {/* In-World Anomaly 2: The Shy Giant Clam holding Corsair Treasure (-110m) */}
               {idx === 5 && (
-                <TactileAnomalySpot
-                  relicId="relic-cutlass"
+                <InWorldGiantClam
                   isUnlocked={discoveredRelicIds.has('relic-cutlass')}
-                  onInspect={handleInspectRelic}
+                  onUnlock={handleUnlockSecret}
                 />
               )}
             </React.Fragment>
@@ -410,12 +427,11 @@ export function App() {
                 onSelect={setSelectedSpecimen}
                 isDiscovered={discoveredIds.has(specimen.id)}
               />
-              {/* Apocryphal Relic 3: Heavy Volcanic Basalt Boulder (Emerald Flask underneath!) */}
+              {/* In-World Anomaly 3: The Liftable Volcanic Basalt Rock & Emerald Bottle (-680m) */}
               {idx === 4 && (
-                <TactileAnomalySpot
-                  relicId="relic-bottle"
+                <InWorldLiftableRock
                   isUnlocked={discoveredRelicIds.has('relic-bottle')}
-                  onInspect={handleInspectRelic}
+                  onUnlock={handleUnlockSecret}
                   onTriggerPlankton={() => setIsPlanktonActive(true)}
                 />
               )}
@@ -452,21 +468,19 @@ export function App() {
                 onSelect={setSelectedSpecimen}
                 isDiscovered={discoveredIds.has(specimen.id)}
               />
-              {/* Apocryphal Relic 4: Sealed Naval Pressure Hatch (120m Titan Sonar!) */}
+              {/* In-World Anomaly 4: The Trench Wall Crevice & Eyes of the 120m Titan (-2,400m) */}
               {idx === 3 && (
-                <TactileAnomalySpot
-                  relicId="relic-titan"
+                <InWorldTrenchEyes
                   isUnlocked={discoveredRelicIds.has('relic-titan')}
-                  onInspect={handleInspectRelic}
+                  onUnlock={handleUnlockSecret}
                   onTriggerTitan={() => setIsTitanSwimming(true)}
                 />
               )}
-              {/* Apocryphal Relic 5: Tangled Abyssal Sponges & Lilies (1930 Beebe Bathysphere!) */}
+              {/* In-World Anomaly 5: The 1930 Beebe Diving Sphere tangled in Sea Lilies (-3,850m) */}
               {idx === 7 && (
-                <TactileAnomalySpot
-                  relicId="relic-bathysphere"
+                <InWorldBeebeSphere
                   isUnlocked={discoveredRelicIds.has('relic-bathysphere')}
-                  onInspect={handleInspectRelic}
+                  onUnlock={handleUnlockSecret}
                   onToggle1930s={() => setIs1930sMode((v) => !v)}
                 />
               )}
@@ -503,12 +517,11 @@ export function App() {
                 onSelect={setSelectedSpecimen}
                 isDiscovered={discoveredIds.has(specimen.id)}
               />
-              {/* Apocryphal Relic 6: Fossilized Sediment Silt Crust (Phosphor Matrix!) */}
+              {/* In-World Anomaly 6: The Sea Organ Coral Pipes & UV Luminescence (-5,100m) */}
               {idx === 2 && (
-                <TactileAnomalySpot
-                  relicId="relic-blacklight"
+                <InWorldCoralOrgan
                   isUnlocked={discoveredRelicIds.has('relic-blacklight')}
-                  onInspect={handleInspectRelic}
+                  onUnlock={handleUnlockSecret}
                   onToggleUV={() => setIsUVMode((v) => !v)}
                 />
               )}
@@ -545,12 +558,11 @@ export function App() {
                 onSelect={setSelectedSpecimen}
                 isDiscovered={discoveredIds.has(specimen.id)}
               />
-              {/* Apocryphal Relic 7: Crushed Oil Barrel (Indestructible Mug!) */}
+              {/* In-World Anomaly 7: The Crushed Steel Drum & Indestructible Mug (-10,250m) */}
               {idx === 4 && (
-                <TactileAnomalySpot
-                  relicId="relic-mug"
+                <InWorldCrushedDrum
                   isUnlocked={discoveredRelicIds.has('relic-mug')}
-                  onInspect={handleInspectRelic}
+                  onUnlock={handleUnlockSecret}
                 />
               )}
             </React.Fragment>
@@ -567,7 +579,7 @@ export function App() {
           isKlaxosaurUnlocked={discoveredRelicIds.has('relic-klaxosaur')}
           onUnlockKlaxosaur={() => {
             const r = APOCRYPHAL_RELICS.find((x) => x.id === 'relic-klaxosaur');
-            if (r) handleInspectRelic(r);
+            if (r) handleUnlockSecret(r);
           }}
         />
       </div>
@@ -605,7 +617,7 @@ export function App() {
         }}
         onSelectRelic={(r) => {
           setIsLogbookOpen(false);
-          handleInspectRelic(r);
+          handleJumpToRelic(r.id);
         }}
         onJumpToSpecimenDepth={() => {}}
         onJumpToRelic={handleJumpToRelic}
@@ -624,10 +636,12 @@ export function App() {
         terminalDepth={10994}
       />
 
-      {/* Apocryphal Relic Inspection Modal */}
-      <RelicModal
-        relic={selectedRelic}
-        onClose={() => setSelectedRelic(null)}
+      {/* Discreet In-World Secret Unlocked Toast (Zero Immersion-Breaking Modals!) */}
+      <SecretNotificationToast
+        toast={secretToast}
+        onDismiss={() => setSecretToast(null)}
+        relicsCount={discoveredRelicIds.size}
+        totalRelics={APOCRYPHAL_RELICS.length}
       />
 
       {/* Environmental Magic Engine (Update: Sovereign Tide) */}
