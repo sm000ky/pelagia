@@ -131,14 +131,17 @@ export const EnvironmentalPhenomena: React.FC<EnvironmentalPhenomenaProps> = ({
     };
   }, [isPlanktonActive]);
 
-  // 2. 120-METER TITAN LEVIATHAN TRANSIT TIMER
+  // 2. 120-METER TITAN LEVIATHAN TRANSIT TIMER & CLEANUP
+  const finishRef = useRef(onTitanFinish);
+  finishRef.current = onTitanFinish;
+
   useEffect(() => {
     if (!isTitanSwimming) return;
     const timer = setTimeout(() => {
-      onTitanFinish();
-    }, 14000); // 14-second majestic transit
+      finishRef.current();
+    }, 11000); // 11-second smooth transit
     return () => clearTimeout(timer);
-  }, [isTitanSwimming, onTitanFinish]);
+  }, [isTitanSwimming]);
 
   return (
     <>
@@ -174,9 +177,10 @@ export const EnvironmentalPhenomena: React.FC<EnvironmentalPhenomenaProps> = ({
 
             {/* Giant Silhouette swimming right to left */}
             <div
+              onAnimationEnd={() => finishRef.current()}
               className="absolute left-full flex items-center select-none"
               style={{
-                animation: 'titanSwim 13.5s cubic-bezier(0.25, 1, 0.5, 1) forwards',
+                animation: 'titanSwim 9.5s linear forwards',
                 width: '160vw',
                 minWidth: '1300px',
               }}
@@ -242,12 +246,17 @@ export const EnvironmentalPhenomena: React.FC<EnvironmentalPhenomenaProps> = ({
 
             {/* Infrasound Acoustic Warning Pill */}
             <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
-              <div className="px-4 py-2 rounded-xl bg-cyan-950/90 border border-cyan-400/80 text-cyan-200 font-mono text-xs shadow-[0_0_30px_rgba(6,182,212,0.4)] flex items-center gap-2.5 animate-bounce">
+              <button
+                onClick={() => finishRef.current()}
+                className="px-4 py-2 rounded-xl bg-cyan-950/90 border border-cyan-400/80 text-cyan-200 font-mono text-xs shadow-[0_0_30px_rgba(6,182,212,0.4)] flex items-center gap-2.5 cursor-pointer hover:bg-cyan-900 transition-colors animate-bounce"
+                title="Dismiss Leviathan Transit"
+              >
                 <Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
                 <span className="font-bold tracking-wider">
-                  BIO-ACOUSTIC CONTACT DETECTED: 120-METER TITAN LEVIATHAN
+                  BIO-ACOUSTIC CONTACT: 120M TITAN LEVIATHAN
                 </span>
-              </div>
+                <X className="w-3.5 h-3.5 ml-1 opacity-60 hover:opacity-100" />
+              </button>
             </div>
           </div>
         </div>
@@ -319,13 +328,19 @@ export const EnvironmentalPhenomena: React.FC<EnvironmentalPhenomenaProps> = ({
       <style>{`
         @keyframes titanSwim {
           0% {
-            transform: translateX(0vw) translateY(40px);
+            transform: translateX(0vw) translateY(30px);
+          }
+          25% {
+            transform: translateX(-80vw) translateY(-20px);
           }
           50% {
-            transform: translateX(-160vw) translateY(-30px);
+            transform: translateX(-160vw) translateY(30px);
+          }
+          75% {
+            transform: translateX(-240vw) translateY(-20px);
           }
           100% {
-            transform: translateX(-320vw) translateY(20px);
+            transform: translateX(-340vw) translateY(20px);
           }
         }
       `}</style>

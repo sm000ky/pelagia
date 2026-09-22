@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { ZONES, SPECIMENS } from './data/oceanData';
 import { BiotaSpecimen, ZoneData } from './types';
 import { MechanicalDepthGauge } from './components/MechanicalDepthGauge';
@@ -77,6 +77,10 @@ export function App() {
   const [isTitanSwimming, setIsTitanSwimming] = useState<boolean>(false);
   const [is1930sMode, setIs1930sMode] = useState<boolean>(false);
   const [isUVMode, setIsUVMode] = useState<boolean>(false);
+
+  const handleTitanFinish = useCallback(() => {
+    setIsTitanSwimming(false);
+  }, []);
 
   const handleUnlockSecret = (relic: ApocryphalRelic) => {
     pelagiaAudio.playRelicUnlock();
@@ -649,7 +653,7 @@ export function App() {
         isPlanktonActive={isPlanktonActive}
         onTogglePlankton={(active) => setIsPlanktonActive(active ?? !isPlanktonActive)}
         isTitanSwimming={isTitanSwimming}
-        onTitanFinish={() => setIsTitanSwimming(false)}
+        onTitanFinish={handleTitanFinish}
         is1930sMode={is1930sMode}
         onToggle1930sMode={(active) => setIs1930sMode(active ?? !is1930sMode)}
         isUVMode={isUVMode}
