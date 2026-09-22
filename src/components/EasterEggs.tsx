@@ -1,184 +1,196 @@
 import React, { useState } from 'react';
-import { Sparkles, X, AlertTriangle, Eye } from 'lucide-react';
+import { Sparkles, X, AlertTriangle, Eye, Award, Compass, ShieldCheck } from 'lucide-react';
+import confetti from 'canvas-confetti';
+import { ApocryphalRelic } from '../types';
+import { APOCRYPHAL_RELICS } from '../data/relicsData';
 import { pelagiaAudio } from '../lib/audioEngine';
 
-interface EasterEggProps {
-  currentDepth: number;
+interface RelicMarkerProps {
+  relicId: string;
+  isUnlocked: boolean;
+  onInspect: (relic: ApocryphalRelic) => void;
+  className?: string;
 }
 
-export const EasterEggs: React.FC<EasterEggProps> = () => {
-  const [activeNote, setActiveNote] = useState<{ title: string; content: string; sign: string } | null>(null);
-
-  const openNote = (title: string, content: string, sign: string, soundType: 'pop' | 'bubble' | 'rumble' = 'bubble') => {
-    if (soundType === 'pop') pelagiaAudio.playBottlePop();
-    else if (soundType === 'rumble') pelagiaAudio.playLeviathanRumble();
-    else pelagiaAudio.playWaterBubble();
-
-    pelagiaAudio.playPaperRustle();
-    setActiveNote({ title, content, sign });
-  };
+export const RelicMarker: React.FC<RelicMarkerProps> = ({
+  relicId,
+  isUnlocked,
+  onInspect,
+  className = '',
+}) => {
+  const relic = APOCRYPHAL_RELICS.find((r) => r.id === relicId);
+  if (!relic) return null;
 
   return (
-    <>
-      {/* 1. Waterline (+0m): Origami Paper Boat */}
-      <div className="relative w-full max-w-4xl mx-auto my-8 px-4 flex justify-center select-none">
-        <button
-          onClick={() =>
-            openNote(
-              'ORIGAMI EXPEDITION VESSEL #002',
-              'A small folded paper boat drifting on the surface swells. Scrawled inside the hull in vermilion ink is an ancient naturalist oath:\n\n"Burung Jian hanya terlahir dengan satu sayap. Mereka harus saling merengkuh untuk bisa terbang menembus batas langit dan samudra. Mari kita selami samudra ini hingga ke palung terdalam."',
-              'Strelizia Expedition Record — sm000ky & Zero Two',
-              'pop'
-            )
-          }
-          className="group cursor-pointer p-4 rounded-xl border border-dashed border-[#1E252B]/30 hover:border-[#D95A47] hover:bg-white/40 transition-all flex items-center gap-3 bg-white/20 backdrop-blur-xs"
-          title="Inspect Drifting Origami Boat"
-        >
-          {/* Origami Boat SVG */}
-          <svg viewBox="0 0 60 40" className="w-10 h-7 text-[#D95A47] group-hover:scale-110 transition-transform" fill="currentColor">
-            <polygon points="5,25 55,25 45,35 15,35" />
-            <polygon points="30,5 30,22 12,22" fill="#FAF6EE" stroke="#1E252B" strokeWidth="1.5" />
-            <polygon points="32,8 48,22 32,22" fill="#EAA838" stroke="#1E252B" strokeWidth="1.5" />
-          </svg>
-          <div className="text-left font-mono text-[11px]">
-            <div className="font-bold text-[#D95A47] flex items-center gap-1">
-              <Sparkles className="w-3 h-3" />
-              <span>EASTER EGG // DRIFTING PAPERCRAFT VESSEL</span>
-            </div>
-            <div className="text-[#626863] text-[10px]">Click to unfold message inside</div>
-          </div>
-        </button>
-      </div>
+    <div className={`relative my-8 sm:my-14 flex justify-center select-none ${className}`}>
+      <button
+        onClick={() => onInspect(relic)}
+        className={`group cursor-pointer px-4 py-3 rounded-2xl border-2 transition-all duration-300 flex items-center gap-3.5 backdrop-blur-md active:scale-95 ${
+          isUnlocked
+            ? 'bg-[#FAF6EE]/90 text-[#1E252B] border-[#EAA838] shadow-[0_0_20px_rgba(234,168,56,0.3)]'
+            : 'bg-[#0E1720]/80 text-[#FAF6EE] border-[#38BDF8]/40 hover:border-[#38BDF8] shadow-[0_0_15px_rgba(56,189,248,0.15)]'
+        }`}
+        title={`Inspect ${relic.title}`}
+      >
+        {/* Papercraft Icon per Relic Type */}
+        <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-black/20 border border-current/30 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+          {relic.iconType === 'albatross' && (
+            <svg viewBox="0 0 60 40" className="w-7 h-5 text-[#D95A47]" fill="currentColor">
+              <polygon points="5,25 55,25 45,35 15,35" />
+              <polygon points="30,5 30,22 12,22" fill="#FAF6EE" stroke="#1E252B" strokeWidth="1.5" />
+              <polygon points="32,8 48,22 32,22" fill="#EAA838" stroke="#1E252B" strokeWidth="1.5" />
+            </svg>
+          )}
 
-      {/* 2. Twilight (-650m): Wax-Sealed Green Glass Message Bottle */}
-      <div className="relative w-full max-w-3xl mx-auto my-16 px-4 flex justify-end select-none">
-        <button
-          onClick={() =>
-            openNote(
-              'ANTIQUE BATHYAL MESSAGE IN A BOTTLE',
-              'Recovered at -650m in the Mesopelagic twilight gloom. The parchment is salt-stained but the handwriting remains crisp:\n\n"To whoever dredges this flask from the twilight realm: If you descend past the midnight void into the hadal floor, remember that the ocean has no bottom for those who dare look beneath the crust. Beware what sleeps under the trench."',
-              'Archival Log — HMS Challenger Expedition (1875)',
-              'pop'
-            )
-          }
-          className="group cursor-pointer p-3.5 rounded-xl border border-cyan-500/40 hover:border-cyan-400 bg-[#0C1B26]/80 hover:bg-[#122737] transition-all flex items-center gap-3 text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.15)]"
-          title="Recover Message in a Bottle"
-        >
-          {/* Glass Bottle SVG */}
-          <svg viewBox="0 0 30 60" className="w-6 h-12 text-cyan-400 group-hover:rotate-6 transition-transform" fill="currentColor">
-            <rect x="11" y="2" width="8" height="8" rx="1" fill="#D97706" />
-            <path d="M10 10 L20 10 L22 22 L26 30 L26 54 C26 58, 4 58, 4 54 L4 30 L8 22 Z" fill="#0E7490" fillOpacity="0.7" stroke="#38BDF8" strokeWidth="1.5" />
-            <rect x="8" y="28" width="14" height="18" rx="1" fill="#FEF3C7" opacity="0.8" />
-          </svg>
-          <div className="text-left font-mono text-[11px]">
-            <div className="font-bold text-cyan-300 flex items-center gap-1">
-              <span>🍾 WAX-SEALED ANTIQUE FLASK (-650M)</span>
-            </div>
-            <div className="text-cyan-400/70 text-[10px]">Click to uncork and read message</div>
-          </div>
-        </button>
-      </div>
+          {relic.iconType === 'cutlass' && (
+            <svg viewBox="0 0 40 40" className="w-6 h-6 text-[#EAA838]" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M8 32 L28 12 M28 12 C32 8, 34 8, 32 14 L18 28" />
+              <circle cx="9" cy="31" r="3" fill="#D95A47" />
+              <path d="M6 34 L12 28" />
+            </svg>
+          )}
 
-      {/* 3. Midnight (-2,600m): Deep Sound Hydrophone & Shadow of the Titan */}
-      <div className="relative w-full max-w-4xl mx-auto my-20 px-4 select-none">
-        <div
-          onClick={() =>
-            openNote(
-              'BIO-ACOUSTIC CONTACT: "THE GIGANTIC PELAGIC TITAN"',
-              'Hydrophone sensors registered an enormous biological sonic pulse (14 Hz ultra-low infrasound frequency). A silhouette measuring over 120 meters in length just glided past the research bathyscaphe.\n\n"Sonar alert: Visual confirmation of an colossal creature swimming through the bathyal trench. Its scale dwarfs any modern blue whale!"',
-              'Strelizia Acoustic Sensor Log // Depth: -2,600m',
-              'rumble'
-            )
-          }
-          className="cursor-pointer group relative p-5 rounded-2xl border-2 border-[#EAA838]/40 hover:border-[#EAA838] bg-[#0A1017]/90 hover:bg-[#0F1823] transition-all shadow-[0_0_25px_rgba(234,168,56,0.15)] flex flex-col sm:flex-row items-center justify-between gap-4"
-        >
-          {/* Steady Illuminated Beacon (Zero Kelap-Kelip) */}
-          <div className="flex items-center gap-3 font-mono">
-            <div className="relative w-10 h-10 rounded-full border border-[#EAA838] flex items-center justify-center bg-[#171F2C] shadow-[0_0_10px_rgba(234,168,56,0.3)]">
-              <span className="w-2 h-2 rounded-full bg-[#EAA838] shadow-[0_0_6px_#EAA838]" />
-              <Eye className="w-4 h-4 text-[#EAA838] ml-1" />
-            </div>
-            <div>
-              <div className="font-bold text-[#F59E0B] text-xs flex items-center gap-1.5">
-                <AlertTriangle className="w-3.5 h-3.5 text-[#F59E0B]" />
-                <span>SONAR ANOMALY DETECTED // 120-METER CONTACT</span>
-              </div>
-              <div className="text-slate-400 text-[10px]">Click to decode acoustic intercept</div>
-            </div>
-          </div>
+          {relic.iconType === 'bottle' && (
+            <svg viewBox="0 0 30 60" className="w-5 h-8 text-emerald-400" fill="currentColor">
+              <rect x="11" y="2" width="8" height="6" rx="1" fill="#D97706" />
+              <path d="M10 8 L20 8 L22 20 L26 28 L26 52 C26 56, 4 56, 4 52 L4 28 L8 20 Z" fill="#0E7490" fillOpacity="0.8" stroke="#38BDF8" strokeWidth="1.5" />
+              <rect x="8" y="28" width="14" height="14" rx="1" fill="#FEF3C7" opacity="0.8" />
+            </svg>
+          )}
 
-          <div className="px-3 py-1 rounded bg-[#EAA838]/20 border border-[#EAA838]/50 text-[#F59E0B] font-mono text-[10px] font-bold group-hover:scale-105 transition-transform">
-            PLAY HYDROPHONE ECHO
-          </div>
+          {relic.iconType === 'titan' && (
+            <div className="relative flex items-center justify-center">
+              <Eye className="w-5 h-5 text-[#F59E0B] animate-pulse" />
+              <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500 animate-ping" />
+            </div>
+          )}
+
+          {relic.iconType === 'bathysphere' && (
+            <svg viewBox="0 0 40 40" className="w-6 h-6 text-[#38BDF8]" fill="none">
+              <circle cx="20" cy="20" r="14" fill="#1E293B" stroke="#38BDF8" strokeWidth="2" />
+              <circle cx="20" cy="20" r="6" fill="#0EA5E9" stroke="#FAF6EE" strokeWidth="1.5" />
+              <path d="M20 6 L20 2 M14 2 h12" stroke="#38BDF8" strokeWidth="2" />
+            </svg>
+          )}
+
+          {relic.iconType === 'blacklight' && (
+            <Sparkles className="w-5 h-5 text-purple-400 animate-spin" style={{ animationDuration: '6s' }} />
+          )}
+
+          {relic.iconType === 'mug' && (
+            <svg viewBox="0 0 40 40" className="w-6 h-6 text-red-400" fill="currentColor">
+              <rect x="8" y="10" width="20" height="22" rx="3" fill="#FAF6EE" stroke="#1E252B" strokeWidth="2" />
+              <path d="M28 14 C35 14, 35 26, 28 26" fill="none" stroke="#1E252B" strokeWidth="2" strokeLinecap="round" />
+              <path d="M12 18 h12 M12 22 h8" stroke="#D95A47" strokeWidth="1.5" />
+            </svg>
+          )}
+
+          {relic.iconType === 'klaxosaur' && (
+            <div className="relative">
+              <span className="text-xl">👑</span>
+              <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-500 animate-ping" />
+            </div>
+          )}
         </div>
-      </div>
 
-      {/* 4. Hadal (-10,200m): Indestructible Ceramic Coffee Cup */}
-      <div className="relative w-full max-w-3xl mx-auto my-16 px-4 flex justify-start select-none">
-        <button
-          onClick={() =>
-            openNote(
-              'HOMO SAPIENS ARTIFACT: ANCIENT EXPEDITION MUG',
-              'Resting upright on the Marianas hadal silt under 1,000 atmospheres of crushing pressure sits a single porcelain coffee mug.\n\nPrinted on its side is an indelible inscription:\n"NO SLEEP TILL CHALLENGER DEEP // EXPEDITION 002".\n\nUnder 16,000 PSI of water, steel collapses, but this porcelain artifact stands eternal.',
-              'Hadal Trench Observation Camera // -10,200m',
-              'bubble'
-            )
-          }
-          className="group cursor-pointer p-3 rounded-xl border border-red-500/40 hover:border-red-400 bg-[#0A070B]/80 hover:bg-[#150D17] transition-all flex items-center gap-3 text-red-200 shadow-[0_0_15px_rgba(239,68,68,0.15)]"
-          title="Inspect Deep Trench Artifact"
-        >
-          {/* Coffee Mug SVG */}
-          <svg viewBox="0 0 40 40" className="w-8 h-8 text-red-400 group-hover:scale-110 transition-transform" fill="currentColor">
-            <rect x="8" y="10" width="20" height="22" rx="3" fill="#FAF6EE" stroke="#1E252B" strokeWidth="2" />
-            <path d="M28 14 C35 14, 35 26, 28 26" fill="none" stroke="#1E252B" strokeWidth="2" strokeLinecap="round" />
-            <path d="M12 18 h12 M12 22 h8" stroke="#D95A47" strokeWidth="1.5" />
-          </svg>
-          <div className="text-left font-mono text-[11px]">
-            <div className="font-bold text-red-300 flex items-center gap-1">
-              <span>☕ FORGOTTEN EXPEDITION ARTIFACT (-10,200M)</span>
-            </div>
-            <div className="text-red-400/70 text-[10px]">Click to inspect plaque</div>
-          </div>
-        </button>
-      </div>
-
-      {/* Easter Egg Modal Card */}
-      {activeNote && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md select-none animate-in fade-in-0 duration-200"
-          onClick={() => setActiveNote(null)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md bg-[#FAF6EE] text-[#1E252B] border-2 border-[#1E252B] rounded-2xl p-6 sm:p-8 shadow-paper-lg paper-grain space-y-4"
-          >
-            <div className="flex items-center justify-between border-b border-dashed border-[#1E252B]/30 pb-3">
-              <span className="font-mono text-[10px] font-bold text-[#D95A47] tracking-widest uppercase flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>SECRET ARCHIVE RECORD</span>
+        {/* Text & Clue Status */}
+        <div className="text-left font-mono text-xs">
+          <div className="flex items-center gap-2">
+            <span className={`text-[10px] font-bold uppercase tracking-widest ${isUnlocked ? 'text-[#D95A47]' : 'text-cyan-400'}`}>
+              {relic.relicNumber}
+            </span>
+            {isUnlocked && (
+              <span className="px-1.5 py-0.2 rounded bg-emerald-900/40 text-emerald-300 text-[9px] font-bold border border-emerald-500/50">
+                UNCOVERED
               </span>
-              <button
-                onClick={() => setActiveNote(null)}
-                className="p-1 rounded-lg border border-[#1E252B] hover:bg-[#D95A47] hover:text-white transition-colors cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <h3 className="text-2xl font-serif font-bold text-[#1E252B]">
-              {activeNote.title}
-            </h3>
-
-            <p className="font-serif text-sm sm:text-base text-[#2D312E] leading-relaxed whitespace-pre-line italic bg-[#F4ECE1] p-4 rounded-xl border border-[#DEC6AE]">
-              {activeNote.content}
-            </p>
-
-            <div className="pt-2 text-right font-mono text-xs text-[#626863] border-t border-dashed border-[#1E252B]/20">
-              — {activeNote.sign}
-            </div>
+            )}
+          </div>
+          <div className="font-bold font-serif text-sm sm:text-base tracking-tight truncate max-w-[240px] sm:max-w-md">
+            {relic.title}
+          </div>
+          <div className="text-[10px] opacity-70 flex items-center gap-1.5">
+            <Compass className="w-3 h-3" />
+            <span>{relic.depthMeters <= 0 ? `+${Math.abs(relic.depthMeters)}M SHORE` : `-${relic.depthMeters}M DEPTH`}</span>
+            <span>·</span>
+            <span>{isUnlocked ? 'Click to inspect archive' : 'Tap to uncover secret anomaly!'}</span>
           </div>
         </div>
-      )}
-    </>
+      </button>
+    </div>
+  );
+};
+
+interface RelicModalProps {
+  relic: ApocryphalRelic | null;
+  onClose: () => void;
+}
+
+export const RelicModal: React.FC<RelicModalProps> = ({ relic, onClose }) => {
+  if (!relic) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md select-none animate-in fade-in-0 duration-200"
+      onClick={onClose}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-lg bg-[#FAF3E0] text-[#1E252B] border-4 border-[#1E252B] rounded-2xl p-6 sm:p-8 shadow-paper-lg paper-grain space-y-5 animate-in zoom-in-95 duration-200"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b-2 border-dashed border-[#1E252B]/30 pb-3">
+          <div className="space-y-0.5 font-mono">
+            <span className="text-[10px] font-bold text-[#D95A47] tracking-widest uppercase flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>CLASSIFIED APOCRYPHAL RELIC</span>
+            </span>
+            <div className="text-xs text-[#626863]">
+              {relic.relicNumber} · {relic.depthMeters <= 0 ? `+${Math.abs(relic.depthMeters)}M SHORE` : `-${relic.depthMeters}M DEPTH`}
+            </div>
+          </div>
+
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg border-2 border-[#1E252B] bg-[#FAF6EE] hover:bg-[#D95A47] hover:text-white transition-colors cursor-pointer shadow-paper-sm"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Title */}
+        <div>
+          <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#1E252B] tracking-tight">
+            {relic.title}
+          </h3>
+          <p className="font-mono text-xs text-[#D95A47] font-semibold mt-1">
+            {relic.subtitle}
+          </p>
+        </div>
+
+        {/* Narrative Lore */}
+        <div className="space-y-2 bg-[#F4ECE1] p-4 sm:p-5 rounded-xl border-2 border-[#DEC6AE] shadow-inner">
+          <div className="text-[10px] font-mono tracking-widest uppercase font-bold text-[#2F6D68]">
+            ARCHIVAL DISPATCH & TESTIMONY
+          </div>
+          <p className="font-serif text-sm sm:text-base text-[#2D312E] leading-relaxed italic whitespace-pre-line">
+            "{relic.lore}"
+          </p>
+        </div>
+
+        {/* Provenance Stamp */}
+        <div className="pt-2 flex items-center justify-between font-mono text-xs text-[#626863] border-t border-dashed border-[#1E252B]/20">
+          <div className="flex items-center gap-1.5 text-[#2F6D68] font-bold text-[11px]">
+            <ShieldCheck className="w-4 h-4" />
+            <span>AUTHENTICATED IN EXPEDITION DIPLOMA</span>
+          </div>
+          <button
+            onClick={onClose}
+            className="font-bold text-[#1E252B] hover:text-[#D95A47] underline cursor-pointer"
+          >
+            [CLOSE LOG]
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };

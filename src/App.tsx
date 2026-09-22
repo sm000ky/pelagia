@@ -7,7 +7,9 @@ import { WaterlineThreshold } from './components/WaterlineThreshold';
 import { SpecimenItem } from './components/SpecimenItem';
 import { FieldJournalModal } from './components/FieldJournalModal';
 import { LogbookDrawer } from './components/LogbookDrawer';
-import { EasterEggs } from './components/EasterEggs';
+import { RelicMarker, RelicModal } from './components/EasterEggs';
+import { APOCRYPHAL_RELICS } from './data/relicsData';
+import { ApocryphalRelic } from './types';
 import { ChallengerDeepFinale } from './components/ChallengerDeepFinale';
 import { ForbiddenAbyssSequence } from './components/ForbiddenAbyssSequence';
 import { DepthScrubberRail } from './components/DepthScrubberRail';
@@ -42,6 +44,36 @@ export function App() {
     }
     return new Set<string>();
   });
+
+  // LocalStorage tracker for 8 Apocryphal Relics (Easter Eggs)
+  const [discoveredRelicIds, setDiscoveredRelicIds] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('pelagia_discovered_relics');
+      if (saved) return new Set(JSON.parse(saved));
+    } catch {
+      // ignore
+    }
+    return new Set<string>();
+  });
+
+  const [selectedRelic, setSelectedRelic] = useState<ApocryphalRelic | null>(null);
+
+  const handleInspectRelic = (relic: ApocryphalRelic) => {
+    pelagiaAudio.playRelicUnlock();
+    setSelectedRelic(relic);
+    if (!discoveredRelicIds.has(relic.id)) {
+      setDiscoveredRelicIds((prev) => {
+        const next = new Set(prev);
+        next.add(relic.id);
+        try {
+          localStorage.setItem('pelagia_discovered_relics', JSON.stringify(Array.from(next)));
+        } catch {
+          // ignore
+        }
+        return next;
+      });
+    }
+  };
 
   const lastZoneIdRef = useRef<string>('coastal');
 
@@ -234,13 +266,18 @@ export function App() {
           discoveredIds={discoveredIds}
           t={t}
         />
+        {/* Apocryphal Relic 1: The Celestial Jian Origami Albatross */}
+        <RelicMarker
+          relicId="relic-albatross"
+          isUnlocked={discoveredRelicIds.has('relic-albatross')}
+          onInspect={handleInspectRelic}
+        />
       </div>
 
       {/* ===================================================================
-       * 2. WATERLINE BREAKTHROUGH (0M) + EASTER EGG 1
+       * 2. WATERLINE BREAKTHROUGH (0M)
        * =================================================================== */}
       <WaterlineThreshold />
-      <EasterEggs currentDepth={currentDepth} />
 
       {/* ===================================================================
        * 3. THE SUNLIGHT REALM (0m to -200m) — 12 SPECIES
@@ -267,14 +304,23 @@ export function App() {
         {SPECIMENS.filter((s) => s.zoneId === 'sunlight')
           .map((s) => getLocalizedSpecimen(s, currentLang))
           .map((specimen, idx) => (
-            <SpecimenItem
-              key={specimen.id}
-              specimen={specimen}
-              zone={ZONES[1]}
-              index={idx}
-              onSelect={setSelectedSpecimen}
-              isDiscovered={discoveredIds.has(specimen.id)}
-            />
+            <React.Fragment key={specimen.id}>
+              <SpecimenItem
+                specimen={specimen}
+                zone={ZONES[1]}
+                index={idx}
+                onSelect={setSelectedSpecimen}
+                isDiscovered={discoveredIds.has(specimen.id)}
+              />
+              {/* Apocryphal Relic 2: Sunken Corsair Cutlass around -110m */}
+              {idx === 5 && (
+                <RelicMarker
+                  relicId="relic-cutlass"
+                  isUnlocked={discoveredRelicIds.has('relic-cutlass')}
+                  onInspect={handleInspectRelic}
+                />
+              )}
+            </React.Fragment>
           ))}
       </section>
 
@@ -299,14 +345,23 @@ export function App() {
         {SPECIMENS.filter((s) => s.zoneId === 'twilight')
           .map((s) => getLocalizedSpecimen(s, currentLang))
           .map((specimen, idx) => (
-            <SpecimenItem
-              key={specimen.id}
-              specimen={specimen}
-              zone={ZONES[2]}
-              index={idx}
-              onSelect={setSelectedSpecimen}
-              isDiscovered={discoveredIds.has(specimen.id)}
-            />
+            <React.Fragment key={specimen.id}>
+              <SpecimenItem
+                specimen={specimen}
+                zone={ZONES[2]}
+                index={idx}
+                onSelect={setSelectedSpecimen}
+                isDiscovered={discoveredIds.has(specimen.id)}
+              />
+              {/* Apocryphal Relic 3: The Emerald Message Flask at -680m */}
+              {idx === 4 && (
+                <RelicMarker
+                  relicId="relic-bottle"
+                  isUnlocked={discoveredRelicIds.has('relic-bottle')}
+                  onInspect={handleInspectRelic}
+                />
+              )}
+            </React.Fragment>
           ))}
       </section>
 
@@ -331,14 +386,31 @@ export function App() {
         {SPECIMENS.filter((s) => s.zoneId === 'midnight')
           .map((s) => getLocalizedSpecimen(s, currentLang))
           .map((specimen, idx) => (
-            <SpecimenItem
-              key={specimen.id}
-              specimen={specimen}
-              zone={ZONES[3]}
-              index={idx}
-              onSelect={setSelectedSpecimen}
-              isDiscovered={discoveredIds.has(specimen.id)}
-            />
+            <React.Fragment key={specimen.id}>
+              <SpecimenItem
+                specimen={specimen}
+                zone={ZONES[3]}
+                index={idx}
+                onSelect={setSelectedSpecimen}
+                isDiscovered={discoveredIds.has(specimen.id)}
+              />
+              {/* Apocryphal Relic 4: 120-Meter Titan Acoustic Contact at -2,400m */}
+              {idx === 3 && (
+                <RelicMarker
+                  relicId="relic-titan"
+                  isUnlocked={discoveredRelicIds.has('relic-titan')}
+                  onInspect={handleInspectRelic}
+                />
+              )}
+              {/* Apocryphal Relic 5: The 1930 Beebe Steel Bathysphere at -3,850m */}
+              {idx === 7 && (
+                <RelicMarker
+                  relicId="relic-bathysphere"
+                  isUnlocked={discoveredRelicIds.has('relic-bathysphere')}
+                  onInspect={handleInspectRelic}
+                />
+              )}
+            </React.Fragment>
           ))}
       </section>
 
@@ -363,14 +435,23 @@ export function App() {
         {SPECIMENS.filter((s) => s.zoneId === 'abyss')
           .map((s) => getLocalizedSpecimen(s, currentLang))
           .map((specimen, idx) => (
-            <SpecimenItem
-              key={specimen.id}
-              specimen={specimen}
-              zone={ZONES[4]}
-              index={idx}
-              onSelect={setSelectedSpecimen}
-              isDiscovered={discoveredIds.has(specimen.id)}
-            />
+            <React.Fragment key={specimen.id}>
+              <SpecimenItem
+                specimen={specimen}
+                zone={ZONES[4]}
+                index={idx}
+                onSelect={setSelectedSpecimen}
+                isDiscovered={discoveredIds.has(specimen.id)}
+              />
+              {/* Apocryphal Relic 6: Phosphor Fluorescent Matrix at -5,100m */}
+              {idx === 2 && (
+                <RelicMarker
+                  relicId="relic-blacklight"
+                  isUnlocked={discoveredRelicIds.has('relic-blacklight')}
+                  onInspect={handleInspectRelic}
+                />
+              )}
+            </React.Fragment>
           ))}
       </section>
 
@@ -395,23 +476,37 @@ export function App() {
         {SPECIMENS.filter((s) => s.zoneId === 'hadal')
           .map((s) => getLocalizedSpecimen(s, currentLang))
           .map((specimen, idx) => (
-            <SpecimenItem
-              key={specimen.id}
-              specimen={specimen}
-              zone={ZONES[5]}
-              index={idx}
-              onSelect={setSelectedSpecimen}
-              isDiscovered={discoveredIds.has(specimen.id)}
-            />
+            <React.Fragment key={specimen.id}>
+              <SpecimenItem
+                specimen={specimen}
+                zone={ZONES[5]}
+                index={idx}
+                onSelect={setSelectedSpecimen}
+                isDiscovered={discoveredIds.has(specimen.id)}
+              />
+              {/* Apocryphal Relic 7: Indestructible Porcelain Mug at -10,250m */}
+              {idx === 4 && (
+                <RelicMarker
+                  relicId="relic-mug"
+                  isUnlocked={discoveredRelicIds.has('relic-mug')}
+                  onInspect={handleInspectRelic}
+                />
+              )}
+            </React.Fragment>
           ))}
       </section>
 
       {/* ===================================================================
-       * 8. CHALLENGER DEEP (-10,994M)
+       * 8. CHALLENGER DEEP (-10,994M) + APOCRYPHA 8: KLAXOSAUR CORE
        * =================================================================== */}
       <ChallengerDeepFinale
         onScrollToTop={handleScrollToTop}
         onOpenCertificate={() => setIsCertificateOpen(true)}
+        isKlaxosaurUnlocked={discoveredRelicIds.has('relic-klaxosaur')}
+        onUnlockKlaxosaur={() => {
+          const r = APOCRYPHAL_RELICS.find((x) => x.id === 'relic-klaxosaur');
+          if (r) handleInspectRelic(r);
+        }}
       />
 
       {/* ===================================================================
@@ -433,14 +528,19 @@ export function App() {
         t={t}
       />
 
-      {/* Expedition Logbook Drawer (50 Species) */}
+      {/* Expedition Logbook Drawer (50 Species & 8 Apocryphal Relics) */}
       <LogbookDrawer
         isOpen={isLogbookOpen}
         onClose={() => setIsLogbookOpen(false)}
         discoveredIds={discoveredIds}
+        discoveredRelicIds={discoveredRelicIds}
         onSelectSpecimen={(s) => {
           setIsLogbookOpen(false);
           setSelectedSpecimen(s);
+        }}
+        onSelectRelic={(r) => {
+          setIsLogbookOpen(false);
+          handleInspectRelic(r);
         }}
         onJumpToSpecimenDepth={() => {}}
         currentLang={currentLang}
@@ -453,7 +553,15 @@ export function App() {
         onClose={() => setIsCertificateOpen(false)}
         discoveredCount={discoveredIds.size}
         totalCount={SPECIMENS.length}
+        relicsCount={discoveredRelicIds.size}
+        totalRelics={APOCRYPHAL_RELICS.length}
         terminalDepth={10994}
+      />
+
+      {/* Apocryphal Relic Inspection Modal */}
+      <RelicModal
+        relic={selectedRelic}
+        onClose={() => setSelectedRelic(null)}
       />
     </div>
   );

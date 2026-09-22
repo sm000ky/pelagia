@@ -6,12 +6,11 @@ import {
   Share2,
   Award,
   Compass,
-  Check,
-  Copy,
   Edit3,
   Sparkles,
   ShieldCheck,
-  Waves,
+  Check,
+  Flame,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { pelagiaAudio } from '../lib/audioEngine';
@@ -21,6 +20,8 @@ interface CertificateModalProps {
   onClose: () => void;
   discoveredCount: number;
   totalCount: number;
+  relicsCount?: number;
+  totalRelics?: number;
   terminalDepth?: number;
 }
 
@@ -29,6 +30,8 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
   onClose,
   discoveredCount,
   totalCount,
+  relicsCount = 0,
+  totalRelics = 8,
   terminalDepth = 10994,
 }) => {
   const [explorerName, setExplorerName] = useState<string>(() => {
@@ -39,20 +42,17 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
     }
   });
 
-  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [copiedToast, setCopiedToast] = useState<boolean>(false);
-
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       pelagiaAudio.playSpecimenChime();
       confetti({
-        particleCount: 60,
-        spread: 80,
+        particleCount: 75,
+        spread: 85,
         origin: { y: 0.6 },
-        colors: ['#D95A47', '#EAA838', '#2F6D68', '#FAF6EE', '#38BDF8'],
+        colors: ['#D95A47', '#EAA838', '#2F6D68', '#FAF6EE', '#B91C1C'],
       });
     }
   }, [isOpen]);
@@ -61,10 +61,10 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
 
   const percent = Math.round((discoveredCount / totalCount) * 100);
 
-  // Dynamic Honorary Rank based on catalogued fauna
+  // Dynamic Honorary Rank based on discovered species and relics
   const getExplorerRank = () => {
-    if (discoveredCount >= 48) return 'Grand Sovereign of the Hadal Realm (Code: 002)';
-    if (discoveredCount >= 35) return 'Grand Commander of the Abyssal Frontier';
+    if (relicsCount >= 8 && discoveredCount >= 45) return 'Grand Sovereign of the Hadal Realm (Code: 002)';
+    if (relicsCount >= 5 || discoveredCount >= 35) return 'Grand Commander of the Abyssal Frontier';
     if (discoveredCount >= 20) return 'Distinguished Mesopelagic Bathynaut';
     if (discoveredCount >= 10) return 'Certified Sunlight Naturalist';
     return 'Apprentice Littoral Explorer';
@@ -81,240 +81,326 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
     }
   };
 
-  // Generate high-resolution 1200x820 Canvas representation of the diploma
+  // High-Resolution 1200x840 Canvas Certificate Generator (Faithful to papercraft aesthetic)
   const renderCertificateToCanvas = (): HTMLCanvasElement => {
     const canvas = document.createElement('canvas');
     canvas.width = 1200;
-    canvas.height = 820;
+    canvas.height = 840;
     const ctx = canvas.getContext('2d');
     if (!ctx) return canvas;
 
     // 1. Aged Vintage Parchment Background
-    const bgGrad = ctx.createLinearGradient(0, 0, 1200, 820);
+    const bgGrad = ctx.createLinearGradient(0, 0, 1200, 840);
     bgGrad.addColorStop(0, '#FAF3E0');
-    bgGrad.addColorStop(0.5, '#F5EDD6');
-    bgGrad.addColorStop(1, '#EFE4C8');
+    bgGrad.addColorStop(0.5, '#F5ECCE');
+    bgGrad.addColorStop(1, '#EDE2C2');
     ctx.fillStyle = bgGrad;
-    ctx.fillRect(0, 0, 1200, 820);
+    ctx.fillRect(0, 0, 1200, 840);
 
-    // Subtle paper noise / grain
-    ctx.fillStyle = 'rgba(30, 37, 43, 0.03)';
-    for (let i = 0; i < 1200; i += 12) {
-      for (let j = 0; j < 820; j += 12) {
-        if ((i + j) % 24 === 0) {
+    // Stipple paper grain
+    ctx.fillStyle = 'rgba(30, 37, 43, 0.035)';
+    for (let i = 0; i < 1200; i += 10) {
+      for (let j = 0; j < 840; j += 10) {
+        if ((i + j) % 20 === 0) {
           ctx.fillRect(i, j, 4, 4);
         }
       }
     }
 
-    // 2. Ornate Double Victorian Border
+    // 2. Ornate Multi-Tier Victorian Certificate Border
     ctx.strokeStyle = '#1E252B';
     ctx.lineWidth = 6;
-    ctx.strokeRect(30, 30, 1140, 760);
+    ctx.strokeRect(32, 32, 1136, 776);
 
     ctx.strokeStyle = '#EAA838';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(42, 42, 1116, 736);
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(44, 44, 1112, 752);
 
     ctx.strokeStyle = '#1E252B';
     ctx.lineWidth = 1;
-    ctx.setLineDash([6, 4]);
-    ctx.strokeRect(50, 50, 1100, 720);
+    ctx.setLineDash([8, 5]);
+    ctx.strokeRect(52, 52, 1096, 736);
     ctx.setLineDash([]);
 
-    // Corner Ornaments
+    // Corner Filigree Brackets
     const drawCorner = (x: number, y: number, rot: number) => {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(rot);
       ctx.fillStyle = '#1E252B';
-      ctx.fillRect(-15, -15, 30, 4);
-      ctx.fillRect(-15, -15, 4, 30);
+      ctx.fillRect(-18, -18, 36, 4);
+      ctx.fillRect(-18, -18, 4, 36);
       ctx.fillStyle = '#D95A47';
       ctx.beginPath();
-      ctx.arc(-8, -8, 4, 0, Math.PI * 2);
+      ctx.arc(-8, -8, 5, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     };
-    drawCorner(42, 42, 0);
-    drawCorner(1158, 42, Math.PI / 2);
-    drawCorner(1158, 778, Math.PI);
-    drawCorner(42, 778, -Math.PI / 2);
+    drawCorner(44, 44, 0);
+    drawCorner(1156, 44, Math.PI / 2);
+    drawCorner(1156, 796, Math.PI);
+    drawCorner(44, 796, -Math.PI / 2);
 
-    // 3. Society Header & Typography
+    // 3. Society Header & Official Inscriptions
     ctx.textAlign = 'center';
     ctx.fillStyle = '#D95A47';
-    ctx.font = 'bold 16px "Courier New", monospace';
+    ctx.font = 'bold 15px "Courier New", monospace';
     ctx.fillText('THE ROYAL PACIFIC OCEANOGRAPHIC SOCIETY · EST. 2026', 600, 95);
 
     ctx.fillStyle = '#1E252B';
-    ctx.font = 'bold 38px Georgia, "Times New Roman", serif';
-    ctx.fillText('DIPLOMA OF BATHYMETRIC CONQUEST', 600, 145);
+    ctx.font = 'bold 36px Georgia, "Times New Roman", serif';
+    ctx.fillText('DIPLOMA OF BATHYMETRIC CONQUEST', 600, 142);
 
     ctx.fillStyle = '#626863';
     ctx.font = 'italic 16px Georgia, serif';
-    ctx.fillText('This document solemnly attests and certifies that', 600, 185);
+    ctx.fillText('This document solemnly attests and certifies that', 600, 180);
 
-    // 4. Explorer Name (Engraved & Underlined)
+    // 4. Explorer Name in Large Engraved Script
     ctx.fillStyle = '#1E252B';
     ctx.font = 'bold 44px Georgia, "Times New Roman", serif';
     const displayExplorer = explorerName.trim() || 'Captain sm000ky';
-    ctx.fillText(displayExplorer, 600, 245);
+    ctx.fillText(displayExplorer, 600, 240);
 
-    // Calligraphic Underline Flourish
+    // Calligraphic Underline Flourish with diamond center
     ctx.strokeStyle = '#D95A47';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.moveTo(380, 260);
-    ctx.lineTo(820, 260);
+    ctx.moveTo(360, 255);
+    ctx.lineTo(840, 255);
     ctx.stroke();
 
-    // Small Diamond Center
     ctx.fillStyle = '#D95A47';
     ctx.beginPath();
-    ctx.moveTo(600, 255);
-    ctx.lineTo(606, 260);
-    ctx.lineTo(600, 265);
-    ctx.lineTo(594, 260);
+    ctx.moveTo(600, 249);
+    ctx.lineTo(607, 255);
+    ctx.lineTo(600, 261);
+    ctx.lineTo(593, 255);
     ctx.fill();
 
-    // 5. Formal Citation Body Text
+    // 5. Formal Citation Narrative
     ctx.fillStyle = '#3E464F';
-    ctx.font = 'italic 16px Georgia, serif';
+    ctx.font = 'italic 15px Georgia, serif';
     ctx.fillText(
-      'having successfully navigated the bathyscaphe through the epipelagic, mesopelagic, and bathypelagic zones,',
+      'having successfully piloted the bathyscaphe through the epipelagic, mesopelagic, and bathypelagic zones,',
       600,
-      305
+      295
     );
     ctx.fillText(
       `has plunged down to -${terminalDepth.toLocaleString()} METERS into Challenger Deep, surviving 1,086 atmospheres of crushing pressure`,
       600,
-      332
+      320
     );
     ctx.fillText(
       'and cataloguing the extraordinary living biodiversity of the Pacific Ocean basin.',
       600,
-      359
+      345
     );
 
-    // 6. Credentials Box
+    // 6. Official Credentials Grid Box
     ctx.fillStyle = '#F4ECE1';
     ctx.strokeStyle = '#DEC6AE';
     ctx.lineWidth = 1.5;
-    ctx.fillRect(160, 400, 880, 140);
-    ctx.strokeRect(160, 400, 880, 140);
+    ctx.fillRect(150, 375, 900, 155);
+    ctx.strokeRect(150, 375, 900, 155);
 
     ctx.textAlign = 'left';
     ctx.fillStyle = '#626863';
-    ctx.font = 'bold 12px "Courier New", monospace';
-    ctx.fillText('HONORARY RANK BESTOWED:', 190, 435);
-    ctx.fillText('MAXIMUM DEPTH ATTAINED:', 190, 480);
-    ctx.fillText('SPECIES CATALOGUED:', 190, 520);
+    ctx.font = 'bold 11px "Courier New", monospace';
+    ctx.fillText('HONORARY RANK BESTOWED:', 175, 410);
+    ctx.fillText('TERMINAL DEPTH CONQUERED:', 175, 450);
+    ctx.fillText('SPECIES CATALOGUED:', 175, 490);
+    ctx.fillText('APOCRYPHAL RELICS UNCOVERED:', 175, 520);
 
     ctx.fillStyle = '#1E252B';
     ctx.font = 'bold 16px Georgia, serif';
-    ctx.fillText(rankTitle, 385, 435);
+    ctx.fillText(rankTitle, 395, 410);
 
     ctx.fillStyle = '#D95A47';
     ctx.font = 'bold 16px "Courier New", monospace';
-    ctx.fillText(`-${terminalDepth.toLocaleString()} M (CHALLENGER DEEP)`, 385, 480);
-
-    ctx.fillStyle = '#1E252B';
-    ctx.font = 'bold 15px "Courier New", monospace';
-    ctx.fillText(`${discoveredCount} of ${totalCount} Species (${percent}% Completed)`, 385, 520);
-
-    // Right side of credentials
-    ctx.fillStyle = '#626863';
-    ctx.font = 'bold 12px "Courier New", monospace';
-    ctx.fillText('HYDROSTATIC LOAD:', 680, 435);
-    ctx.fillText('COORDINATES:', 680, 480);
-    ctx.fillText('AUTHENTICATION:', 680, 520);
+    ctx.fillText(`-${terminalDepth.toLocaleString()} M (CHALLENGER DEEP)`, 395, 450);
 
     ctx.fillStyle = '#1E252B';
     ctx.font = 'bold 14px "Courier New", monospace';
-    ctx.fillText('1,086.0 ATM (15,960 PSI)', 835, 435);
-    ctx.fillText("11°22'N · 142°35'E", 835, 480);
-    ctx.fillStyle = '#2F6D68';
-    ctx.fillText('VERIFIED // PASS', 835, 520);
+    ctx.fillText(`${discoveredCount} of ${totalCount} Species (${percent}% Completed)`, 395, 490);
 
-    // 7. Seals & Signatures (Bottom Deck)
+    ctx.fillStyle = '#B45309';
+    ctx.font = 'bold 14px "Courier New", monospace';
+    ctx.fillText(`${relicsCount} of ${totalRelics} Anomalies Classified`, 395, 520);
+
+    // Right Column of Credentials
+    ctx.fillStyle = '#626863';
+    ctx.font = 'bold 11px "Courier New", monospace';
+    ctx.fillText('HYDROSTATIC LOAD:', 680, 410);
+    ctx.fillText('COORDINATES:', 680, 450);
+    ctx.fillText('AUTHENTICATION:', 680, 490);
+    ctx.fillText('VESSEL HULL:', 680, 520);
+
+    ctx.fillStyle = '#1E252B';
+    ctx.font = 'bold 14px "Courier New", monospace';
+    ctx.fillText('1,086.0 ATM (15,960 PSI)', 825, 410);
+    ctx.fillText("11°22'N · 142°35'E", 825, 450);
+    ctx.fillStyle = '#2F6D68';
+    ctx.fillText('VERIFIED // PASS', 825, 490);
+    ctx.fillStyle = '#1E252B';
+    ctx.fillText('DSV STRELIZIA (TI-GR23)', 825, 520);
+
+    // 7. Authentic Rubber Ink Stamps in Corners
+    // Stamp 1: Prussian Blue Survey Stamp (Tilted -12°)
+    ctx.save();
+    ctx.translate(130, 200);
+    ctx.rotate(-0.21);
+    ctx.strokeStyle = 'rgba(31, 78, 121, 0.85)';
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(-65, -30, 130, 60);
+    ctx.setLineDash([4, 2]);
+    ctx.strokeRect(-60, -25, 120, 50);
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(31, 78, 121, 0.85)';
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 9px "Courier New", monospace';
+    ctx.fillText('★ PACIFIC OCEAN ★', 0, -8);
+    ctx.font = 'bold 11px "Courier New", monospace';
+    ctx.fillText('SURVEY VERIFIED', 0, 8);
+    ctx.font = '8px "Courier New", monospace';
+    ctx.fillText('-10,994M RECORD', 0, 20);
+    ctx.restore();
+
+    // Stamp 2: Vermilion Red Challenger Deep Stamp (Tilted +8°)
+    ctx.save();
+    ctx.translate(1070, 200);
+    ctx.rotate(0.14);
+    ctx.strokeStyle = 'rgba(185, 28, 28, 0.85)';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(0, 0, 42, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([3, 2]);
+    ctx.beginPath();
+    ctx.arc(0, 0, 36, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(185, 28, 28, 0.85)';
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 8px "Courier New", monospace';
+    ctx.fillText('CHALLENGER DEEP', 0, -12);
+    ctx.font = 'bold 13px Georgia, serif';
+    ctx.fillText('10,994 M', 0, 5);
+    ctx.font = '8px "Courier New", monospace';
+    ctx.fillText('EXPEDITION 002', 0, 20);
+    ctx.restore();
+
+    // 8. Signatures & Real 3D Melted Wax Seal (Bottom Deck)
     // Left: sm000ky Signature
     ctx.textAlign = 'center';
     ctx.strokeStyle = '#1E252B';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(180, 680);
-    ctx.lineTo(380, 680);
+    ctx.moveTo(170, 710);
+    ctx.lineTo(380, 710);
     ctx.stroke();
 
     ctx.fillStyle = '#1E252B';
-    ctx.font = 'italic bold 22px "Brush Script MT", Georgia, cursive';
-    ctx.fillText('sm000ky', 280, 668);
+    ctx.font = 'italic bold 24px "Brush Script MT", Georgia, cursive';
+    ctx.fillText('sm000ky', 275, 698);
     ctx.fillStyle = '#626863';
     ctx.font = '11px "Courier New", monospace';
-    ctx.fillText('sm000ky · Chief Expedition Architect', 280, 700);
+    ctx.fillText('sm000ky · Chief Expedition Architect', 275, 730);
 
-    // Center: Crimson Wax Seal
+    // Center: Authentic Embossed Crimson Wax Seal with Organic Melted Drips
     ctx.save();
-    ctx.translate(600, 660);
+    ctx.translate(600, 680);
+
+    // Ribbon tails hanging down from seal
+    ctx.fillStyle = '#991B1B';
+    ctx.beginPath();
+    ctx.moveTo(-18, 20);
+    ctx.lineTo(-30, 85);
+    ctx.lineTo(-14, 75);
+    ctx.lineTo(-2, 85);
+    ctx.lineTo(-6, 20);
+    ctx.fill();
+
     ctx.fillStyle = '#B91C1C';
     ctx.beginPath();
-    ctx.arc(0, 0, 48, 0, Math.PI * 2);
+    ctx.moveTo(6, 20);
+    ctx.lineTo(2, 85);
+    ctx.lineTo(14, 75);
+    ctx.lineTo(30, 85);
+    ctx.lineTo(18, 20);
     ctx.fill();
-    ctx.strokeStyle = '#7F1D1D';
-    ctx.lineWidth = 3;
+
+    // Organic Melted Wax Contour
+    ctx.fillStyle = '#7F1D1D';
+    ctx.beginPath();
+    ctx.arc(0, 0, 50, 0, Math.PI * 2);
+    ctx.fill();
+
+    const waxGrad = ctx.createRadialGradient(-12, -12, 10, 0, 0, 48);
+    waxGrad.addColorStop(0, '#EF4444');
+    waxGrad.addColorStop(0.4, '#DC2626');
+    waxGrad.addColorStop(0.85, '#B91C1C');
+    waxGrad.addColorStop(1, '#991B1B');
+    ctx.fillStyle = waxGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, 46, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Inner Stamped Ring & Anchor Compass Emblem
+    ctx.strokeStyle = '#FEE2E2';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(0, 0, 36, 0, Math.PI * 2);
     ctx.stroke();
 
     ctx.fillStyle = '#FEF2F2';
-    ctx.font = 'bold 9px "Courier New", monospace';
+    ctx.font = 'bold 8px "Courier New", monospace';
     ctx.fillText('OFFICIAL EXPEDITION', 0, -22);
-    ctx.fillText('SEAL', 0, -10);
+    ctx.fillText('SEAL', 0, -11);
 
-    // Anchor & Compass Emblem in Seal
     ctx.strokeStyle = '#FEF2F2';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.arc(0, 8, 12, 0, Math.PI * 2);
+    ctx.arc(0, 8, 10, 0, Math.PI * 2);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(0, -4);
-    ctx.lineTo(0, 20);
-    ctx.moveTo(-10, 14);
-    ctx.lineTo(10, 14);
+    ctx.moveTo(0, -2);
+    ctx.lineTo(0, 18);
+    ctx.moveTo(-8, 13);
+    ctx.lineTo(8, 13);
     ctx.stroke();
 
     ctx.font = 'bold 8px "Courier New", monospace';
-    ctx.fillText('-10,994M · 2026', 0, 32);
+    ctx.fillText('-10,994M · 2026', 0, 29);
     ctx.restore();
 
     // Right: Zero Two Signature
     ctx.strokeStyle = '#1E252B';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(820, 680);
-    ctx.lineTo(1020, 680);
+    ctx.moveTo(820, 710);
+    ctx.lineTo(1030, 710);
     ctx.stroke();
 
     ctx.fillStyle = '#D95A47';
-    ctx.font = 'italic bold 22px "Brush Script MT", Georgia, cursive';
-    ctx.fillText('Zero Two (Code: 002)', 920, 668);
+    ctx.font = 'italic bold 24px "Brush Script MT", Georgia, cursive';
+    ctx.fillText('Zero Two (Code: 002)', 925, 698);
     ctx.fillStyle = '#626863';
     ctx.font = '11px "Courier New", monospace';
-    ctx.fillText('Zero Two · Kokpit Imperial Co-Pilot', 920, 700);
+    ctx.fillText('Zero Two · Kokpit Imperial Co-Pilot', 925, 730);
 
     // Bottom Date & Serial
     ctx.fillStyle = '#8A968E';
     ctx.font = '10px "Courier New", monospace';
     ctx.fillText(
-      `ISSUED: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} · CERTIFICATE ID: № PAC-10994-PELAGIA`,
+      `REGISTRATION: № PAC-10994-PELAGIA · ISSUED ON ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`,
       600,
-      760
+      785
     );
 
     return canvas;
   };
 
-  // Download high-resolution PNG image
+  // High-Resolution PNG Download
   const handleDownloadPNG = () => {
     pelagiaAudio.playStampThud();
     setIsExporting(true);
@@ -325,7 +411,7 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
         const dataUrl = canvas.toDataURL('image/png');
         const a = document.createElement('a');
         a.href = dataUrl;
-        a.download = `pelagia-expedition-diploma-${explorerName.replace(/\s+/g, '_')}.png`;
+        a.download = `pelagia-conquest-diploma-${explorerName.replace(/\s+/g, '_')}.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -337,10 +423,10 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
     }, 150);
   };
 
-  // Share Progress via Native Web Share API or Clipboard Copy
+  // Native Web Share API Progress Sharing
   const handleShareProgress = async () => {
     pelagiaAudio.playWaterBubble();
-    const shareText = `🌊 I dove -10,994M into the Mariana Trench and catalogued ${discoveredCount}/${totalCount} species on Pelagia! Here is my official expedition diploma:`;
+    const shareText = `🌊 I dove -10,994M into Challenger Deep, catalogued ${discoveredCount}/${totalCount} marine species and uncovered ${relicsCount}/${totalRelics} apocryphal relics on Pelagia! Here is my official expedition diploma:`;
     const shareUrl = 'https://pelagia.vercel.app';
 
     try {
@@ -363,14 +449,12 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
             url: shareUrl,
           });
         } else {
-          // Fallback to Clipboard
           await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
           setCopiedToast(true);
           setTimeout(() => setCopiedToast(false), 3000);
         }
       });
     } catch {
-      // Fallback
       await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
       setCopiedToast(true);
       setTimeout(() => setCopiedToast(false), 3000);
@@ -389,9 +473,9 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-3xl my-auto bg-[#FAF3E0] text-[#1E252B] border-4 border-[#1E252B] rounded-2xl p-5 sm:p-9 shadow-paper-lg paper-grain space-y-5 animate-in zoom-in-95 duration-300"
+        className="relative w-full max-w-4xl my-auto bg-[#FAF3E0] text-[#1E252B] border-4 border-[#1E252B] rounded-2xl p-4 sm:p-8 shadow-paper-lg paper-grain space-y-5 animate-in zoom-in-95 duration-300"
       >
-        {/* Close Modal Button */}
+        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-3 sm:top-4 right-3 sm:right-4 p-1.5 rounded-lg border-2 border-[#1E252B] bg-[#FAF6EE] hover:bg-[#D95A47] hover:text-white transition-colors cursor-pointer shadow-paper-sm z-10"
@@ -399,14 +483,14 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
           <X className="w-5 h-5" />
         </button>
 
-        {/* Name Input Bar (Live Certificate Customizer) */}
+        {/* Custom Explorer Name Bar */}
         <div className="p-3 sm:p-4 rounded-xl bg-[#F4ECE1] border-2 border-[#1E252B] shadow-paper-sm flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2 font-mono text-xs font-bold text-[#1E252B]">
             <Edit3 className="w-4 h-4 text-[#D95A47]" />
             <span>CUSTOMIZE EXPLORER NAME:</span>
           </div>
 
-          <div className="relative w-full sm:w-72">
+          <div className="relative w-full sm:w-80">
             <input
               type="text"
               value={explorerName}
@@ -418,11 +502,28 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
           </div>
         </div>
 
-        {/* Certificate Parchment Frame */}
-        <div className="relative border-4 border-[#1E252B] p-5 sm:p-8 rounded-xl space-y-5 text-center bg-[#FDFBF7] shadow-inner">
+        {/* The Physical Parchment Certificate Frame */}
+        <div className="relative border-4 border-[#1E252B] p-5 sm:p-9 rounded-xl space-y-5 text-center bg-[#FDFBF7] shadow-inner overflow-hidden">
           {/* Inner Golden Trim & Dashed Line */}
           <div className="absolute inset-1.5 border-2 border-[#EAA838] pointer-events-none rounded-lg" />
           <div className="absolute inset-3 border border-dashed border-[#1E252B]/30 pointer-events-none rounded-lg" />
+
+          {/* Rubber Stamps in Corners */}
+          <div className="hidden sm:block absolute top-6 left-6 -rotate-12 pointer-events-none select-none">
+            <div className="px-2.5 py-1.5 rounded border-2 border-[#1F4E79]/80 text-[#1F4E79]/80 font-mono text-[9px] font-bold tracking-widest text-center">
+              <div>★ PACIFIC OCEAN ★</div>
+              <div>SURVEY VERIFIED</div>
+              <div className="text-[8px] font-normal">-10,994M RECORD</div>
+            </div>
+          </div>
+
+          <div className="hidden sm:block absolute top-6 right-6 rotate-12 pointer-events-none select-none">
+            <div className="w-16 h-16 rounded-full border-2 border-dashed border-[#B91C1C]/80 text-[#B91C1C]/80 font-mono flex flex-col items-center justify-center text-[7.5px] font-bold">
+              <span>CHALLENGER</span>
+              <span className="font-serif text-[10px] font-bold text-[#B91C1C]">10,994M</span>
+              <span>EXPEDITION</span>
+            </div>
+          </div>
 
           {/* Society Emblem */}
           <div className="flex justify-center pt-2">
@@ -444,20 +545,20 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
             </div>
           </div>
 
-          {/* The Explorer Name on Parchment */}
+          {/* Explorer Name Calligraphy on Parchment */}
           <div className="py-2">
             <div className="font-serif font-bold text-3xl sm:text-5xl text-[#1E252B] tracking-tight border-b-2 border-[#D95A47] pb-2 inline-block max-w-full px-4 break-words">
               {explorerName.trim() || 'Captain sm000ky'}
             </div>
           </div>
 
-          {/* Formal Citation */}
+          {/* Formal Citation Body */}
           <p className="font-serif text-xs sm:text-sm leading-relaxed text-[#4B5563] italic max-w-xl mx-auto">
-            "having successfully piloted the bathyscaphe through the epipelagic, mesopelagic, and bathypelagic zones, has plunged down to <strong className="text-[#1E252B] font-mono">-{terminalDepth.toLocaleString()} M</strong> into Challenger Deep, surviving 1,086 atmospheres of crushing hydrostatic load and cataloguing the living biodiversity of Earth's deepest frontier."
+            "having successfully navigated the bathyscaphe through the epipelagic, mesopelagic, and bathypelagic zones, has plunged down to <strong className="text-[#1E252B] font-mono">-{terminalDepth.toLocaleString()} M</strong> into Challenger Deep, surviving 1,086 atmospheres of crushing hydrostatic load and cataloguing the living biodiversity of Earth's deepest frontier."
           </p>
 
-          {/* Official Credentials Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5 font-mono text-xs text-left bg-[#F4ECE1] p-3.5 sm:p-5 rounded-xl border border-[#DEC6AE] shadow-paper-sm">
+          {/* Official Credentials Grid (Featuring Fauna + Apocryphal Relics!) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 font-mono text-xs text-left bg-[#F4ECE1] p-3.5 sm:p-5 rounded-xl border border-[#DEC6AE] shadow-paper-sm">
             <div>
               <div className="text-[9px] sm:text-[10px] text-[#626863] uppercase">HONORARY RANK BESTOWED:</div>
               <div className="font-bold text-[#1E252B] text-xs sm:text-sm font-serif">{rankTitle}</div>
@@ -474,12 +575,15 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
             </div>
 
             <div>
-              <div className="text-[9px] sm:text-[10px] text-[#626863] uppercase">HYDROSTATIC LOAD:</div>
-              <div className="font-bold text-[#1E252B] text-xs sm:text-sm">1,086.0 ATMOSPHERES</div>
+              <div className="text-[9px] sm:text-[10px] text-[#626863] uppercase">APOCRYPHAL RELICS:</div>
+              <div className="font-bold text-[#B45309] text-xs sm:text-sm flex items-center gap-1.5">
+                <span>{relicsCount} of {totalRelics} Uncovered</span>
+                {relicsCount >= 8 && <span className="text-[10px] text-emerald-600 font-bold">★ ALL SECRETS SOLVED!</span>}
+              </div>
             </div>
           </div>
 
-          {/* Signatures & Wax Seal Row */}
+          {/* Signatures & 3D Melted Wax Seal Row */}
           <div className="pt-4 border-t border-dashed border-[#1E252B]/20 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
             {/* sm000ky Signature */}
             <div className="text-center sm:text-left space-y-0.5">
@@ -488,11 +592,20 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
               <div className="text-[9px] text-[#626863]">Chief Expedition Architect</div>
             </div>
 
-            {/* Crimson Wax Seal Emblem */}
-            <div className="w-14 h-14 rounded-full bg-[#B91C1C] text-[#FEF2F2] border-2 border-[#7F1D1D] shadow-paper-sm flex flex-col items-center justify-center font-bold text-[8px] rotate-[-6deg] flex-shrink-0">
-              <span>OFFICIAL</span>
-              <span>SEAL</span>
-              <span className="text-[7px] opacity-80">-10,994M</span>
+            {/* 3D Melted Wax Seal with Ribbon Tails */}
+            <div className="relative flex flex-col items-center">
+              {/* Ribbon tails hanging down */}
+              <div className="absolute top-8 flex gap-1 pointer-events-none">
+                <div className="w-3 h-10 bg-[#B91C1C] -rotate-12 shadow-sm rounded-b" />
+                <div className="w-3 h-10 bg-[#991B1B] rotate-12 shadow-sm rounded-b" />
+              </div>
+
+              {/* 3D Wax Seal Circle */}
+              <div className="relative z-10 w-16 h-16 rounded-full bg-gradient-to-br from-[#EF4444] via-[#DC2626] to-[#7F1D1D] text-[#FEF2F2] border-2 border-[#7F1D1D] shadow-md flex flex-col items-center justify-center font-bold text-[8px] rotate-[-4deg] flex-shrink-0">
+                <span className="tracking-tighter">OFFICIAL</span>
+                <span className="text-[10px]">SEAL</span>
+                <span className="text-[7px] opacity-80">-10,994M</span>
+              </div>
             </div>
 
             {/* Zero Two Signature */}
@@ -504,9 +617,8 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
           </div>
         </div>
 
-        {/* Certificate Actions Bar (Download PNG, Share, Print) */}
+        {/* Certificate Actions Bar */}
         <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1">
-          {/* Download Image (PNG) */}
           <button
             onClick={handleDownloadPNG}
             disabled={isExporting}
@@ -516,7 +628,6 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
             <span>{isExporting ? 'GENERATING DIPLOMA...' : 'DOWNLOAD CERTIFICATE (PNG)'}</span>
           </button>
 
-          {/* Share Progress */}
           <button
             onClick={handleShareProgress}
             className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#2F6D68] hover:bg-[#3D857F] text-white font-mono text-xs font-bold transition-all shadow-paper cursor-pointer active:scale-95"
@@ -525,7 +636,6 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
             <span>SHARE PROGRESS</span>
           </button>
 
-          {/* Print / PDF */}
           <button
             onClick={handlePrint}
             className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#1E252B] hover:bg-black text-white font-mono text-xs font-bold transition-all shadow-paper cursor-pointer active:scale-95"
@@ -538,7 +648,7 @@ export const NaturalistCertificateModal: React.FC<CertificateModalProps> = ({
 
         {/* Copied Toast Notification */}
         {copiedToast && (
-          <div className="text-center font-mono text-xs font-bold text-emerald-600 bg-emerald-100 border border-emerald-300 p-2 rounded-lg animate-in fade-in duration-200">
+          <div className="text-center font-mono text-xs font-bold text-emerald-700 bg-emerald-100 border border-emerald-300 p-2 rounded-lg animate-in fade-in duration-200">
             ✓ Expedition link & progress copied to clipboard! Ready to share.
           </div>
         )}

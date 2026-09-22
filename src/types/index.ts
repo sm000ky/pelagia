@@ -45,3 +45,15 @@ export interface BiotaSpecimen {
   papercraftType: string;
   tagCategory?: 'Fish' | 'Cephalopod' | 'Mammal' | 'Crustacean' | 'Reptile' | 'Jelly' | 'Bioluminescent';
 }
+
+export interface ApocryphalRelic {
+  id: string;
+  relicNumber: string;
+  title: string;
+  subtitle: string;
+  depthMeters: number;
+  locationHint: string;
+  lore: string;
+  provenance: string;
+  iconType: 'albatross' | 'cutlass' | 'bottle' | 'titan' | 'bathysphere' | 'blacklight' | 'mug' | 'klaxosaur';
+}

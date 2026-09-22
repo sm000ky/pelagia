@@ -456,6 +456,36 @@ class PelagiaAudioEngine {
       // ignore
     }
   }
+
+  public playRelicUnlock(): void {
+    if (!this.ctx || !this.masterGain || this.isMuted) return;
+    try {
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      const t = this.ctx.currentTime;
+      // Magical harmonic arpeggio (C5 - G5 - C6 - E6)
+      const freqs = [523.25, 783.99, 1046.50, 1318.51];
+      freqs.forEach((freq, idx) => {
+        if (!this.ctx || !this.masterGain) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const start = t + idx * 0.08;
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+
+        gain.gain.setValueAtTime(0.001, start);
+        gain.gain.linearRampToValueAtTime(0.18, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 1.2);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(start);
+        osc.stop(start + 1.3);
+      });
+    } catch {
+      // ignore
+    }
+  }
 }
 
 export const pelagiaAudio = new PelagiaAudioEngine();

@@ -1,23 +1,55 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
-import { ArrowUp, Award, Compass, Sparkles } from 'lucide-react';
+import { ArrowUp, Award, Compass, Sparkles, Flame } from 'lucide-react';
+import { pelagiaAudio } from '../lib/audioEngine';
 
 interface ChallengerDeepFinaleProps {
   onScrollToTop: () => void;
   onOpenCertificate?: () => void;
+  isKlaxosaurUnlocked?: boolean;
+  onUnlockKlaxosaur?: () => void;
 }
 
 export const ChallengerDeepFinale: React.FC<ChallengerDeepFinaleProps> = ({
   onScrollToTop,
   onOpenCertificate,
+  isKlaxosaurUnlocked = false,
+  onUnlockKlaxosaur,
 }) => {
+  const [fissureTaps, setFissureTaps] = useState<number>(0);
+
   const triggerCelebration = () => {
     confetti({
       particleCount: 50,
       spread: 70,
       origin: { y: 0.8 },
-      colors: ['#D95A47', '#EAA838', '#2F6D68', '#FAF6EE']
+      colors: ['#D95A47', '#EAA838', '#2F6D68', '#FAF6EE'],
     });
+  };
+
+  const handleTapFissure = () => {
+    if (isKlaxosaurUnlocked) {
+      pelagiaAudio.playLeviathanRumble();
+      return;
+    }
+
+    const next = fissureTaps + 1;
+    setFissureTaps(next);
+    pelagiaAudio.playWaterBubble();
+
+    if (next >= 3) {
+      pelagiaAudio.playLeviathanRumble();
+      pelagiaAudio.playRelicUnlock();
+      confetti({
+        particleCount: 80,
+        spread: 90,
+        origin: { y: 0.7 },
+        colors: ['#EF4444', '#DC2626', '#EAA838', '#FAF6EE'],
+      });
+      if (onUnlockKlaxosaur) {
+        onUnlockKlaxosaur();
+      }
+    }
   };
 
   return (
@@ -58,6 +90,36 @@ export const ChallengerDeepFinale: React.FC<ChallengerDeepFinaleProps> = ({
             <div className="text-[10px] text-white/40">SURFACE LOCATION</div>
             <div className="font-bold text-[#EAA838]">11°22'N · 142°35'E</div>
           </div>
+        </div>
+
+        {/* Secret Apocryphal Relic VIII: Bedrock Magma Fissure */}
+        <div className="pt-2">
+          <button
+            onClick={handleTapFissure}
+            className={`w-full p-3.5 rounded-xl border-2 transition-all flex items-center justify-between gap-3 text-left font-mono cursor-pointer active:scale-98 ${
+              isKlaxosaurUnlocked
+                ? 'bg-red-950/40 border-red-500 text-red-200 shadow-[0_0_20px_rgba(239,68,68,0.3)]'
+                : 'bg-black/60 border-dashed border-red-500/40 text-red-300 hover:border-red-400'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-red-950/60 border border-red-500 flex items-center justify-center text-red-400">
+                <Flame className="w-5 h-5 animate-pulse" />
+              </div>
+              <div>
+                <div className="text-[10px] text-red-400/80 font-bold uppercase tracking-wider">
+                  APOCRYPHA 08 // MANTLE FISSURE
+                </div>
+                <div className="font-bold text-xs sm:text-sm text-white">
+                  {isKlaxosaurUnlocked ? 'Protocol 002: Klaxosaur Core Awakened' : 'Tap Bedrock Fissure (3x to Awaken)'}
+                </div>
+              </div>
+            </div>
+
+            <span className="px-2 py-1 rounded bg-red-950 border border-red-500/60 text-[10px] text-red-300 font-bold">
+              {isKlaxosaurUnlocked ? '✓ AWAKENED' : `${fissureTaps}/3 TAPS`}
+            </span>
+          </button>
         </div>
 
         {/* Action Buttons */}
